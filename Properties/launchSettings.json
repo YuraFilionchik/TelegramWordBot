@@ -1,0 +1,19 @@
+{
+  "profiles": {
+    "TelegramWordBot": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "TELEGRAM_TOKEN": "7697374244:AAFzEqLCu8jicuJ8QGbB4UjALw50XfgqBLM"
+      },
+      "dotnetRunMessages": true
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker",
+      "environmentVariables": {
+        "TELEGRAM_TOKEN": "7697374244:AAFzEqLCu8jicuJ8QGbB4UjALw50XfgqBLM"
+      }
+    }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json"
+}
