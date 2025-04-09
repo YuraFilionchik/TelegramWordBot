@@ -12,9 +12,7 @@ COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "TelegramWordBot.dll"]
 
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
-RUN apt-get update && apt-get install -y locales \
-    && locale-gen ru_RU.UTF-8 \
-    && update-locale LANG=ru_RU.UTF-8
+
 ENV LANG ru_RU.UTF-8
 ENV LANGUAGE ru_RU:ru
 ENV LC_ALL ru_RU.UTF-8
