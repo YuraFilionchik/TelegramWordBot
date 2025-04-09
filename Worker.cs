@@ -33,7 +33,7 @@ namespace TelegramWordBot
             var me = await _botClient.GetMe();
             _logger.LogInformation($"Бот {me.Username} запущен");
 
-            await Task.Delay(-1, stoppingToken); // áåñêîíå÷íîå îæèäàíèå
+            await Task.Delay(-1, stoppingToken);
         }
 
         private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken ct)
@@ -45,7 +45,7 @@ namespace TelegramWordBot
 
             await botClient.SendMessage(
                 chatId: message.Chat.Id,
-                text: $"Ты написал: {text}",
+                text: $"Ты написаль: {text}",
                 cancellationToken: ct
             );
         }
