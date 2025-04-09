@@ -1,12 +1,14 @@
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
 
-# Установка русской локали
+# Устанавливаем и настраиваем локаль
 RUN apt-get update \
     && apt-get install -y --no-install-recommends locales \
-    && sed -i '/ru_RU.UTF-8/s/^# //g' /etc/locale.gen \
     && locale-gen ru_RU.UTF-8 \
-    && update-locale LANG=ru_RU.UTF-8
+    && update-locale LANG=ru_RU.UTF-8 \
+    && export LANG=ru_RU.UTF-8 \
+    && export LANGUAGE=ru_RU:ru \
+    && export LC_ALL=ru_RU.UTF-8
 
 ENV LANG=ru_RU.UTF-8
 ENV LANGUAGE=ru_RU:ru
