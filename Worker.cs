@@ -31,9 +31,9 @@ namespace TelegramWordBot
         );
             
             var me = await _botClient.GetMe();
-            _logger.LogInformation($"Бот {me.Username} запущен.");
+            _logger.LogInformation($"Р‘РѕС‚ {me.Username} Р·Р°РїСѓС‰РµРЅ");
 
-            await Task.Delay(-1, stoppingToken); // бесконечное ожидание
+            await Task.Delay(-1, stoppingToken); // ГЎГҐГ±ГЄГ®Г­ГҐГ·Г­Г®ГҐ Г®Г¦ГЁГ¤Г Г­ГЁГҐ
         }
 
         private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken ct)
@@ -41,11 +41,11 @@ namespace TelegramWordBot
             if (update.Message is not { } message || message.Text is not { } text)
                 return;
 
-            Console.WriteLine($"Получено сообщение от {message.Chat.Username}: {text}");
+            Console.WriteLine($"РџРѕР»СѓС‡РµРЅРѕ СЃРѕРѕР±С‰РµРЅРёРµ РѕС‚ {message.Chat.Username}: {text}");
 
             await botClient.SendMessage(
                 chatId: message.Chat.Id,
-                text: $"Ты написал: {text}",
+                text: $"РўС‹ РЅР°РїРёСЃР°Р»: {text}",
                 cancellationToken: ct
             );
         }
