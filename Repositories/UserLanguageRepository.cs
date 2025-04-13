@@ -34,12 +34,18 @@ public class UserLanguageRepository
 
     public async Task<IEnumerable<string>> GetUserLanguageNamesAsync(Guid userId)
     {
-        using var conn = _factory.CreateConnection();
-        var sql = @"
+        try
+        {
+            using var conn = _factory.CreateConnection();
+            var sql = @"
             SELECT l.name 
             FROM user_languages ul
             INNER JOIN languages l ON ul.language_id = l.id
             WHERE ul.user_id = @UserId";
-        return await conn.QueryAsync<string>(sql, new { UserId = userId });
+            return await conn.QueryAsync<string>(sql, new { UserId = userId });
+        }catch
+        {
+            return new List<string>(); 
+        }
     }
 }
