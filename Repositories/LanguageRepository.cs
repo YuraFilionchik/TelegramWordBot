@@ -1,8 +1,11 @@
-using Dapper; using TelegramWordBot.Models;
+using Dapper; 
+using TelegramWordBot.Models;
 
-namespace TelegramWordBot.Repositories { public class LanguageRepository { private readonly DbConnectionFactory _factory;
+namespace TelegramWordBot.Repositories { 
+    public class LanguageRepository { 
+        private readonly DbConnectionFactory _factory;
 
-public LanguageRepository(DbConnectionFactory factory)
+    public LanguageRepository(DbConnectionFactory factory)
     {
         _factory = factory;
     }
@@ -17,6 +20,12 @@ public LanguageRepository(DbConnectionFactory factory)
     {
         using var conn = _factory.CreateConnection();
         return await conn.QueryFirstOrDefaultAsync<Language>("SELECT * FROM languages WHERE code = @code", new { code });
+    }
+
+    public async Task<Language?> GetByNameAsync(string name)
+    {
+        using var conn = _factory.CreateConnection();
+        return await conn.QueryFirstOrDefaultAsync<Language>("SELECT * FROM languages WHERE name = @name", new { name });
     }
 
     public async Task AddAsync(Language language)

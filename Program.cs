@@ -13,6 +13,13 @@ builder.Services.AddSingleton(dbFactory);
 builder.Services.AddSingleton<WordRepository>();
 builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<UserWordProgressRepository>();
+builder.Services.AddSingleton<LanguageRepository>();
+builder.Services.AddSingleton<UserWordRepository>();
+builder.Services.AddHttpClient<IAIHelper, AIHelper>();
+builder.Services.AddSingleton<TranslationRepository>();
+builder.Services.AddSingleton<UserLanguageRepository>();
+
+
 
 builder.Services.AddHostedService<Worker>();
 
