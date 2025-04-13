@@ -15,14 +15,16 @@ public class UserRepository
     public async Task<User?> GetByTelegramIdAsync(long telegramId)
     {
         using var conn = _factory.CreateConnection();
-        return await conn.QueryFirstOrDefaultAsync<User>(
+        User? user = await conn.QueryFirstOrDefaultAsync<User>(
             "SELECT * FROM users WHERE telegram_id = @telegramId", new { telegramId });
+        user.Telegram_Id = telegramId;
+        return user;
     }
 
     public async Task AddAsync(User user)
     {
         using var conn = _factory.CreateConnection();
         await conn.ExecuteAsync(
-            "INSERT INTO users (id, telegram_id, native_language) VALUES (@Id, @TelegramId, @NativeLanguage)", user);
+            "INSERT INTO users (id, telegram_id, native_language, current_language) VALUES (@Id, @Telegram_Id, @NativeLanguage, @CurrentLanguage)", user);
     }
 }

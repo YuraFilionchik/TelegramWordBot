@@ -57,8 +57,9 @@ namespace TelegramWordBot
         
         public async Task<string>GetLangInfo(string text)
         {
-            string prompt = $"Extract the language name and its code from the following text: '{text}'." +
-                $" Give your answer strictly in the format: [code]-[language name]]";
+            string prompt = $"Extract the language name from the following text: '{text}'." +
+                $" Give your answer strictly in the format of one word with a capital letter in english. " +
+                $"If you can not do it - return only 'error'";
             return await TranslateWithGeminiAsync(prompt, true);
         }
 
@@ -114,7 +115,7 @@ namespace TelegramWordBot
             response.EnsureSuccessStatusCode();
 
             var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-            var content = json.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("srcText").GetString();
+            var content = json.GetProperty("candidates")[0].GetProperty("content").GetProperty("parts")[0].GetProperty("text").GetString();
             return content?.Trim() ?? "";
         }
 

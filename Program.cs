@@ -3,8 +3,8 @@ using TelegramWordBot.Repositories;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-var connectionString = Environment.GetEnvironmentVariable("CONNECtiON_STRING")
-    ?? throw new InvalidOperationException("CONNECtiON_STRING environment variable is not set.");
+var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING")
+    ?? throw new InvalidOperationException("CONNECTION_STRING environment variable is not set.");
 
 connectionString = DbConnectionFactory.ConvertDatabaseUrl(connectionString);
 

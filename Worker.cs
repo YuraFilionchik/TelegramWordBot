@@ -77,13 +77,7 @@ namespace TelegramWordBot
             var user = await _userRepo.GetByTelegramIdAsync(UserTelegramId);
             var isNewUser = await IsNewUser(user, message);
             var userLanguages = await _userLangRepository.GetUserLanguageNamesAsync(user.Id);
-            var userParams = new {
-                user = user,
-                userLanguages = userLanguages,
-                botClient = botClient, 
-                isNewUser = isNewUser,
-                
-            };
+     
             if (_userStates.TryGetValue(UserTelegramId, out string state))
             {
                 if (state == "awaiting_addword")
@@ -101,6 +95,18 @@ namespace TelegramWordBot
                         await _userWordRepo.AddUserWordAsync(user.Id, newWord.Id);
                         var translation = _translationRepo.GetTranslationTextAsync(newWord);
                         await botClient.SendMessage(chatId, $"Добавлено. {text} - {translation}", cancellationToken: ct);
+                    return;
+                }else if (state == "awaiting_language")
+                {
+                    var langInfo = await _ai.GetLangInfo(text);
+                    if (langInfo.ToLower() == "error")
+                    {
+                        await botClient.SendMessage(chatId, "Error adding new language");
+                        return;
+                    }
+                    var langToAdd = await _languageRepo.GetByNameAsync(langInfo);
+                    await _userLangRepository.AddUserLanguageAsync(user.Id, langToAdd.Id);
+                    await botClient.SendMessage(chatId, $"Язык \"{langToAdd.Name}\" добавлен.", cancellationToken: ct);
                     return;
                 }
             }
@@ -131,11 +137,13 @@ namespace TelegramWordBot
                     break;
 
                 case "/addlanguage":
-                    var partsAdd = text.Split(' ');
-                    var langInfo = _ai.GetLangInfo(text);
-                    var langToAdd = new Language { Code = partsAdd[1], Name = partsAdd[2] };
-                    await _languageRepo.AddAsync(langToAdd);
-                    await botClient.SendMessage(chatId, $"Язык \"{langToAdd.Name}\" добавлен.", cancellationToken: ct);
+                    if (lowerText.Split( ).Length == 1)
+                    {
+                        _userStates[UserTelegramId] = "awaiting_language";
+                        await botClient.SendMessage(chatId, "Введите название языка для изучения");
+                        return;
+                    }
+                    
                     break;
 
                 case "/removelanguage":
@@ -220,7 +228,7 @@ namespace TelegramWordBot
                 user = new Models.User
                 {
                     Id = Guid.NewGuid(),
-                    TelegramId = message.From.Id,
+                    Telegram_Id = message.From.Id,
                     NativeLanguage = message.From.LanguageCode ?? "Ru"  //TODO request and changing lang
                 };
                 await _userRepo.AddAsync(user);
