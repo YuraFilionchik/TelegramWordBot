@@ -98,6 +98,7 @@ namespace TelegramWordBot
                     return;
                 }else if (state == "awaiting_language")
                 {
+                    _userStates.Remove(UserTelegramId);
                     var langInfo = await _ai.GetLangInfo(text);
                     if (langInfo.ToLower() == "error")
                     {
