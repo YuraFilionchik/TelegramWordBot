@@ -31,4 +31,12 @@ public class UserWordRepository
         var sql = "INSERT INTO user_words (user_id, word_id) VALUES (@UserId, @WordId) ON CONFLICT DO NOTHING";
         await conn.ExecuteAsync(sql, new { UserId = userId, WordId = wordId });
     }
+
+    public async Task RemoveAllUserWords()
+    {
+        using var conn = _factory.CreateConnection();
+        var sql = @"
+            DELETE FROM user_words";
+        await conn.ExecuteAsync(sql);
+    }
 }

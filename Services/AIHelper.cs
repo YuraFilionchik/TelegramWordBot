@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using TelegramWordBot.Models;
 
-namespace TelegramWordBot
+namespace TelegramWordBot.Services
 {
     public interface IAIHelper
     {
@@ -27,22 +27,43 @@ namespace TelegramWordBot
         public async Task<string> TranslateWordAsync(string srcText, string nativeLangName, string targetLangName)
         {
             var oneWord = srcText.Split(' ').Count() == 1;
-            string prompt = $"Be a high-class translator. There are several languages ​​- {nativeLangName} and {targetLangName} . " +
-                $"Automatically recognize the language of the text and translate into other languages ​​from the list.";
+            string prompt = $"You are an expert translator specializing in {nativeLangName} and {targetLangName} . " +
+                $"Automatically recognize the language of the given text and translate into other language ({nativeLangName}/{targetLangName}). " +
+                $"Return an error message if the source text does not belong to any of these languages. " +
+                $"Make all translations as accurately as possible. ";
+                
             if (oneWord)
-                prompt = $"Give a translation of this word - '{srcText}'." +
+                prompt += @"Respond ONLY in JSON format like this, with no explanations or conversational text: 
+               {
+                {
+                    translationLanguage: 'The name of the language you translated *into*',
+                    translations: [
+                    { { text: 'translation_1', example: 'example_sentence_1_in_target_language' } },
+                    { { text: 'translation_2', example: 'example_sentence_2_in_target_language' } },
+                    { { error: 'error_message_if_it_is' } }
+                                    ]
+                }
+            }" +
+            $" Give a translation of this word - '{srcText}'. " +
                $" If you need several of the most common translation options, " +
                $"as well as one example for each meaning of the translation. ";
             else
-                prompt = $"Just translate the text without unnecessary information, text = '{srcText}' ";
+                prompt += @"Respond ONLY in JSON format like this, with no explanations or conversational text: 
+               {
+                {
+                    translationLanguage: 'The name of the language you translated *into*',
+                    translations: [
+                    { { text: 'translation' } },
+                    { { error: 'error_message_if_it_is' } }
+                                    ]
+                }
+            } "+
+            $"Translate the text = '{srcText}' ";
 
-            prompt+= $"Make all translations as accurately as possible and " +
-                $"in the response give only translation without unnecessary explanations and comments. " +
-                $"Your response must be exactly in form: [Target language name]=[translation results]" +
-                $"If  recognized language of source text  is not in list - make answer for user in {nativeLangName} language," +
-                $" that source text language is not in list of his languages,and give response in form: error=[message for user]"; 
+            prompt += @"// --- Important: Ensure the JSON is valid and contains only the requested fields. ---";
 
             return await TranslateWithGeminiAsync(prompt, false);
+            //TODO make parsing JSON and return object Translation
            // return await TranslateWithOpenAIAsync(prompt);
         }
 
@@ -89,16 +110,31 @@ namespace TelegramWordBot
 
         private async Task<string> TranslateWithGeminiAsync(string prompt, bool lite)
         {
-            var requestBody = new
+            var requestBody = new GeminiRequest
             {
-                contents = new[] {
-                new {
-                    parts = new[] {
-                        new { text = prompt }
-                    }
+                Contents = new List<Content>
+            {
+                new Content
+                {
+                    Parts = new List<Part> { new Part { Text = prompt } }
                 }
+            },
+                GenerationConfig = new GenerationConfiguration
+                {
+                    Temperature = 0.0, // Для точности перевода
+                    MaxOutputTokens = 150 // Ограничение для короткого текста
+                },
+                SafetySettings = new List<SafetySetting>
+            {
+                // ВАЖНО: Использование BLOCK_NONE отключает защиту.
+                // Используйте с осторожностью и пониманием рисков.
+                new SafetySetting { Category = "HARM_CATEGORY_HARASSMENT", Threshold = "BLOCK_NONE" },
+                new SafetySetting { Category = "HARM_CATEGORY_HATE_SPEECH", Threshold = "BLOCK_NONE" },
+                new SafetySetting { Category = "HARM_CATEGORY_SEXUALLY_EXPLICIT", Threshold = "BLOCK_NONE" },
+                new SafetySetting { Category = "HARM_CATEGORY_DANGEROUS_CONTENT", Threshold = "BLOCK_NONE" }
             }
             };
+
             string url;
             if (lite)  url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key={_geminiKey}";
             else

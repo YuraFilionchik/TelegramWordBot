@@ -51,6 +51,14 @@ namespace TelegramWordBot.Repositories
             using var conn = _factory.CreateConnection();
             await conn.ExecuteAsync(sql, word);
         }
+
+        public async Task RemoveAllWords()
+        {
+            using var conn = _factory.CreateConnection();
+            var sql = @"
+            DELETE FROM words";
+            await conn.ExecuteAsync(sql);
+        }
     }
 
 }

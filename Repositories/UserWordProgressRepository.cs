@@ -56,5 +56,8 @@ public class UserWordProgressRepository
                     progress = @Progress
                 WHERE user_id = @UserId AND word_id = @WordId", existing);
         }
+
     }
+
+
 }

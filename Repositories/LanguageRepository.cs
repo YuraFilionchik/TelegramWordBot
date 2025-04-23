@@ -16,8 +16,10 @@ namespace TelegramWordBot.Repositories {
         return await conn.QueryAsync<Language>("SELECT * FROM languages ORDER BY name");
     }
 
-    public async Task<Language?> GetByCodeAsync(string code)
+    public async Task<Language?> GetByCodeAsync(string? code)
     {
+            if (code == null) return null;
+            code = code.ToLower();
         using var conn = _factory.CreateConnection();
         return await conn.QueryFirstOrDefaultAsync<Language>("SELECT * FROM languages WHERE code = @code", new { code });
     }

@@ -48,4 +48,12 @@ public class UserLanguageRepository
             return new List<string>(); 
         }
     }
+
+    public async Task RemoveAllUserLanguages()
+    {
+        using var conn = _factory.CreateConnection();
+        var sql = @"
+            DELETE FROM user_languages";
+        await conn.ExecuteAsync(sql);
+    }
 }

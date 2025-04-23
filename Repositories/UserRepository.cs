@@ -17,7 +17,6 @@ public class UserRepository
         using var conn = _factory.CreateConnection();
         User? user = await conn.QueryFirstOrDefaultAsync<User>(
             "SELECT * FROM users WHERE telegram_id = @telegramId", new { telegramId });
-        user.Telegram_Id = telegramId;
         return user;
     }
 
@@ -25,6 +24,13 @@ public class UserRepository
     {
         using var conn = _factory.CreateConnection();
         await conn.ExecuteAsync(
-            "INSERT INTO users (id, telegram_id, native_language, current_language) VALUES (@Id, @Telegram_Id, @NativeLanguage, @CurrentLanguage)", user);
+            "INSERT INTO users (id, telegram_id, native_language, current_language) VALUES (@Id, @Telegram_Id, @Native_Language, @Current_Language)", user);
+    }
+
+    public async Task UpdateAsync(User user)
+    {
+        using var conn = _factory.CreateConnection();
+        await conn.ExecuteAsync(
+            "UPDATE users SET telegram_id = @Telegram_Id, native_language = @Native_Language, current_language = @Current_Language WHERE id = @Id", user);
     }
 }
