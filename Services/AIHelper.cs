@@ -7,7 +7,7 @@ namespace TelegramWordBot.Services
 {
     public interface IAIHelper
     {
-        Task<string> TranslateWordAsync(string word, string sourceLangCode, string targetLangCode);
+        Task<TranslatedTextClass> TranslateWordAsync(string word, string sourceLangCode, string targetLangCode);
         Task<string> SimpleTranslateText(string text, string targetLang);
         Task<string> GetLangInfo(string text);
     }
@@ -24,13 +24,13 @@ namespace TelegramWordBot.Services
             _openAiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");// ?? throw new InvalidOperationException("OPENAI_API_KEY is not set.");
             _geminiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY") ?? throw new InvalidOperationException("GEMINI_API_KEY is not set.");
         }
-        public async Task<string> TranslateWordAsync(string srcText, string nativeLangName, string targetLangName)
+        public async Task<TranslatedTextClass> TranslateWordAsync(string srcText, string nativeLangName, string targetLangName)
         {
             var oneWord = srcText.Split(' ').Count() == 1;
             string prompt = $"You are an expert translator specializing in {nativeLangName} and {targetLangName} . " +
                 $"Automatically recognize the language of the given text and translate into other language ({nativeLangName}/{targetLangName}). " +
                 $"Return an error message if the source text does not belong to any of these languages. " +
-                $"Make all translations as accurately as possible. ";
+                $"Make all translations as accurately as possible. My native language is {nativeLangName} and I study {targetLangName}";
                 
             if (oneWord)
                 prompt += @"Respond ONLY in JSON format like this, with no explanations or conversational text: 
@@ -38,15 +38,13 @@ namespace TelegramWordBot.Services
                 {
                     translationLanguage: 'The name of the language you translated *into*',
                     translations: [
-                    { { text: 'translation_1', example: 'example_sentence_1_in_target_language' } },
-                    { { text: 'translation_2', example: 'example_sentence_2_in_target_language' } },
+                    { { text: 'translation_1', example: 'example_sentence_1' } },
+                    { { text: 'translation_2_if_needed)', example: 'example_sentence_2' } },
                     { { error: 'error_message_if_it_is' } }
                                     ]
                 }
             }" +
-            $" Give a translation of this word - '{srcText}'. " +
-               $" If you need several of the most common translation options, " +
-               $"as well as one example for each meaning of the translation. ";
+            $" Give a translation of this word - '{srcText}'. " ;
             else
                 prompt += @"Respond ONLY in JSON format like this, with no explanations or conversational text: 
                {
@@ -60,9 +58,10 @@ namespace TelegramWordBot.Services
             } "+
             $"Translate the text = '{srcText}' ";
 
-            prompt += @"// --- Important: Ensure the JSON is valid and contains only the requested fields. ---";
-
-            return await TranslateWithGeminiAsync(prompt, false);
+            prompt += @"// --- Important: Ensure the JSON is valid and contains only the requested fields. Your answer is content of json.---";
+            var response =  await TranslateWithGeminiAsync(prompt, false);
+            TranslatedTextClass returnedTranslate = new TranslatedTextClass(response);
+            return returnedTranslate;
             //TODO make parsing JSON and return object Translation
            // return await TranslateWithOpenAIAsync(prompt);
         }
@@ -122,7 +121,7 @@ namespace TelegramWordBot.Services
                 GenerationConfig = new GenerationConfiguration
                 {
                     Temperature = 0.0, // Для точности перевода
-                    MaxOutputTokens = 150 // Ограничение для короткого текста
+                    MaxOutputTokens = 450 // Ограничение для короткого текста
                 },
                 SafetySettings = new List<SafetySetting>
             {

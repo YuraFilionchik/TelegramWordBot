@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.Json; 
 using System.Threading.Tasks; 
 
 namespace TelegramWordBot.Services 
 {
-    class TranslatedTextClass
+    public class TranslatedTextClass
     {
         string? languageName; //  nullable на случай ошибки
         string? translatedText; //  nullable на случай ошибки или отсутствия текста
@@ -21,6 +22,21 @@ namespace TelegramWordBot.Services
         public TranslatedTextClass(string json)
         {
             examples = new List<string>();
+            json = json.Trim().Trim('`');
+            var startIndex = json.IndexOf('{');
+            var endIndex = json.LastIndexOf('}');
+            json = json.Substring(startIndex, endIndex - startIndex + 1);
+            //            "```json
+            //{
+            //                "translationLanguage": "Polish",
+            //"translations": [
+            //{
+            //                    "text": "ryba",
+            //"example": "Na obiad była smażona ryba."
+            //}
+            //]
+            //}
+            //            "
 
             try
             {
@@ -56,10 +72,17 @@ namespace TelegramWordBot.Services
                             if (translationItem.ValueKind == JsonValueKind.Object)
                             {
                                 // Пытаемся извлечь 'text'
-                                if (!firstTextFound && translationItem.TryGetProperty("text", out JsonElement textElement) && textElement.ValueKind == JsonValueKind.String)
+                                if ( translationItem.TryGetProperty("text", out JsonElement textElement) && textElement.ValueKind == JsonValueKind.String)
                                 {
-                                    this.translatedText = textElement.GetString();
-                                    firstTextFound = true; // Устанавливаем флаг, что основной текст найден
+                                    if (!firstTextFound)
+                                    {
+                                        this.translatedText = textElement.GetString();
+                                        firstTextFound = true; // Устанавливаем флаг, что основной текст найден
+                                    }
+                                    else
+                                    {
+                                        this.translatedText +=", " + textElement.GetString();
+                                    }
                                 }
 
                                 // Пытаемся извлечь 'example' (независимо от 'text')
@@ -127,6 +150,16 @@ namespace TelegramWordBot.Services
             }
         }
 
+        public string GetExampleString()
+        {
+            StringBuilder sb = new StringBuilder();
+            if (Examples != null && Examples.Count != 0)
+            {
+                foreach (var ex in Examples)
+                    sb.AppendLine(ex);                
+            }
+            return sb.ToString();
+        }
         public bool IsSuccess()
         {
             return string.IsNullOrEmpty(this.error) && !string.IsNullOrEmpty(this.translatedText);

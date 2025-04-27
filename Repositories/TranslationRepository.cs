@@ -37,12 +37,21 @@ public class TranslationRepository
         return await conn.QueryAsync<Translation>(sql, new { WordId = wordId });
     }
 
-    public async Task<Translation?> GetTranslationTextAsync(Word word)
+    public async Task<Translation?> GetTranslationTextAsync(Guid wordId, int targetLangId)
     {
-        var wordId = word.Id;
-        var targetLanguageId = word.LanguageId;
         using var conn = _factory.CreateConnection();
         var sql = "SELECT * FROM translations WHERE word_id = @WordId AND language_id = @LanguageId LIMIT 1";
-        return await conn.QueryFirstOrDefaultAsync<Translation>(sql, new { WordId = wordId, LanguageId = targetLanguageId });
+        return await conn.QueryFirstOrDefaultAsync<Translation>(sql, new { WordId = wordId, LanguageId = targetLangId });
+    }
+
+    public async Task<bool> ExistTranslate(Guid? wordId, int targetLangId)
+    {
+        if (wordId == null) return false;
+        using var conn = _factory.CreateConnection();
+        var sql = @"SELECT EXISTS (
+                   SELECT 1 FROM translations
+                   WHERE word_id = @WordId AND language_id = @LanguageId";
+
+        return await conn.ExecuteScalarAsync<bool>(sql, new { WordId = wordId, LanguageId = targetLangId });
     }
 }

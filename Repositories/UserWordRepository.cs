@@ -21,7 +21,7 @@ public class UserWordRepository
                 JOIN words w ON uw.word_id = w.id
                 WHERE uw.user_id = @UserId AND LOWER(w.base_text) = LOWER(@BaseText)
             )";
-
+        //here is the bug with same words in different langs
         return await conn.ExecuteScalarAsync<bool>(sql, new { UserId = userId, BaseText = baseText });
     }
 

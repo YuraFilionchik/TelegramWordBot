@@ -14,6 +14,8 @@ namespace TelegramWordBot.Repositories
             _factory = factory;
         }
 
+       
+
         public async Task<Word?> GetByTextAsync(string baseText)
         {
             using var conn = _factory.CreateConnection();
