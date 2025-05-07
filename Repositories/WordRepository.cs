@@ -20,8 +20,16 @@ namespace TelegramWordBot.Repositories
         {
             using var conn = _factory.CreateConnection();
             return await conn.QueryFirstOrDefaultAsync<Word>(
-                "SELECT * FROM words WHERE LOWER(base_text) = LOWER(@BaseText)",
-                new { BaseText = baseText });
+                "SELECT * FROM words WHERE LOWER(base_text) = LOWER(@Base_Text)",
+                new { Base_Text = baseText });
+        }
+
+        public async Task<Word?> GetByTextAndLanguageAsync(string text, int languageId)
+        {
+            using var conn = _factory.CreateConnection();
+            return await conn.QueryFirstOrDefaultAsync<Word>(
+                "SELECT * FROM words WHERE LOWER(base_text) = LOWER(@Base_Text) AND language_id = @Language_Id",
+                new { Base_Text = text, Language_Id = languageId });
         }
 
 
@@ -30,10 +38,10 @@ namespace TelegramWordBot.Repositories
             using var conn = _factory.CreateConnection();
             var sql = @"SELECT EXISTS (
                    SELECT 1 FROM words 
-                   WHERE base_text = @BaseText 
-                   " + (languageId.HasValue ? "AND language_id = @LanguageId" : "") + ")";
+                   WHERE base_text = @Base_Text 
+                   " + (languageId.HasValue ? "AND language_id = @Language_Id" : "") + ")";
 
-            return await conn.ExecuteScalarAsync<bool>(sql, new { BaseText = baseText, LanguageId = languageId });
+            return await conn.ExecuteScalarAsync<bool>(sql, new { Base_Text = baseText, Language_Id = languageId });
         }
 
         public async Task<IEnumerable<Word>> GetAllWordsAsync()
@@ -44,11 +52,9 @@ namespace TelegramWordBot.Repositories
 
         public async Task AddWordAsync(Word word)
         {
-            if (await WordExistsAsync(word.BaseText, word.LanguageId)) return;
-            var sql = @"INSERT INTO Words (id, base_text, language_id, last_review, 
-                     count_total_view, count_plus, count_minus, progress)
-                    VALUES (@Id, @BaseText, @LanguageId, @LastReview, 
-                            @CountTotalView, @CountPlus, @CountMinus, @Progress)";
+            //if (await WordExistsAsync(word.Base_Text, word.Language_Id)) return;
+            var sql = @"INSERT INTO Words (id, base_text, language_id)
+                    VALUES (@Id, @Base_Text, @Language_Id)";
 
             using var conn = _factory.CreateConnection();
             await conn.ExecuteAsync(sql, word);

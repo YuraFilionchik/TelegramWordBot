@@ -47,6 +47,11 @@ public class TelegramMessageHelper
         var text = $"✅ <b>{EscapeHtml(message)}</b>";
         await _bot.SendMessage(chatId, text, parseMode: ParseMode.Html, cancellationToken: ct);
     }
+    public async Task SendInfoAsync(ChatId chatId, string message, CancellationToken ct)
+    {
+        var text = $"ℹ️<i>{EscapeHtml(message)}</i>";
+        await _bot.SendMessage(chatId, text, parseMode: ParseMode.Html, cancellationToken: ct);
+    }
 
     private string EscapeHtml(string input) =>
         input.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");

@@ -16,7 +16,7 @@ public class UserRepository
     {
         using var conn = _factory.CreateConnection();
         User? user = await conn.QueryFirstOrDefaultAsync<User>(
-            "SELECT * FROM users WHERE telegram_id = @telegramId", new { telegramId });
+            "SELECT * FROM users WHERE telegram_id = @Telegram_Id", new { Telegram_Id = telegramId });
         return user;
     }
 
