@@ -14,7 +14,7 @@ namespace TelegramWordBot.Services
         string? error;
         List<string>? examples;
 
-        public string? LanguageName { get => languageName; set => languageName = value; }
+        //public string? LanguageName { get => languageName; set => languageName = value; }
         public string? TranslatedText { get => translatedText; set => translatedText = value; }
         public List<string>? Examples { get => examples; set => examples = value; }
         public string? Error { get => error; set => error = value; }
@@ -28,7 +28,6 @@ namespace TelegramWordBot.Services
             json = json.Substring(startIndex, endIndex - startIndex + 1);
             //            "```json
             //{
-            //                "translationLanguage": "Polish",
             //"translations": [
             //{
             //                    "text": "ryba",
@@ -50,18 +49,6 @@ namespace TelegramWordBot.Services
                         // Если есть ошибка верхнего уровня, остальное не парсим
                         return; 
                     }
-
-                    // Парсим язык перевода
-                    if (root.TryGetProperty("translationLanguage", out JsonElement langElement) && langElement.ValueKind == JsonValueKind.String)
-                    {
-                        this.languageName = langElement.GetString();
-                    }
-                    else
-                    {
-                        this.error = "Invalid response format: Missing or invalid 'translationLanguage'.";
-                        return;
-                    }
-
 
                     //Парсим массив translations
                     if (root.TryGetProperty("translations", out JsonElement translationsElement) && translationsElement.ValueKind == JsonValueKind.Array)
@@ -136,7 +123,6 @@ namespace TelegramWordBot.Services
                 Console.WriteLine($"JSON Parsing Error: {ex.Message}"); // Логирование для отладки
                 this.error = $"Failed to parse JSON response: {ex.Message}";
                 // Обнуляем остальные поля на всякий случай
-                this.languageName = null;
                 this.translatedText = null;
                 this.examples = null;
             }
@@ -144,7 +130,6 @@ namespace TelegramWordBot.Services
             {
                 Console.WriteLine($"Unexpected Error during translation object creation: {ex.Message}"); // Логирование
                 this.error = $"An unexpected error occurred while processing the translation: {ex.Message}";
-                this.languageName = null;
                 this.translatedText = null;
                 this.examples = null;
             }

@@ -1,7 +1,9 @@
 ﻿using Dapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Linq;
 using TelegramWordBot.Models;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace TelegramWordBot.Repositories
 {
@@ -59,6 +61,14 @@ namespace TelegramWordBot.Repositories
             using var conn = _factory.CreateConnection();
             await conn.ExecuteAsync(sql, word);
         }
+
+        public async Task<Word?> GetWordById(Guid wordId)
+        {
+            using var conn = _factory.CreateConnection();
+            var sql = @"SELECT 1 FROM Words WHERE id = @Word_Id";
+           return await conn.QueryFirstOrDefaultAsync<Word>(sql, new {Word_Id = wordId} );
+        }
+
 
         public async Task RemoveAllWords()
         {

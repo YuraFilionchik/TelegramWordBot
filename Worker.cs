@@ -63,7 +63,9 @@ namespace TelegramWordBot
                 new BotCommand { Command = "addlanguage", Description = "Добавить язык для изучения" },
                 new BotCommand { Command = "addword", Description = "Добавить новое слово" },
                 new BotCommand { Command = "removeword", Description = "Удалить слово" },
-                new BotCommand { Command = "clearalldata", Description = "Удалить ВСЕ ДАННЫЕ!" }
+                new BotCommand { Command = "clearalldata", Description = "Удалить ВСЕ ДАННЫЕ!" },
+                new BotCommand { Command = "switchlanguage", Description = "Изменить изучаемый язык" },
+                new BotCommand { Command = "mywords", Description = "Показать мои слова" }
 
             });
 
@@ -115,31 +117,8 @@ namespace TelegramWordBot
 
                         case "awaiting_addword":
                             _userStates.Remove(UserTelegramId);
-                            if (user.Current_Language == null || user.Native_Language == null || currentLearnLanguage == null)
-                            {
-                                await _msg.SendErrorAsync(chatId, "Не настроены родной или изучаемый язык пользователя", ct);
-                                return;
-                            }
-                            var exists = await _userWordRepo.UserHasWordAsync(user.Id, text);
-                            //TODO check if exist translation!!!! for current language
-                           //слова общие для всех пользователей, а переводы индивидуальные
-                            if (exists)
-                            {
-                                await botClient.SendMessage(chatId, $"Слово \"{text}\" уже есть в твоём списке.", cancellationToken: ct);
-                                return;
-                            }
-                            var newWord = await CreateWordWithTranslationAsync(user.Id, text, nativeLanguage, currentLearnLanguage);
-                            //Language targetLang = currentLearnLanguage; //by default - save in target lang
-                            //if (newWord.Language_Id == currentLearnLanguage.Id)
-                            //{
-                            //    targetLang = nativeLanguage;
-                            //}
-                            await _userWordRepo.AddUserWordAsync(user.Id, newWord.Id);
-                            var translation = await _translationRepo.GetTranslationAsync(newWord.Id, nativeLanguage.Id) ?? throw new NullReferenceException("Can not get translation for word");
-                            await botClient.SendMessage(chatId, $"Добавлено {newWord.Base_Text}", cancellationToken: ct);
-                            await _msg.SendWordCardAsync(chatId, newWord.Base_Text, translation.Text + "\n" + translation.Examples, null, ct);
+                            ProcessAddWord(user, text, currentLearnLanguage, nativeLanguage, ct);
                             return;
-
                         case "awaiting_language":
                             _userStates.Remove(UserTelegramId);
                             ProcessAddLanguage(user, text);
@@ -154,7 +133,6 @@ namespace TelegramWordBot
 
                 if (string.IsNullOrWhiteSpace(user.Native_Language))
                 {
-                    //TODO request native lang
                     _userStates[UserTelegramId] = "awaiting_nativelanguage";
                     await botClient.SendMessage(chatId, "Введите ваш родной язык(Enter your native language):");
                     return;
@@ -183,7 +161,7 @@ namespace TelegramWordBot
                         _userStates[UserTelegramId] = "awaiting_addword";
                         await botClient.SendMessage(chatId, "Введите слово для запоминания:", cancellationToken: ct);
                         break;
-
+                    
                     case "/learn":
                         await botClient.SendMessage(chatId, "Режим изучения слов скоро будет доступен. (в разработке)", cancellationToken: ct);
                         break;
@@ -241,6 +219,8 @@ namespace TelegramWordBot
                             break;
                     case "/clearalldata":
                         await _msg.SendSuccessAsync(chatId, "Удаление слов и настроек...", ct);
+                        user.Current_Language = "";
+                        await _userRepo.UpdateAsync(user);
                         await _translationRepo.RemoveAllTranslations();
                         await _userLangRepository.RemoveAllUserLanguages();
                         await _userWordRepo.RemoveAllUserWords();
@@ -293,12 +273,15 @@ namespace TelegramWordBot
                                 }else
                                     foreach (var w in words)
                                     {
-                                        var translation = await _translationRepo.GetTranslationAsync(w.Id, lang.Id);
+                                        var translation = await _translationRepo.GetTranslationAsync(w.Id, nativeLanguage.Id);
                                         msgStr += w.Base_Text + " - " + translation?.Text  + Environment.NewLine;
                                     }
                                 await botClient.SendMessage(chatId, msgStr, parseMode: ParseMode.Html, cancellationToken: ct);
                             }
                         }
+                        break;
+                    case "switchlanguage":
+
                         break;
                     default: //поиск слова и вывод его карточки
                         if (user.Current_Language == null)
@@ -327,9 +310,32 @@ namespace TelegramWordBot
             return Task.CompletedTask;
         }
         
-            private async void ProcessAddNativeLanguage(Models.User user, string? text)
+        private async void ProcessAddWord(Models.User user, string text, Language currentLearnLanguage, Language nativeLanguage, CancellationToken ct)
         {
-            var langInfo = await _ai.GetLangInfo(text);
+            var chatId = user.Telegram_Id;
+            if (user.Current_Language == null || user.Native_Language == null || currentLearnLanguage == null)
+            {
+                await _msg.SendErrorAsync(chatId, "Не настроены родной или изучаемый язык пользователя", ct);
+                return;
+            }
+            
+            var exists = await _userWordRepo.UserHasWordAsync(user.Id, text);
+            if (exists)
+            {
+                await _msg.SendInfoAsync(chatId, $"\"{text}\" уже есть в твоём списке.", ct);
+                return;
+            }
+
+            var newWord = await CreateWordWithTranslationAsync(user.Id, text, nativeLanguage, currentLearnLanguage);
+           // await _userWordRepo.AddUserWordAsync(user.Id, newWord.Id);
+            var translation = await _translationRepo.GetTranslationAsync(newWord.Id, nativeLanguage.Id) ?? throw new NullReferenceException("Can not get translation for word");
+            await _msg.SendSuccessAsync(chatId, $"Добавлено {newWord.Base_Text}", ct);
+            await _msg.SendWordCardAsync(chatId, newWord.Base_Text, translation.Text + "\n" + translation.Examples, null, ct);
+            //TODO fix Examples
+        }
+        private async void ProcessAddNativeLanguage(Models.User user, string? text)
+        {
+            var langInfo = await _ai.GetLangName(text);
             var chatId = user.Telegram_Id;
             if (langInfo.ToLower() == "error")
             {
@@ -347,7 +353,7 @@ namespace TelegramWordBot
 
         private async void ProcessAddLanguage(Models.User user, string? text)
         {
-            var langInfo = await _ai.GetLangInfo(text);
+            var langInfo = await _ai.GetLangName(text);
             var chatId = user.Telegram_Id;
             if (langInfo.ToLower() == "error")
             {
@@ -359,6 +365,7 @@ namespace TelegramWordBot
             user.Current_Language = langToAdd.Name;
             await _userRepo.UpdateAsync(user);
             await _botClient.SendMessage(chatId, $"Язык \"{langToAdd.Name}\" добавлен.");
+            await _botClient.SendMessage(chatId, $"Теперь можете добавлять слова для изучения с помощью команды /addword или меню");
             return;
         }
 
@@ -417,112 +424,162 @@ namespace TelegramWordBot
             return false;
         }
 
-        private async Task<Word> CreateWordWithTranslationAsync(Guid userId, string baseText, Language nativeLang, Language targetLang)
+        private async Task<Word> CreateWordWithTranslationAsync(Guid userId, string inputText, Language nativeLang, Language targetLang)
         {
-            // 1. Пытаемся найти слово сразу в целевом языке
-            var word = await _wordRepo.GetByTextAndLanguageAsync(baseText, targetLang.Id);
-
-            Guid translationId;
-            string translationText;
-
-            if (word != null)
+            try
             {
-                // слово уже есть в targetLang, проверим перевод (nativeLang)
-                var genTrans = await _translationRepo.GetTranslationAsync(word.Id, nativeLang.Id);
-                if (genTrans != null)
+                var inputTextLanguage = await _ai.GetLangName(inputText);
+                if (string.IsNullOrWhiteSpace(inputTextLanguage) || inputTextLanguage.ToLower() == "error")
                 {
-                    translationId = genTrans.Id;
-                    translationText = genTrans.Text;
+                    throw new Exception("Не удалось определить язык текста: " + inputText);
                 }
-                else
+
+                Language inputLanguage = await _languageRepo.GetByNameAsync(inputTextLanguage);
+                if (inputLanguage == null) throw new Exception($"Не удалось найти язык {inputTextLanguage} в базе");
+
+                Guid translationId;
+                string translationText = "";
+                //inputText на иностранном языке
+                if (inputLanguage.Id == targetLang.Id)
                 {
-                    // перевод в nativeLang отсутствует, добавляем AI-перевод
-                    var aiTranslation = await _ai.TranslateWordAsync(baseText, targetLang.Name, nativeLang.Name);
-                    translationText = aiTranslation.TranslatedText;
-                    var newGenTrans = new Translation
+                    //ищем в базе слов на targetLang
+                    var word = await _wordRepo.GetByTextAndLanguageAsync(inputText, targetLang.Id);
+                    if (word != null)
                     {
-                        Id = Guid.NewGuid(),
-                        Word_Id = word.Id,
-                        Language_Id = nativeLang.Id,
-                        Text = translationText
-                    };
-                    await _translationRepo.AddTranslationAsync(newGenTrans);
-                    translationId = newGenTrans.Id;
-                }
-            }
-            else
-            {
-                // 2. Слова нет в target, проверим native
-                var nativeWord = await _wordRepo.GetByTextAndLanguageAsync(baseText, nativeLang.Id);
-                if (nativeWord != null)
-                {
-                    // уже есть слово в native, ищем его перевод в target
-                    var genTrans = await _translationRepo.GetTranslationAsync(nativeWord.Id, targetLang.Id);
-                    if (genTrans != null)
-                    {
-                        // убеждаемся, что у нас есть Word entity для перевода
-                        translationText = genTrans.Text;
-                        word = await _wordRepo.GetByTextAndLanguageAsync(translationText, targetLang.Id)
-                               ?? new Word { Id = Guid.NewGuid(), Base_Text = translationText, Language_Id = targetLang.Id };
-                        if (word.Id == default) await _wordRepo.AddWordAsync(word);
-                        translationId = genTrans.Id;
+                        // слово уже есть в targetLang, проверим перевод (nativeLang)
+                        var genTrans = await _translationRepo.GetTranslationAsync(word.Id, nativeLang.Id);
+                        if (genTrans != null)
+                        {
+                            translationId = genTrans.Id;
+                            translationText = genTrans.Text;
+                        }
+                        else
+                        {
+                            // перевод в nativeLang отсутствует, добавляем AI-перевод
+                            var aiTranslation = await _ai.TranslateWordAsync(inputText, targetLang.Name, nativeLang.Name);
+                            translationText = aiTranslation.TranslatedText;
+                            if (aiTranslation == null || !aiTranslation.IsSuccess() || string.IsNullOrEmpty(aiTranslation.TranslatedText))
+                            {
+                                throw new Exception("Ошибка получения перевода AI");
+                            }
+
+                            var newGenTrans = new Translation
+                            {
+                                Id = Guid.NewGuid(),
+                                Word_Id = word.Id,
+                                Language_Id = nativeLang.Id,
+                                Text = translationText
+                            };
+                            await _translationRepo.AddTranslationAsync(newGenTrans);
+                            translationId = newGenTrans.Id;
+                        }
+                        //есть и слово и перевод
+                        await _userWordRepo.AddUserWordAsync(userId, word.Id);
+                        return word;
                     }
                     else
                     {
-                        // перевода нет ни у кого, вызываем AI 
-                        var aiTranslation = await _ai.TranslateWordAsync(baseText, nativeLang.Code, targetLang.Code);
-                        translationText = aiTranslation.TranslatedText;
-                        word = new Word { Id = Guid.NewGuid(), Base_Text = translationText, Language_Id = targetLang.Id };
-                        await _wordRepo.AddWordAsync(word);
-                        var newGenTrans = new Translation
+                        //создаем новое слово  и перевод на родной язык
+                        Word newWord = new()
+                        {
+                            Id = new Guid(),
+                            Base_Text = inputText,
+                            Language_Id = targetLang.Id
+                        };
+
+                        //переводим
+                        var translation = await _ai.TranslateWordAsync(inputText, targetLang.Name, nativeLang.Name);
+                        if (translation == null || !translation.IsSuccess() || string.IsNullOrEmpty(translation.TranslatedText))
+                        {
+                            throw new Exception("Ошибка получения перевода AI");
+                        }
+
+                        Translation wordTranslation = new Translation
                         {
                             Id = Guid.NewGuid(),
-                            Word_Id = nativeWord.Id,
-                            Language_Id = targetLang.Id,
-                            Text = translationText
+                            Word_Id = newWord.Id,
+                            Language_Id = nativeLang.Id,
+                            Text = translation.TranslatedText
                         };
-                        await _translationRepo.AddTranslationAsync(newGenTrans);
-                        translationId = newGenTrans.Id;
+                        await _wordRepo.AddWordAsync(newWord);
+                        await _translationRepo.AddTranslationAsync(wordTranslation);
+                        await _userWordRepo.AddUserWordAsync(userId, newWord.Id);
+                        return newWord;
                     }
                 }
-                else
+                else////inputText на родном языке
                 {
-                    // 3. Слово отсутствует в обоих языках, генерируем AI и создаём сразу target word
-                    var aiTranslation = await _ai.TranslateWordAsync(baseText, nativeLang.Code, targetLang.Code);
-                    translationText = aiTranslation.TranslatedText;
-                    word = new Word { Id = Guid.NewGuid(), Base_Text = translationText, Language_Id = targetLang.Id };
-                    await _wordRepo.AddWordAsync(word);
-                    // сохраняем AI-перевод как общий источник для native
-                    var newGenTrans = new Translation
+                    //ищем в переводах
+                    var translates = await _translationRepo.FindWordByText(inputText);
+                    if (translates != null && translates.Count() != 0)//что-то есть
+                    {
+                        var nativeTranslate = translates.First(x => x.Language_Id == nativeLang.Id);
+                        if (nativeTranslate != null) //есть слово в списке переводов
+                        {
+                            var foreignWord = await _wordRepo.GetWordById(nativeTranslate.Word_Id);
+                            if (foreignWord != null)
+                            {
+                                //есть перевод, есть само слово на TargetLang и они связаны
+                                //по идее ничего не нужно делать, только добавить к пользователю
+                                await _userWordRepo.AddUserWordAsync(userId, foreignWord.Id);
+                                return foreignWord;
+                            }
+                            else //есть только перевод, но нет самого иностранного слова (по каким-либо причинам)
+                            {
+                                var translToForeign = await _ai.TranslateWordAsync(inputText, nativeLang.Code, targetLang.Code);
+                                Word word = new()
+                                {
+                                    Id = nativeTranslate.Word_Id,
+                                    Base_Text = translToForeign.TranslatedText ?? "no translation",
+                                    Language_Id = targetLang.Id
+
+                                };
+                                await _wordRepo.AddWordAsync(word);
+                                await _userWordRepo.AddUserWordAsync(userId, word.Id);
+                                return word;
+                            }
+                        }
+
+                    }
+                    //нет слова в базе переводов, inputText на родном языке
+                    //переводим на иностранный
+                    var translation = await _ai.TranslateWordAsync(inputText, nativeLang.Name, targetLang.Name);
+                    if (translation == null || !translation.IsSuccess() || string.IsNullOrEmpty(translation.TranslatedText))
+                    {
+                        throw new Exception("Ошибка получения перевода AI");
+                    }
+
+                    Word newWord = new Word
+                    {
+                        Id = new Guid(),
+                        Base_Text = translation.TranslatedText,
+                        Language_Id = targetLang.Id
+                    };
+
+                    Translation wordTranslation = new Translation
                     {
                         Id = Guid.NewGuid(),
-                        Word_Id = word.Id,
+                        Word_Id = newWord.Id,
                         Language_Id = nativeLang.Id,
-                        Text = baseText
+                        Text = inputText
                     };
-                    await _translationRepo.AddTranslationAsync(newGenTrans);
-                    translationId = newGenTrans.Id;
+                    await _wordRepo.AddWordAsync(newWord);
+                    await _translationRepo.AddTranslationAsync(wordTranslation);
+                    await _userWordRepo.AddUserWordAsync(userId, newWord.Id);
+                    return newWord;
                 }
             }
-
-            // 4. Связь user_word и перевод
-            var userWord = await _userWordRepo.GetUserWordAsync(userId, word.Id);
-            if (userWord == null)
+            catch(Exception ex)
             {
-                await _userWordRepo.AddUserWordAsync(userId, word.Id);
-                userWord = await _userWordRepo.GetUserWordAsync(userId, word.Id);
+                throw new Exception(ex.Message);
             }
-            // Обновляем translation_id для пользователя
-            await _userWordRepo.UpdateTranslationIdAsync(userId, word.Id, translationId);
-
-            return word;
         }
 
         #region old method
-        //private async Task<Word> CreateWordWithTranslationAsync(string baseText, Language nativeLang, Language targetLang)
+        //private async Task<Word> CreateWordWithTranslationAsync(string inputText, Language nativeLang, Language targetLang)
         //{
         //    //looking for Word in Base
-        //    var wordFromBase = await _wordRepo.GetByTextAsync(baseText);
+        //    var wordFromBase = await _wordRepo.GetByTextAsync(inputText);
 
         //    //существует ли слово и перевод к нему на targetLang 
         //    bool isExistTranslate = await _translationRepo.ExistTranslate(wordFromBase?.Id, targetLang.Id);
@@ -536,7 +593,7 @@ namespace TelegramWordBot
         //        }
         //        else //no any translations
         //        {
-        //            var translation = await _ai.TranslateWordAsync(baseText, nativeLang.Name, targetLang.Name);
+        //            var translation = await _ai.TranslateWordAsync(inputText, nativeLang.Name, targetLang.Name);
         //            if (translation == null || string.IsNullOrEmpty(translation.TranslatedText))
         //            {
         //                throw new NullReferenceException(nameof(translation));
@@ -549,7 +606,7 @@ namespace TelegramWordBot
 
         //            Word word;
         //            bool inversed = false;
-        //            //baseText на иностранном, перевод на родной
+        //            //inputText на иностранном, перевод на родной
         //            if (translation.LanguageName?.ToLowerInvariant() == nativeLang.Name.ToLowerInvariant())
         //            {
         //                //sourceLang = targetLang;
@@ -560,7 +617,7 @@ namespace TelegramWordBot
         //                    word = new Word
         //                    {
         //                        Id = Guid.NewGuid(),
-        //                        Base_Text = baseText,
+        //                        Base_Text = inputText,
         //                        Language_Id = targetLang.Id
         //                    };
         //                    await _wordRepo.AddWordAsync(word);
@@ -570,7 +627,7 @@ namespace TelegramWordBot
         //                    word = wordFromBase;
         //                }
         //            }
-        //            else //baseText на родном, перевод на Ин.яз
+        //            else //inputText на родном, перевод на Ин.яз
         //            {
         //                word = new Word
         //                {
@@ -586,7 +643,7 @@ namespace TelegramWordBot
         //                Id = Guid.NewGuid(),
         //                Word_Id = word.Id,
         //                Language_Id = nativeLang.Id,
-        //                Text = inversed ? translation.TranslatedText : baseText,
+        //                Text = inversed ? translation.TranslatedText : inputText,
         //                Examples = translation.GetExampleString()
         //            });
 

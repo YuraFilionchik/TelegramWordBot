@@ -54,4 +54,13 @@ public class TranslationRepository
 
         return await conn.ExecuteScalarAsync<bool>(sql, new { Word_Id = wordId, Language_Id = targetLangId });
     }
+
+    public async Task<IEnumerable<Translation>> FindWordByText(string text)
+    {
+        text = text.Trim();
+        if (string.IsNullOrEmpty(text)) return new List<Translation>();
+        using var conn = _factory.CreateConnection();
+        var sql = "SELECT * FROM translations WHERE text = @Text";
+        return await conn.QueryAsync<Translation>(sql, new { Text = text });
+    }
 }
