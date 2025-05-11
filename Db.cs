@@ -8,8 +8,12 @@ using Npgsql;
 
 namespace TelegramWordBot
 {
+    public interface IConnectionFactory
+    {
+        IDbConnection CreateConnection();
+    }
 
-    public class DbConnectionFactory
+    public class DbConnectionFactory : IConnectionFactory
     {
         private readonly string _connectionString;
 

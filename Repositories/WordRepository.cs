@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Connections;
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace TelegramWordBot.Repositories
 {
     public class WordRepository
     {
-        private readonly DbConnectionFactory _factory;
+        private readonly IConnectionFactory _factory;
 
-        public WordRepository(DbConnectionFactory factory)
+        public WordRepository(IConnectionFactory factory)
         {
             _factory = factory;
         }
