@@ -50,13 +50,13 @@ namespace TelegramWordBot.Repositories
         public async Task<IEnumerable<Word>> GetAllWordsAsync()
         {
             using var conn = _factory.CreateConnection();
-            return await conn.QueryAsync<Word>("SELECT * FROM Words");
+            return await conn.QueryAsync<Word>("SELECT * FROM words");
         }
 
         public async Task AddWordAsync(Word word)
         {
             //if (await WordExistsAsync(word.Base_Text, word.Language_Id)) return;
-            var sql = @"INSERT INTO Words (id, base_text, language_id)
+            var sql = @"INSERT INTO words (id, base_text, language_id)
                     VALUES (@Id, @Base_Text, @Language_Id)";
 
             using var conn = _factory.CreateConnection();
@@ -66,7 +66,7 @@ namespace TelegramWordBot.Repositories
         public async Task<Word?> GetWordById(Guid wordId)
         {
             using var conn = _factory.CreateConnection();
-            var sql = @"SELECT 1 FROM Words WHERE id = @Word_Id";
+            var sql = @"SELECT 1 FROM words WHERE id = @Word_Id";
            return await conn.QueryFirstOrDefaultAsync<Word>(sql, new {Word_Id = wordId} );
         }
 
