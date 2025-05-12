@@ -12,8 +12,8 @@ var tokenTG = Environment.GetEnvironmentVariable("TELEGRAM_TOKEN")
 builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(tokenTG));
 
 connectionString = DbConnectionFactory.ConvertDatabaseUrl(connectionString);
-
 var dbFactory = new DbConnectionFactory(connectionString);
+builder.Services.AddSingleton<IConnectionFactory>(new DbConnectionFactory(connectionString));
 builder.Services.AddSingleton(dbFactory);
 builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(tokenTG));
 builder.Services.AddSingleton<WordRepository>();

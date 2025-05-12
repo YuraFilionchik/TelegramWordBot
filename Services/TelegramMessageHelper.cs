@@ -54,5 +54,5 @@ public class TelegramMessageHelper
     }
 
     private string EscapeHtml(string input) =>
-        input.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
+        input.Replace("&", "&amp;");//.Replace("<", "&lt;").Replace(">", "&gt;");
 }
