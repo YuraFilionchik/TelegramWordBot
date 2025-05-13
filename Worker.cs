@@ -86,16 +86,14 @@ namespace TelegramWordBot
             if (isNewUser)
                 user = await _userRepo.GetByTelegramIdAsync(userTelegramId);
 
-            
             // Handle keyboard buttons first
             var (handled, newState) = await HandleKeyboardCommandAsync(user, text, chatId, ct);
             if (handled)
             {
-
                 if (!string.IsNullOrEmpty(newState))
                 {
+                    await filterMessages(message); 
                     _userStates[userTelegramId] = newState;
-                    await _botClient.DeleteMessage(chatId, messageId);
                 }
                 return;
             }
@@ -251,6 +249,16 @@ namespace TelegramWordBot
                     await _msg.SendErrorAsync(chatId, "Неизвестная команда. Используйте меню или /start.", ct);
                     break;
             }
+        }
+
+        private async Task  filterMessages(Message? message)
+        {
+            if (message == null) return;
+            var keybord = KeyboardFactory.GetMainMenu();
+            if (keybord.Keyboard.Any(x => x.Any(c => c.Text == message.Text)))
+            {
+                await _botClient.DeleteMessage(message.Chat.Id, message.Id);
+            }            
         }
 
         private async Task ShowMyWords(long chatId, User user, CancellationToken ct)
