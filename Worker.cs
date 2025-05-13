@@ -86,14 +86,17 @@ namespace TelegramWordBot
             if (isNewUser)
                 user = await _userRepo.GetByTelegramIdAsync(userTelegramId);
 
-            await _botClient.DeleteMessage(chatId, messageId);
+            
             // Handle keyboard buttons first
             var (handled, newState) = await HandleKeyboardCommandAsync(user, text, chatId, ct);
             if (handled)
             {
 
                 if (!string.IsNullOrEmpty(newState))
+                {
                     _userStates[userTelegramId] = newState;
+                    await _botClient.DeleteMessage(chatId, messageId);
+                }
                 return;
             }
 
@@ -102,6 +105,7 @@ namespace TelegramWordBot
             // Handle FSM states
             if (_userStates.TryGetValue(userTelegramId, out var state))
             {
+                
                 _userStates.Remove(userTelegramId);
                 switch (state)
                 {
@@ -137,6 +141,7 @@ namespace TelegramWordBot
             }
 
             var cmd = text.Trim().Split(' ')[0].ToLowerInvariant();
+            await _botClient.DeleteMessage(chatId, messageId);
             // Text commands
             switch (cmd)
             {
@@ -355,6 +360,7 @@ namespace TelegramWordBot
                     return (true, string.Empty);
 
                 case "➕ добавить слово":
+                    //await _botClient.DeleteMessage(chatId,);
                     await _msg.SendInfoAsync(chatId, "Введите слово для добавления:", ct);
                     return (true, "awaiting_addword");
 
