@@ -69,193 +69,212 @@ namespace TelegramWordBot
 
         private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken ct)
         {
-            if (update.CallbackQuery is { } callback)
-            {
-                await HandleCallbackAsync(botClient, callback, ct);
-                return;
-            }
-
-            if (update.Message is not { } message || message.Text is not { } text)
-                return;
-
-            var chatId = message.Chat.Id;
-            var userTelegramId = message.From!.Id;
-            var messageId = message.Id;
-            Models.User? user = await _userRepo.GetByTelegramIdAsync(userTelegramId);
-            var isNewUser = await IsNewUser(user, message);
-            if (isNewUser)
-                user = await _userRepo.GetByTelegramIdAsync(userTelegramId);
-
-            // Handle keyboard buttons first
-            var (handled, newState) = await HandleKeyboardCommandAsync(user, text, chatId, ct);
-            if (handled)
-            {
-                if (!string.IsNullOrEmpty(newState))
+                if (update.CallbackQuery is { } callback)
                 {
-                    await filterMessages(message); 
-                    _userStates[userTelegramId] = newState;
+                    await HandleCallbackAsync(botClient, callback, ct);
+                    return;
                 }
-                return;
-            }
 
-            var lowerText = text.Trim().ToLowerInvariant();
+                if (update.Message is not { } message || message.Text is not { } text)
+                    return;
 
-            // Handle FSM states
-            if (_userStates.TryGetValue(userTelegramId, out var state))
+                var chatId = message.Chat.Id;
+                var userTelegramId = message.From!.Id;
+                var messageId = message.Id;
+            try
             {
-                
-                _userStates.Remove(userTelegramId);
-                switch (state)
+                Models.User? user = await _userRepo.GetByTelegramIdAsync(userTelegramId);
+                var isNewUser = await IsNewUser(user, message);
+                if (isNewUser)
+                    user = await _userRepo.GetByTelegramIdAsync(userTelegramId);
+
+                await filterMessages(message);
+                // Handle keyboard buttons first
+                var (handled, newState) = await HandleKeyboardCommandAsync(user, text, chatId, ct);
+                if (handled)
                 {
-                    case "awaiting_nativelanguage":
-                        await ProcessAddNativeLanguage(user, text, ct);
-                        break;
-                    case "awaiting_language":
-                        await ProcessAddLanguage(user, text, ct);
-                        break;
-                    case "awaiting_addword":
-                        await ProcessAddWord(user, text, ct);
-                        break;
-                    case "awaiting_remove_foreign":
-                        await ProcessRemoveForeignLanguage(user, text, ct);
-                        break;
+                    if (!string.IsNullOrEmpty(newState))
+                    {
+                        _userStates[userTelegramId] = newState;
+                    }
+                    return;
                 }
-                return;
-            }
 
-            // Ensure languages are set
-            if (string.IsNullOrWhiteSpace(user.Native_Language))
-            {
-                _userStates[userTelegramId] = "awaiting_nativelanguage";
-                await _msg.SendInfoAsync(chatId, "Введите ваш родной язык:", ct);
-                return;
-            }
+                var lowerText = text.Trim().ToLowerInvariant();
 
-            if (string.IsNullOrWhiteSpace(user.Current_Language))
-            {
-                _userStates[userTelegramId] = "awaiting_language";
-                await _msg.SendInfoAsync(chatId, "Какой язык хотите изучать?", ct);
-                return;
-            }
+                // Handle FSM states
+                if (_userStates.TryGetValue(userTelegramId, out var state))
+                {
 
-            var cmd = text.Trim().Split(' ')[0].ToLowerInvariant();
-            await _botClient.DeleteMessage(chatId, messageId);
-            // Text commands
-            switch (cmd)
-            {
-                case "/start":
-                    await ProcessStartCommand(user, message, ct);
-                    break;
-
-                case "/addword":
-                    var langs = await _userLangRepository.GetUserLanguageNamesAsync(user.Id);
-                    if (!langs.Any())
+                    _userStates.Remove(userTelegramId);
+                    switch (state)
                     {
-                        await _msg.SendErrorAsync(chatId, "Сначала добавьте язык через /addlanguage", ct);
-                        return;
+                        case "awaiting_nativelanguage":
+                            await ProcessAddNativeLanguage(user, text, ct);
+                            break;
+                        case "awaiting_language":
+                            await ProcessAddLanguage(user, text, ct);
+                            break;
+                        case "awaiting_addword":
+                            await ProcessAddWord(user, text, ct);
+                            break;
+                        case "awaiting_remove_foreign":
+                            await ProcessRemoveForeignLanguage(user, text, ct);
+                            break;
+                        case "awaiting_currentlanguage":
+                            await ProcessChangeCurrentLanguage(user, text, ct);
+                            break;
                     }
-                    _userStates[userTelegramId] = "awaiting_addword";
-                    await _msg.SendInfoAsync(chatId, "Введите слово для запоминания:", ct);
-                    break;
+                    return;
+                }
 
-                case "/learn":
-                    await StartLearningAsync(user, ct);
-                    break;
+                // Ensure languages are set
+                if (string.IsNullOrWhiteSpace(user.Native_Language))
+                {
+                    _userStates[userTelegramId] = "awaiting_nativelanguage";
+                    await _msg.SendInfoAsync(chatId, "Введите ваш родной язык:", ct);
+                    return;
+                }
 
-                case "/config":
-                    await KeyboardFactory.ShowConfigMenuAsync(_botClient, chatId, ct);
-                    break;
+                if (string.IsNullOrWhiteSpace(user.Current_Language))
+                {
+                    _userStates[userTelegramId] = "awaiting_language";
+                    await _msg.SendInfoAsync(chatId, "Какой язык хотите изучать?", ct);
+                    return;
+                }
 
-                case "/addlanguage":
-                    var parts = text.Split(' ', 2);
-                    if (parts.Length < 2)
-                    {
-                        _userStates[userTelegramId] = "awaiting_language";
-                        await _msg.SendInfoAsync(chatId, "Введите название языка:", ct);
-                    }
-                    else
-                    {
-                        await ProcessAddLanguage(user, parts[1], ct);
-                    }
-                    break;
+                var cmd = text.Trim().Split(' ')[0].ToLowerInvariant();
+               
+                // Text commands
+                switch (cmd)
+                {
+                    case "/start":
+                        await ProcessStartCommand(user, message, ct);
+                        break;
 
-                case "/removelanguage":
-                    var rm = text.Split(' ', 2);
-                    if (rm.Length < 2)
-                    {
-                        await _msg.SendErrorAsync(chatId, "Используйте /removelanguage [код]", ct);
-                    }
-                    else
-                    {
-                        await ProcessRemoveForeignLanguage(user, rm[1], ct);
-                    }
-                    break;
+                    case "/addword":
+                        var langs = await _userLangRepository.GetUserLanguageNamesAsync(user.Id);
+                        if (!langs.Any())
+                        {
+                            await _msg.SendErrorAsync(chatId, "Сначала добавьте язык через /addlanguage", ct);
+                            return;
+                        }
+                        _userStates[userTelegramId] = "awaiting_addword";
+                        await _msg.SendInfoAsync(chatId, "Введите слово для запоминания:", ct);
+                        break;
 
-                case "/listlanguages":
-                    var all = await _languageRepo.GetAllAsync();
-                    var list = all.Any()
-                        ? string.Join("\n", all.Select(l => $"{l.Code} — {l.Name}"))
-                        : "Список пуст.";
-                    await botClient.SendMessage(chatId, list, cancellationToken: ct);
-                    break;
+                    case "/learn":
+                        await StartLearningAsync(user, ct);
+                        break;
 
-                case "/mylangs":
-                    var my = await _userLangRepository.GetUserLanguageNamesAsync(user.Id);
-                    if (!my.Any())
-                        await _msg.SendErrorAsync(chatId, "У вас нет добавленных языков.", ct);
-                    else
-                        await _msg.SendInfoAsync(chatId,
-                            "Вы изучаете:\n" + string.Join("\n", my), ct);
-                    break;
+                    case "/config":
+                        await KeyboardFactory.ShowConfigMenuAsync(_botClient, chatId, ct);
+                        break;
 
-                case "/clearalldata":
-                    await _msg.SendSuccessAsync(chatId, "Сброс данных...", ct);
-                    user.Current_Language = null;
-                    await _userRepo.UpdateAsync(user);
-                    await _translationRepo.RemoveAllTranslations();
-                    await _userLangRepository.RemoveAllUserLanguages();
-                    await _userWordRepo.RemoveAllUserWords();
-                    await _wordRepo.RemoveAllWords();
-                    await _msg.SendSuccessAsync(chatId, "Готово", ct);
-                    break;
-
-                case "/user":
-                    var userLangs = await _userLangRepository.GetUserLanguageNamesAsync(user.Id);
-                    var info = $"{message.From.FirstName}\n@{message.From.Username}\n" +
-                               $"Native: {user.Native_Language}\nCurrent: {user.Current_Language}\n" +
-                               string.Join(", ", userLangs);
-                    await botClient.SendMessage(chatId, info, parseMode: ParseMode.MarkdownV2, cancellationToken: ct);
-                    break;
-
-                case "/removeword":
-                    var sw = text.Split(' ', 2);
-                    if (sw.Length < 2)
-                        await _msg.SendInfoAsync(chatId, "пример: /removeword слово", ct);
-                    else
-                    {
-                        var ok = await _userWordRepo.RemoveUserWordAsync(user.Id, sw[1].Trim());
-                        if (ok)
-                            await _msg.SendInfoAsync(chatId, $"Слово '{sw[1]}' удалено", ct);
+                    case "/addlanguage":
+                        var parts = text.Split(' ', 2);
+                        if (parts.Length < 2)
+                        {
+                            _userStates[userTelegramId] = "awaiting_language";
+                            await _msg.SendInfoAsync(chatId, "Введите название языка:", ct);
+                        }
                         else
-                            await _msg.SendInfoAsync(chatId, $"Слово '{sw[1]}' не найдено", ct);
-                    }
-                    break;
+                        {
+                            await ProcessAddLanguage(user, parts[1], ct);
+                        }
+                        break;
 
-                case "/mywords":
-                    await ShowMyWords(chatId, user, ct);
-                    break;
+                    case "/removelanguage":
+                        var rm = text.Split(' ', 2);
+                        if (rm.Length < 2)
+                        {
+                            await _msg.SendErrorAsync(chatId, "Используйте /removelanguage [код]", ct);
+                        }
+                        else
+                        {
+                            await ProcessRemoveForeignLanguage(user, rm[1], ct);
+                        }
+                        break;
 
-                default:
-                    await _msg.SendErrorAsync(chatId, "Неизвестная команда. Используйте меню или /start.", ct);
-                    break;
+                    case "/listlanguages":
+                        var all = await _languageRepo.GetAllAsync();
+                        var list = all.Any()
+                            ? string.Join("\n", all.Select(l => $"{l.Code} — {l.Name}"))
+                            : "Список пуст.";
+                        await botClient.SendMessage(chatId, list, cancellationToken: ct);
+                        break;
+
+                    case "/mylangs":
+                        var my = await _userLangRepository.GetUserLanguageNamesAsync(user.Id);
+                        if (!my.Any())
+                            await _msg.SendErrorAsync(chatId, "У вас нет добавленных языков.", ct);
+                        else
+                            await _msg.SendInfoAsync(chatId,
+                                "Вы изучаете:\n" + string.Join("\n", my), ct);
+                        break;
+
+                    case "/clearalldata":
+                        await _msg.SendSuccessAsync(chatId, "Сброс данных...", ct);
+                        user.Current_Language = null;
+                        await _userRepo.UpdateAsync(user);
+                        await _translationRepo.RemoveAllTranslations();
+                        await _userLangRepository.RemoveAllUserLanguages();
+                        await _userWordRepo.RemoveAllUserWords();
+                        await _wordRepo.RemoveAllWords();
+                        await _msg.SendSuccessAsync(chatId, "Готово", ct);
+                        break;
+
+                    case "/user":
+                        var userLangs = await _userLangRepository.GetUserLanguageNamesAsync(user.Id);
+                        var info = $"{message.From.FirstName}\n@{message.From.Username}\n" +
+                                   $"Native: {user.Native_Language}\nCurrent: {user.Current_Language}\n" +
+                                   string.Join(", ", userLangs);
+                        await botClient.SendMessage(chatId, info, parseMode: ParseMode.MarkdownV2, cancellationToken: ct);
+                        break;
+
+                    case "/removeword":
+                        var sw = text.Split(' ', 2);
+                        if (sw.Length < 2)
+                            await _msg.SendInfoAsync(chatId, "пример: /removeword слово", ct);
+                        else
+                        {
+                            var ok = await _userWordRepo.RemoveUserWordAsync(user.Id, sw[1].Trim());
+                            if (ok)
+                                await _msg.SendInfoAsync(chatId, $"Слово '{sw[1]}' удалено", ct);
+                            else
+                                await _msg.SendInfoAsync(chatId, $"Слово '{sw[1]}' не найдено", ct);
+                        }
+                        break;
+
+                    case "/mywords":
+                        await ShowMyWords(chatId, user, ct);
+                        break;
+
+                    default:
+                        await _msg.SendErrorAsync(chatId, "Неизвестная команда. Используйте меню или /start.", ct);
+                        break;
+                }
             }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error processing update");
+                if (ex.Message.Contains("Translation"))
+                {
+                    await _msg.SendErrorAsync(chatId, ex.Message, ct);
+                }
+            }
+        }
+
+        private async Task ProcessChangeCurrentLanguage(User user, string text, CancellationToken ct)
+        {
+            throw new NotImplementedException();
         }
 
         private async Task  filterMessages(Message? message)
         {
             if (message == null) return;
             var keybord = KeyboardFactory.GetMainMenu();
-            if (keybord.Keyboard.Any(x => x.Any(c => c.Text == message.Text)))
+            if (keybord.Keyboard.Any(x => x.Any(c => c.Text.Contains(message.Text.Trim()))))
             {
                 await _botClient.DeleteMessage(message.Chat.Id, message.Id);
             }            
@@ -306,7 +325,7 @@ namespace TelegramWordBot
             var user = await _userRepo.GetByTelegramIdAsync(userTelegramId);
 
             var parts = data.Split(':');
-            var action = parts[0];
+            var action = parts[0];  
             switch (action)
             {
                 case "learn": // learn:rem:wordId or learn:fail:wordId
@@ -340,6 +359,9 @@ namespace TelegramWordBot
                     _userStates[userTelegramId] = "awaiting_nativelanguage";
                     await _msg.SendInfoAsync(chatId, "Введите ваш родной язык:", ct);
                     break;
+                case "switch_language":
+                    await HandleSwitchLanguageCommandAsync(user, chatId, ct);
+                    break;
                 case "add_foreign":
                     _userStates[userTelegramId] = "awaiting_language";
                     await _msg.SendInfoAsync(chatId, "Введите название языка для изучения:", ct);
@@ -355,8 +377,94 @@ namespace TelegramWordBot
                         await _msg.SendInfoAsync(chatId, $"Ваши языки:\n{list}\nВведите код для удаления:", ct);
                     }
                     break;
+                case "switch_lang":
+                     await ProcessSwitchLanguage(callback, chatId, user, parts, ct);
+                    break;
             }
-            bot.AnswerCallbackQuery(callback.Id);
+            await bot.AnswerCallbackQuery(callback.Id);
+        }
+
+        private async Task ProcessSwitchLanguage(CallbackQuery callback, long chatId, User? user, string[] parts, CancellationToken ct)
+        {
+            // Извлекаем GUID языка
+            var langIdPart = parts[1];
+            if (!int.TryParse(langIdPart, out var newLangId))
+            {
+                await _botClient.AnswerCallbackQuery(
+                    callbackQueryId: callback.Id,
+                    text: "Неверный идентификатор языка.",
+                    cancellationToken: ct
+                );
+                return;
+            }
+
+            // Проверяем, что юзер действительно изучает этот язык
+            var userLangs = await _userLangRepository.GetUserLanguagesAsync(user.Id);
+            if (!userLangs.Any(lg => lg.Id == newLangId))
+            {
+                await _botClient.AnswerCallbackQuery(
+                    callbackQueryId: callback.Id,
+                    text: "Этот язык не найден в вашем списке.",
+                    cancellationToken: ct
+                );
+                return;
+            }
+            var newUserLang = userLangs.First(lg => lg.Id == newLangId);
+            // Сохраняем новый текущий язык
+            user.Current_Language = newUserLang.Name;
+            await _userRepo.UpdateAsync(user);
+
+            // Подтверждаем выбор и удаляем inline-клавиатуру
+            await _botClient.EditMessageReplyMarkup(
+                chatId: chatId,
+                messageId: callback.Message.MessageId,
+                replyMarkup: null,
+                cancellationToken: ct
+            );
+
+            await _botClient.SendMessage(
+                chatId: chatId,
+                text: $"Текущий язык переключён на «{userLangs.First(lg => lg.Id == newLangId).Name}».",
+                cancellationToken: ct
+            );
+
+            await _botClient.AnswerCallbackQuery(
+                callbackQueryId: callback.Id,
+                text: "Язык успешно изменён.",
+                cancellationToken: ct
+            );
+        }
+
+        /// <summary>
+        /// Шлёт юзеру список его языков в виде inline-кнопок
+        /// </summary>
+        private async Task HandleSwitchLanguageCommandAsync(User user, long chatId, CancellationToken ct)
+        {
+            var langs = await _userLangRepository.GetUserLanguagesAsync(user.Id);
+            if (!langs.Any())
+            {
+                await _msg.SendErrorAsync(chatId, "У вас ещё нет ни одного изучаемого языка.", ct);
+                return;
+            }
+
+            var buttons = langs
+                .Select(lg =>
+                    InlineKeyboardButton.WithCallbackData(
+                        text: lg.Name,
+                        callbackData: $"switch_lang:{lg.Id}"
+                    ))
+                .Chunk(2) // по 2 кнопки в строке
+                .Select(row => row.ToArray())
+                .ToArray();
+
+            var keyboard = new InlineKeyboardMarkup(buttons);
+
+            await _botClient.SendMessage(
+                chatId: chatId,
+                text: "Выберите язык, который хотите сделать текущим:",
+                replyMarkup: keyboard,
+                cancellationToken: ct
+            );
         }
 
         private async Task<(bool handled, string newState)> HandleKeyboardCommandAsync(User user, string command, long chatId, CancellationToken ct)
@@ -443,13 +551,13 @@ namespace TelegramWordBot
             }
             var rnd = new Random();
             var word = due[rnd.Next(due.Count)];
-            await _msg.SendInfoAsync(chatId, $"Переведите слово: <b>{word.Base_Text}</b>", ct);
+            //await _msg.SendInfoAsync(chatId, $"Переведите слово: <b>{word.Base_Text}</b>", ct);
             var inline = new InlineKeyboardMarkup(new[]
             {
                 new[] { InlineKeyboardButton.WithCallbackData("✅ Вспомнил", $"learn:rem:{word.Id}") },
                 new[] { InlineKeyboardButton.WithCallbackData("❌ Не вспомнил", $"learn:fail:{word.Id}") }
             });
-            //await _botClient.SendMessage(chatId, "Выберите действие:", parseMode: ParseMode.Html, replyMarkup: inline, cancellationToken: ct);
+            await _botClient.SendMessage(chatId, $"Переведите слово: <b>{word.Base_Text}</b>", parseMode: ParseMode.Html, replyMarkup: inline, cancellationToken: ct);
         }
 
         private async Task ProcessRemoveForeignLanguage(User user, string code, CancellationToken ct)
@@ -542,14 +650,15 @@ namespace TelegramWordBot
         {
             try
             {
-                var inputTextLanguage = await _ai.GetLangName(inputText);
+                var langs = await _userLangRepository.GetUserLanguagesAsync(userId);
+                var inputTextLanguage = await _ai.GetLangName(inputText, langs);
                 if (string.IsNullOrWhiteSpace(inputTextLanguage) || inputTextLanguage.ToLower() == "error")
                 {
-                    throw new Exception("Не удалось определить язык текста: " + inputText);
+                    throw new Exception("Translation. Не удалось определить язык текста: " + inputText);
                 }
 
                 Language inputLanguage = await _languageRepo.GetByNameAsync(inputTextLanguage);
-                if (inputLanguage == null) throw new Exception($"Не удалось найти язык {inputTextLanguage} в базе");
+                if (inputLanguage == null) throw new Exception($"Translation. Не удалось найти язык {inputTextLanguage} в базе");
 
                 Guid translationId;
                 string translationText = "";
@@ -574,7 +683,7 @@ namespace TelegramWordBot
                             translationText = aiTranslation.TranslatedText;
                             if (aiTranslation == null || !aiTranslation.IsSuccess() || string.IsNullOrEmpty(aiTranslation.TranslatedText))
                             {
-                                throw new Exception("Ошибка получения перевода AI");
+                                throw new Exception("Translation. Ошибка получения перевода AI");
                             }
 
                             var newGenTrans = new Translation
@@ -605,7 +714,7 @@ namespace TelegramWordBot
                         var translation = await _ai.TranslateWordAsync(inputText, targetLang.Name, nativeLang.Name);
                         if (translation == null || !translation.IsSuccess() || string.IsNullOrEmpty(translation.TranslatedText))
                         {
-                            throw new Exception("Ошибка получения перевода AI");
+                            throw new Exception("Translation. Ошибка получения перевода AI");
                         }
 
                         Translation wordTranslation = new Translation
@@ -641,6 +750,10 @@ namespace TelegramWordBot
                             else //есть только перевод, но нет самого иностранного слова (по каким-либо причинам)
                             {
                                 var translToForeign = await _ai.TranslateWordAsync(inputText, nativeLang.Code, targetLang.Code);
+                                if (translToForeign == null || !translToForeign.IsSuccess() || string.IsNullOrEmpty(translToForeign.TranslatedText))
+                                {
+                                    throw new Exception("Translation. Ошибка получения перевода AI");
+                                }
                                 Word word = new()
                                 {
                                     Id = nativeTranslate.Word_Id,
@@ -660,7 +773,7 @@ namespace TelegramWordBot
                     var translation = await _ai.TranslateWordAsync(inputText, nativeLang.Name, targetLang.Name);
                     if (translation == null || !translation.IsSuccess() || string.IsNullOrEmpty(translation.TranslatedText))
                     {
-                        throw new Exception("Ошибка получения перевода AI");
+                        throw new Exception("Translation. Ошибка получения перевода AI");
                     }
 
                     Word newWord = new Word
@@ -683,8 +796,8 @@ namespace TelegramWordBot
                     return newWord;
                 }
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex)            {
+                
                 throw new Exception(ex.Message);
             }
         }

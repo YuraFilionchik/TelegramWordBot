@@ -10,6 +10,7 @@ namespace TelegramWordBot.Services
         Task<TranslatedTextClass> TranslateWordAsync(string word, string sourceLangCode, string targetLangCode);
         Task<string> SimpleTranslateText(string text, string targetLang);
         Task<string> GetLangName(string text);
+        Task<string> GetLangName(string text, IEnumerable<Language> languages);
     }
 
     class AIHelper: IAIHelper
@@ -75,6 +76,25 @@ namespace TelegramWordBot.Services
             string prompt = $"Extract the language name from the following text: '{text}'." +
                 $" Give your answer strictly in the format of one word with a capital letter in english. " +
                 $"If you can not do it - return only 'error'";
+            return await TranslateWithGeminiAsync(prompt, true);
+        }
+
+        public async Task<string> GetLangName(string text, IEnumerable<Language> languages)
+        {
+            string prompt = "";
+            if (languages == null || languages.Count() == 0) 
+             prompt = $"Determine the language name of the following text: '{text}'." +
+                $" Give your answer strictly in the format of one word with a capital letter in english. " +
+                $"If you can not do it - return only 'error'";
+            else
+            {
+                var langsString = string.Join(", ", languages.Select(x => x.Name));
+                prompt = $"Try to determine one language from ( {langsString} ) of the following text: '{text}'." +
+                $" Give your answer strictly in the format of one word with a capital letter in english. " +
+                $"If you can not do it - return only 'error'";
+
+            }
+
             return await TranslateWithGeminiAsync(prompt, true);
         }
 

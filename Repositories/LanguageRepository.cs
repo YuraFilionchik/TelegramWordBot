@@ -27,9 +27,24 @@ namespace TelegramWordBot.Repositories {
     public async Task<Language?> GetByNameAsync(string? name)
     {
             if (string.IsNullOrEmpty(name)) return null;
-        using var conn = _factory.CreateConnection();
-        return await conn.QueryFirstOrDefaultAsync<Language>("SELECT * FROM languages WHERE name = @name", new { name });
-    }
+
+            // Ќормализаци€ регистра: перва€ буква Ч заглавна€, остальные Ч строчные
+            string normalizedName = string.Create(name.Length, name, (chars, input) =>
+            {
+                for (int i = 0; i < chars.Length; i++)
+                {
+                    chars[i] = (i == 0)
+                        ? char.ToUpperInvariant(input[i])
+                        : char.ToLowerInvariant(input[i]);
+                }
+            });
+
+            using var conn = _factory.CreateConnection();
+            return await conn.QueryFirstOrDefaultAsync<Language>(
+                "SELECT * FROM languages WHERE name = @normalizedName",
+                new { normalizedName }
+            );
+        }
 
     public async Task AddAsync(Language language)
     {

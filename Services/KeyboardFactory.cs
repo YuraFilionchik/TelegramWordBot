@@ -39,9 +39,10 @@ public static class KeyboardFactory
     {
         return new InlineKeyboardMarkup(new[]
         {
-            new[] { InlineKeyboardButton.WithCallbackData("🌐 Изменить родной язык", "set_native") },
-            new[] { InlineKeyboardButton.WithCallbackData("➕ Добавить изучаемый язык", "add_foreign") },
-            new[] { InlineKeyboardButton.WithCallbackData("➖ Удалить язык", "remove_foreign") }
+            new[] { InlineKeyboardButton.WithCallbackData("🌐 Выбрать другой язык", "switch_language") },
+            new[] { InlineKeyboardButton.WithCallbackData("➕ Добавить новый язык", "add_foreign") },
+            new[] { InlineKeyboardButton.WithCallbackData("➖ Удалить текущий язык", "remove_foreign") },
+            new[] { InlineKeyboardButton.WithCallbackData("🌐 Изменить родной язык", "set_native") }
         });
     }
 
