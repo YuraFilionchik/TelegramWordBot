@@ -650,7 +650,8 @@ namespace TelegramWordBot
         {
             try
             {
-                var langs = await _userLangRepository.GetUserLanguagesAsync(userId);
+                var langs = (await _userLangRepository.GetUserLanguagesAsync(userId)).ToList();
+                langs.Add(nativeLang);
                 var inputTextLanguage = await _ai.GetLangName(inputText, langs);
                 if (string.IsNullOrWhiteSpace(inputTextLanguage) || inputTextLanguage.ToLower() == "error")
                 {

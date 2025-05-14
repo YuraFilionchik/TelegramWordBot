@@ -1,0 +1,150 @@
+﻿// TelegramBotApiReference.cs
+// Справочник по использованию библиотеки Telegram.Bot v22 для ИИ-ассистентов.
+//
+// Этот файл содержит примеры и пояснения ключевых методов API,
+// чтобы помочь ИИ-ассистентам быстро разобраться с основными задачами.
+
+using Telegram.Bot;
+using Telegram.Bot.Polling;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.InputFiles;
+using Telegram.Bot.Types.ReplyMarkups;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace TelegramBotApiReference
+{
+    public static class Reference
+    {
+        /*
+         * 1. Инициализация клиента:
+         *    Создание клиента выполняется через конструктор TelegramBotClient с передачей токена бота. :contentReference[oaicite:0]{index=0}
+         *    Во всех методах убран суффикс Async, так как методы уже асинхронны по умолчанию. :contentReference[oaicite:1]{index=1}
+         */
+        private static TelegramBotClient InitClient(string token)
+        {
+            return new TelegramBotClient(token);
+        }
+
+        /*
+         * 2. Обработка обновлений:
+         *    Для приёма обновлений используется метод ReceiveAsync, которому передаётся обработчик и настройки приёмника. :contentReference[oaicite:2]{index=2}
+         *    В простых примерах подписываются на событие OnMessage для обработки входящих текстовых сообщений. :contentReference[oaicite:3]{index=3}
+         */
+        public static async Task StartReceivingAsync(TelegramBotClient botClient, CancellationToken ct)
+        {
+            var receiverOptions = new ReceiverOptions
+            {
+                AllowedUpdates = Array.Empty<UpdateType>()
+            };
+
+            await botClient.ReceiveAsync(
+                new DefaultUpdateHandler(HandleUpdateAsync, HandleErrorAsync),
+                receiverOptions,
+                ct);
+        }
+
+        private static Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken ct)
+        {
+            // Пример обработки входящего сообщения
+            if (update.Message?.Text is string text)
+            {
+                Console.WriteLine($"Received: {text}");
+            }
+            return Task.CompletedTask;
+        }
+
+        private static Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken ct)
+        {
+            Console.Error.WriteLine(exception);
+            return Task.CompletedTask;
+        }
+
+        /*
+         * 3. Отправка сообщений:
+         *    SendMessage отправляет текстовые сообщения с указанием chatId и текста. :contentReference[oaicite:4]{index=4}
+         *    SendPhoto позволяет прикреплять изображения с параметрами photo и caption. :contentReference[oaicite:5]{index=5}
+         *    Параметр parseMode определяет форматирование текста как HTML или Markdown. :contentReference[oaicite:6]{index=6}
+         */
+        public static Task<Message> SendExampleMessagesAsync(TelegramBotClient botClient, ChatId chatId, CancellationToken ct)
+        {
+            // Текстовое сообщение
+            var textTask = botClient.SendMessage(
+                chatId: chatId,
+                text: "<b>Привет!</b> Это пример.", 
+                parseMode: ParseMode.Html,
+                cancellationToken: ct);
+
+            // Фото
+            var photoTask = botClient.SendPhoto(
+                chatId: chatId,
+                photo: new InputFileUrl("https://example.com/photo.jpg"),
+                caption: "Пример фотографии",
+                cancellationToken: ct);
+
+            return Task.WhenAll(textTask, photoTask).ContinueWith(_ => textTask.Result);
+        }
+
+        /*
+         * 4. Редактирование сообщений:
+         *    EditMessageText изменяет текст отправленного сообщения по chatId и messageId. :contentReference[oaicite:7]{index=7}
+         *    EditMessageMedia заменяет медиа с помощью InputMediaPhoto или других классов InputMedia*. :contentReference[oaicite:8]{index=8}
+         */
+        public static async Task<Message> EditExampleAsync(TelegramBotClient botClient, ChatId chatId, int messageId, CancellationToken ct)
+        {
+            // Редактирование текста
+            await botClient.EditMessageText(
+                chatId: chatId,
+                messageId: messageId,
+                text: "Обновлённый текст",
+                cancellationToken: ct);
+
+            // Редактирование медиа
+            var media = new InputMediaPhoto(new InputFileUrl("https://example.com/new.jpg"))
+            {
+                Caption = "Новое изображение"
+            };
+
+            return await botClient.EditMessageMedia(
+                chatId: chatId,
+                messageId: messageId,
+                media: media,
+                cancellationToken: ct);
+        }
+
+        /*
+         * 5. Клавиатуры:
+         *    InlineKeyboardMarkup создаётся из массива InlineKeyboardButton с CallbackData. :contentReference[oaicite:9]{index=9}
+         *    ReplyKeyboardMarkup формируется списком KeyboardButton для Reply-клавиатур. :contentReference[oaicite:10]{index=10}
+         */
+        public static async Task<Message> SendKeyboardExampleAsync(TelegramBotClient botClient, ChatId chatId, CancellationToken ct)
+        {
+            var inline = new InlineKeyboardMarkup(new[]
+            {
+                new[] { InlineKeyboardButton.WithCallbackData("Да", "yes"), InlineKeyboardButton.WithCallbackData("Нет", "no") }
+            });
+
+            await botClient.SendMessage(
+                chatId: chatId,
+                text: "Выберите опцию:",
+                replyMarkup: inline,
+                cancellationToken: ct);
+
+            var reply = new ReplyKeyboardMarkup(new[]
+            {
+                new KeyboardButton[] { "Опция 1", "Опция 2" }
+            })
+            {
+                ResizeKeyboard = true
+            };
+
+            return await botClient.SendMessage(
+                chatId: chatId,
+                text: "Или выберите из Reply-клавиатуры:",
+                replyMarkup: reply,
+                cancellationToken: ct);
+        }
+    }
+}

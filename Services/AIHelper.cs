@@ -7,7 +7,7 @@ namespace TelegramWordBot.Services
 {
     public interface IAIHelper
     {
-        Task<TranslatedTextClass> TranslateWordAsync(string word, string sourceLangCode, string targetLangCode);
+        Task<TranslatedTextClass> TranslateWordAsync(string word, string sourceLangName, string targetLangName);
         Task<string> SimpleTranslateText(string text, string targetLang);
         Task<string> GetLangName(string text);
         Task<string> GetLangName(string text, IEnumerable<Language> languages);
