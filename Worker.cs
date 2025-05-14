@@ -10,6 +10,7 @@ using TelegramWordBot.Services;
 using static System.Net.Mime.MediaTypeNames;
 using System.Text;
 using User = TelegramWordBot.Models.User;
+using System.Transactions;
 
 namespace TelegramWordBot
 {
@@ -283,28 +284,73 @@ namespace TelegramWordBot
         private async Task ShowMyWords(long chatId, User user, CancellationToken ct)
         {
             var native = await _languageRepo.GetByNameAsync(user.Native_Language);
-            var langsForWords = await _userLangRepository.GetUserLanguagesAsync(user.Id);
-            if (!langsForWords.Any())
+            var langs = (await _userLangRepository.GetUserLanguagesAsync(user.Id)).ToList();
+
+            // Если языков нет
+            if (!langs.Any())
             {
-                await _msg.SendErrorAsync(chatId, "У вас нет добавленных языков", ct);
+                await _msg.SendText(new ChatId(chatId),
+                    "❌ У вас нет добавленных языков.",
+                    ct);
+                return;
             }
-            else
+
+            // Локальный экранировщик HTML для заголовков и текста
+            string Escape(string s) => s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;");
+
+            foreach (var lang in langs)
             {
-                foreach (var lg in langsForWords)
+                var words = (await _userWordRepo.GetWordsByUserId(user.Id, lang.Id)).ToList();
+                var header = $"<b>{Escape(lang.Name)} ({words.Count})</b>";
+
+                if (!words.Any())
                 {
-                    var sb = new StringBuilder($"<b>{lg.Name}:</b>\n");
-                    var words = await _userWordRepo.GetWordsByUserId(user.Id, lg.Id);
-                    if (!words.Any()) sb.Append("Нет слов");
-                    else
-                        foreach (var w in words)
-                        {
-                            var tr = await _translationRepo.GetTranslationAsync(w.Id, native!.Id);
-                            sb.AppendLine($"{w.Base_Text} — {tr?.Text}");
-                        }
-                    await _msg.SendInfoAsync(chatId, sb.ToString(), ct);
+                    // Для пустого списка — просто заголовок и «Нет слов»
+                    await _msg.SendText(new ChatId(chatId),
+                        $"{header}\nНет слов.",
+                        ct);
+                    continue;
+                }
+
+                if (words.Count <= 5)
+                {
+                    // Небольшой список — отправляем единым сообщением
+                    var sb = new StringBuilder();
+                    sb.AppendLine(header);
+                    foreach (var w in words)
+                    {
+                        var tr = await _translationRepo.GetTranslationAsync(w.Id, native.Id);
+                        var right = tr?.Text ?? "-";
+                        sb.AppendLine($"{Escape(w.Base_Text)} — {Escape(right)}");
+                    }
+                    await _msg.SendText(new ChatId(chatId), sb.ToString(), ct);
+                }
+                else
+                {
+                    // Длинный список — показываем слайдер
+                    await _msg.SendText(new ChatId(chatId),
+                        $"{header}\nИспользуйте кнопки «⬅️» и «➡️» для навигации.",
+                        ct);
+
+                    // Первая карточка в слайдере
+                    var first = words[0];
+                    var firstTr = await _translationRepo.GetTranslationAsync(first.Id, native.Id);
+                    await _msg.ShowWordSlider(
+                        new ChatId(chatId),
+                        langId: lang.Id,
+                        currentIndex: 0,
+                        totalWords: words.Count,
+                        word: first.Base_Text,
+                        translation: firstTr?.Text ?? "-",
+                        example: firstTr?.Examples?? null,
+                        category: lang.Name,
+                        imageUrl: null,
+                        ct: ct
+                    );
                 }
             }
         }
+
 
         private Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken ct)
         {
@@ -380,8 +426,52 @@ namespace TelegramWordBot
                 case "switch_lang":
                      await ProcessSwitchLanguage(callback, chatId, user, parts, ct);
                     break;
+                case "prev":
+                case "next":
+                    await HandleSliderNavigationAsync(callback, user, parts, ct);
+                    break;
             }
             await bot.AnswerCallbackQuery(callback.Id);
+        }
+
+        /// <summary>
+        /// Обрабатывает навигацию «Назад» / «Вперед» для слайдера слов.
+        /// Ожидает callback.Data в формате "prev:LANG_ID:NEW_INDEX" или "next:LANG_ID:NEW_INDEX".
+        /// </summary>
+        private async Task HandleSliderNavigationAsync(CallbackQuery callback, User user, string[] parts, CancellationToken ct)
+        {
+            var chatId = callback.Message!.Chat.Id;
+
+            if (parts.Length < 3
+                || !int.TryParse(parts[1], out var langId)
+                || !int.TryParse(parts[2], out var newIndex))
+            {
+                return;
+            }
+
+            var words = (await _userWordRepo.GetWordsByUserId(user.Id, langId)).ToList();
+            if (newIndex < 0 || newIndex >= words.Count)
+                return;
+
+            var word = words[newIndex];
+            var native = await _languageRepo.GetByNameAsync(user.Native_Language);
+            var tr = await _translationRepo.GetTranslationAsync(word.Id, native.Id);
+            var lang = (await _userLangRepository.GetUserLanguagesAsync(user.Id))
+                       .FirstOrDefault(l => l.Id == langId);
+            var category = lang?.Name ?? "";
+
+            await _msg.ShowWordSlider(
+                new ChatId(chatId),
+                langId: langId,
+                currentIndex: newIndex,
+                totalWords: words.Count,
+                word: word.Base_Text,
+                translation: tr?.Text,
+                example: tr?.Examples,
+                category: category,
+                imageUrl: null,
+                ct: ct
+            );
         }
 
         private async Task ProcessSwitchLanguage(CallbackQuery callback, long chatId, User? user, string[] parts, CancellationToken ct)
@@ -489,7 +579,7 @@ namespace TelegramWordBot
                     return (true, string.Empty);
 
                 case "📊 статистика":
-                    await KeyboardFactory.ShowStatisticsAsync(_botClient, chatId, ct);
+                    await ShowStatisticsAsync(user, chatId, ct);
                     return (true, string.Empty);
 
                 case "❓ помощь":
@@ -522,13 +612,20 @@ namespace TelegramWordBot
 
             var native = await _languageRepo.GetByNameAsync(user.Native_Language);
             var tr = await _translationRepo.GetTranslationAsync(wordId, native.Id);
+            var word = await _wordRepo.GetWordById(wordId);
+            if (word == null)
+            {
+                await _msg.SendErrorAsync(chatId, "Слово не найдено", ct);
+                return;
+            }
+            string wordCard = _msg.GenerateWordCardText(word.Base_Text, tr?.Text?? "", tr?.Examples ?? "", null);
             if (!success)
             {
-                await _msg.SendInfoAsync(chatId, $"Перевод: {tr?.Text}", ct);
+                await _msg.SendErrorAsync(chatId, wordCard, ct);
             }
             else
             {
-                await _msg.SendInfoAsync(chatId, $"Отлично: {tr?.Text}", ct);
+                await _msg.SendSuccessAsync(chatId, wordCard, ct);
             }
             await SendNextLearningWordAsync(user, chatId, ct);
         }
@@ -692,7 +789,8 @@ namespace TelegramWordBot
                                 Id = Guid.NewGuid(),
                                 Word_Id = word.Id,
                                 Language_Id = nativeLang.Id,
-                                Text = translationText
+                                Text = translationText,
+                                Examples = aiTranslation.GetExampleString() ?? ""
                             };
                             await _translationRepo.AddTranslationAsync(newGenTrans);
                             translationId = newGenTrans.Id;
@@ -723,7 +821,8 @@ namespace TelegramWordBot
                             Id = Guid.NewGuid(),
                             Word_Id = newWord.Id,
                             Language_Id = nativeLang.Id,
-                            Text = translation.TranslatedText
+                            Text = translation.TranslatedText,
+                            Examples = translation.GetExampleString() ?? ""
                         };
                         await _wordRepo.AddWordAsync(newWord);
                         await _translationRepo.AddTranslationAsync(wordTranslation);
@@ -784,12 +883,13 @@ namespace TelegramWordBot
                         Language_Id = targetLang.Id
                     };
 
-                    Translation wordTranslation = new Translation
+                    Translation wordTranslation = new()
                     {
                         Id = Guid.NewGuid(),
                         Word_Id = newWord.Id,
                         Language_Id = nativeLang.Id,
-                        Text = inputText
+                        Text = inputText,
+                        Examples = translation.GetExampleString()?? ""
                     };
                     await _wordRepo.AddWordAsync(newWord);
                     await _translationRepo.AddTranslationAsync(wordTranslation);
@@ -803,6 +903,77 @@ namespace TelegramWordBot
             }
         }
 
+        private async Task ShowStatisticsAsync(User user, ChatId chatId, CancellationToken ct)
+        {
+            // Получаем список изучаемых языков
+            var langs = (await _userLangRepository.GetUserLanguagesAsync(user.Id)).ToList();
+            if (!langs.Any())
+            {
+                await _msg.SendText(chatId, "❌ У вас нет добавленных языков.", ct);
+                return;
+            }
+
+            var sb = new StringBuilder();
+            sb.AppendLine("📊 <b>Статистика изучения</b>");
+            sb.AppendLine();
+
+            int grandTotalWords = 0, grandTotalViews = 0, grandTotalPlus = 0, grandTotalMinus = 0;
+
+            // Для каждого языка собираем и выводим статистику
+            foreach (var lang in langs)
+            {
+                // Слова пользователя в этом языке
+                var words = (await _userWordRepo.GetWordsByUserId(user.Id, lang.Id)).ToList();
+                int countWords = words.Count;
+                grandTotalWords += countWords;
+
+                // Собираем прогресс для каждого слова
+                int sumViews = 0, sumPlus = 0, sumMinus = 0;
+                foreach (var w in words)
+                {
+                    var prog = await _progressRepo.GetAsync(user.Id, w.Id);
+                    if (prog != null)
+                    {
+                        sumViews += prog.Count_Total_View;
+                        sumPlus += prog.Count_Plus;
+                        sumMinus += prog.Count_Minus;
+                    }
+                }
+
+                grandTotalViews += sumViews;
+                grandTotalPlus += sumPlus;
+                grandTotalMinus += sumMinus;
+
+                // Вычисляем процент успеха
+                string successRate = (sumPlus + sumMinus) > 0
+                    ? $"{Math.Round(sumPlus * 100.0 / (sumPlus + sumMinus))}%"
+                    : "–";
+
+                sb
+                    .AppendLine($"<b>{TelegramMessageHelper.EscapeHtml(lang.Name)}</b> ({countWords}):")
+                    .AppendLine($"  👁 Просмотров: {sumViews}")
+                    .AppendLine($"  ✅ Успешных:   {sumPlus}")
+                    .AppendLine($"  ❌ Неуспешных: {sumMinus}")
+                    .AppendLine($"  🏆 Успех:       {successRate}")
+                    .AppendLine();
+            }
+
+            // Итоговые цифры
+            string grandRate = (grandTotalPlus + grandTotalMinus) > 0
+                ? $"{Math.Round(grandTotalPlus * 100.0 / (grandTotalPlus + grandTotalMinus))}%"
+                : "–";
+
+            sb
+                .AppendLine("<b>Всего по всем языкам:</b>")
+                .AppendLine($"  🗂 Слов:       {grandTotalWords}")
+                .AppendLine($"  👁 Просмотров: {grandTotalViews}")
+                .AppendLine($"  ✅ Успешных:   {grandTotalPlus}")
+                .AppendLine($"  ❌ Неуспешных: {grandTotalMinus}")
+                .AppendLine($"  🏆 Успех:       {grandRate}");
+
+            // Отправляем одним сообщением
+            await _msg.SendText(chatId, sb.ToString(), ct);
+        }
     }
 }
 

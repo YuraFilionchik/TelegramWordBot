@@ -14,7 +14,7 @@ public class TelegramMessageHelper
     }
 
     // === Вспомогательный метод для генерации текста карточки слова ===
-    private string GenerateWordCardText(string word, string translation, string? example = null, string? category = null)
+    public string GenerateWordCardText(string word, string translation, string? example = null, string? category = null)
     {
         var text = $"<b>{EscapeHtml(word)}</b>\n<i>{EscapeHtml(translation)}</i>";
 
@@ -121,20 +121,33 @@ public class TelegramMessageHelper
         }
     }
 
-    public async Task<Message> ShowWordSlider(ChatId chatId, int currentWordIndex, int totalWords, string word, string translation, string? example = null, string? category = null, string? imageUrl = null, CancellationToken ct = default)
+    public async Task<Message> ShowWordSlider(ChatId chatId, int langId, 
+        int currentIndex, int totalWords, string word, string translation, 
+        string? example = null, string? category = null, string? imageUrl = null, CancellationToken ct = default)
     {
-        var keyboardButtons = new List<InlineKeyboardButton>();
+        var buttons = new List<InlineKeyboardButton>();
 
-        if (currentWordIndex > 0)
-            keyboardButtons.Add(InlineKeyboardButton.WithCallbackData("⬅️ Назад", $"prev_{currentWordIndex - 1}"));
+        if (currentIndex > 0)
+        {
+            buttons.Add(InlineKeyboardButton.WithCallbackData(
+                text: "⬅️ Назад",
+                callbackData: $"prev:{langId}:{currentIndex - 1}"
+            ));
+        }
 
-        if (currentWordIndex < totalWords - 1)
-            keyboardButtons.Add(InlineKeyboardButton.WithCallbackData("➡️ Вперед", $"next_{currentWordIndex + 1}"));
+        if (currentIndex < totalWords - 1)
+        {
+            buttons.Add(InlineKeyboardButton.WithCallbackData(
+                text: "➡️ Вперед",
+                callbackData: $"next:{langId}:{currentIndex + 1}"
+            ));
+        }
 
-        var keyboard = new InlineKeyboardMarkup(keyboardButtons);
+        var keyboard = new InlineKeyboardMarkup(new[] { buttons.ToArray() });
 
-        var text = GenerateWordCardText(word, translation, example, category);
-        text += $"\n\n📄 {currentWordIndex + 1}/{totalWords}";
+        // Генерируем текст карточки (можно вынести в общий метод)
+        var text = GenerateWordCardText(word, translation, example, category)
+                 + $"\n\n📄 {currentIndex + 1}/{totalWords}";
 
         if (!string.IsNullOrWhiteSpace(imageUrl))
         {
@@ -210,6 +223,21 @@ public class TelegramMessageHelper
         }
     }
 
+    /// <summary>
+    /// Отправляет произвольное HTML-сообщение.
+    /// </summary>
+    public async Task<Message> SendText(
+        ChatId chatId,
+        string text,
+        CancellationToken ct = default)
+    {
+        return await _bot.SendMessage(
+            chatId: chatId,
+            text: text,
+            parseMode: ParseMode.Html,
+            cancellationToken: ct);
+    }
+
     public async Task SendErrorAsync(ChatId chatId, string message, CancellationToken ct)
     {
         var text = $"❌ <i>{EscapeHtml(message)}</i>";
@@ -227,7 +255,7 @@ public class TelegramMessageHelper
         await _bot.SendMessage(chatId, text, parseMode: ParseMode.Html, cancellationToken: ct);
     }
 
-    private string EscapeHtml(string input) =>
+    public static string EscapeHtml(string input) =>
         input.Replace("&", "&amp;");//.Replace("<", "&lt;").Replace(">", "&gt;");
 
     //private string EscapeHtml(string input) =>

@@ -58,11 +58,7 @@ public static class KeyboardFactory
         await botClient.SendMessage(chatId, "Настройки:", replyMarkup: GetConfigInline(), cancellationToken: ct);
     }
 
-    // Отображение статистики (заглушка)
-    public static async Task ShowStatisticsAsync(ITelegramBotClient botClient, ChatId chatId, CancellationToken ct)
-    {
-        await botClient.SendMessage(chatId, "📊 Статистика: (в разработке)", cancellationToken: ct);
-    }
+    
 
     // Обработка команд с кнопок
     //public static async Task<(bool handled, string? newState)> HandleKeyboardCommandAsync(ITelegramBotClient botClient, ChatId chatId, string command,  CancellationToken ct)

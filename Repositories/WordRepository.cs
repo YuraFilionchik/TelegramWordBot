@@ -66,7 +66,7 @@ namespace TelegramWordBot.Repositories
         public async Task<Word?> GetWordById(Guid wordId)
         {
             using var conn = _factory.CreateConnection();
-            var sql = @"SELECT 1 FROM words WHERE id = @Word_Id";
+            var sql = @"SELECT * FROM words WHERE id = @Word_Id";
            return await conn.QueryFirstOrDefaultAsync<Word>(sql, new {Word_Id = wordId} );
         }
 
