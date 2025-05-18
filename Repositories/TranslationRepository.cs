@@ -63,4 +63,14 @@ public class TranslationRepository
         var sql = "SELECT * FROM translations WHERE text = @Text";
         return await conn.QueryAsync<Translation>(sql, new { Text = text });
     }
+
+    internal async Task RemoveByWordIdAsync(Guid? wordId)
+    {
+        if (wordId == null) return;
+        using var conn = _factory.CreateConnection();
+        const string sql = @"
+        DELETE FROM translations
+        WHERE word_id = @Word_Id";
+        await conn.ExecuteAsync(sql, new { Word_Id = wordId.Value });
+    }
 }

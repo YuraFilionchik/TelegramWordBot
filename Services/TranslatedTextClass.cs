@@ -9,12 +9,10 @@ namespace TelegramWordBot.Services
 {
     public class TranslatedTextClass
     {
-        string? languageName; //  nullable на случай ошибки
-        string? translatedText; //  nullable на случай ошибки или отсутствия текста
+        string? translatedText; 
         string? error;
         List<string>? examples;
 
-        //public string? LanguageName { get => languageName; set => languageName = value; }
         public string? TranslatedText { get => translatedText; set => translatedText = value; }
         public List<string>? Examples { get => examples; set => examples = value; }
         public string? Error { get => error; set => error = value; }
@@ -26,16 +24,6 @@ namespace TelegramWordBot.Services
             var startIndex = json.IndexOf('{');
             var endIndex = json.LastIndexOf('}');
             json = json.Substring(startIndex, endIndex - startIndex + 1);
-            //            "```json
-            //{
-            //"translations": [
-            //{
-            //                    "text": "ryba",
-            //"example": "Na obiad była smażona ryba."
-            //}
-            //]
-            //}
-            //            "
 
             try
             {
