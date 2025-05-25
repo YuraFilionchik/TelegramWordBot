@@ -42,7 +42,24 @@ public static class KeyboardFactory
             new[] { InlineKeyboardButton.WithCallbackData("🌐 Выбрать другой язык", "switch_language") },
             new[] { InlineKeyboardButton.WithCallbackData("➕ Добавить новый язык", "add_foreign") },
             new[] { InlineKeyboardButton.WithCallbackData("➖ Удалить текущий язык", "remove_foreign") },
-            new[] { InlineKeyboardButton.WithCallbackData("🌐 Изменить родной язык", "set_native") }
+            new[] { InlineKeyboardButton.WithCallbackData("🌐 Изменить родной язык", "set_native") },
+            new[] { InlineKeyboardButton.WithCallbackData("Режим обучения", "config_learn:main") }
+        });
+    }
+
+    public static InlineKeyboardMarkup GetConfigLearnInline(Models.User user)
+    {
+        if (user.Prefer_Multiple_Choice)
+        return new InlineKeyboardMarkup(new[]
+        {
+            new[] { InlineKeyboardButton.WithCallbackData("Вспомнил/Не вспомнил", "config_learn:binary") },
+            new[] { InlineKeyboardButton.WithCallbackData("✅ Выбор из вариантов", "config_learn:multiple") }
+        });
+        else
+            return new InlineKeyboardMarkup(new[]
+        {
+            new[] { InlineKeyboardButton.WithCallbackData("✅ Вспомнил/Не вспомнил", "config_learn:binary") },
+            new[] { InlineKeyboardButton.WithCallbackData("Выбор из вариантов", "config_learn:multiple") }
         });
     }
 
@@ -58,7 +75,11 @@ public static class KeyboardFactory
         await botClient.SendMessage(chatId, "Настройки:", replyMarkup: GetConfigInline(), cancellationToken: ct);
     }
 
-    
+    public static async Task ShowLearnConfig(ITelegramBotClient botClient, ChatId chatId, Models.User user, CancellationToken ct)
+    {
+        await botClient.SendMessage(chatId, "Режим показа слов при обучении", replyMarkup: GetConfigLearnInline(user), cancellationToken: ct);
+    }
+
 
     // Обработка команд с кнопок
     //public static async Task<(bool handled, string? newState)> HandleKeyboardCommandAsync(ITelegramBotClient botClient, ChatId chatId, string command,  CancellationToken ct)

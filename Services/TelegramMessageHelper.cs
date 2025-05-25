@@ -238,6 +238,20 @@ public class TelegramMessageHelper
             cancellationToken: ct);
     }
 
+    public async Task<Message> SendText(
+        ChatId chatId,
+        string text,
+        InlineKeyboardMarkup replyMarkup,
+        CancellationToken ct = default)
+    {
+        return await _bot.SendMessage(
+            chatId: chatId,
+            text: text,
+            parseMode: ParseMode.Html,
+            replyMarkup: replyMarkup,
+            cancellationToken: ct);
+    }
+
     public async Task SendErrorAsync(ChatId chatId, string message, CancellationToken ct)
     {
         var text = $"❌ <i>{EscapeHtml(message)}</i>";

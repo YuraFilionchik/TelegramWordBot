@@ -11,6 +11,7 @@ namespace TelegramWordBot.Services
         Task<string> SimpleTranslateText(string text, string targetLang);
         Task<string> GetLangName(string text);
         Task<string> GetLangName(string text, IEnumerable<Language> languages);
+        Task<List<string>> GetVariants(string originalWord, string translatedWord, string target_lang);
     }
 
     class AIHelper: IAIHelper
@@ -42,7 +43,7 @@ namespace TelegramWordBot.Services
                                     ]
                 }
             }" +
-            $" Give a translation from {sourLangName} to {targetLangName} of this word - '{srcText}'. " ;
+            $" Give a translation from {sourLangName} to {targetLangName} of this originalWord - '{srcText}'. " ;
             else
                 prompt += @"Respond ONLY in JSON format like this, with no explanations or conversational text: 
                {
@@ -56,7 +57,7 @@ namespace TelegramWordBot.Services
             $"Translate from {sourLangName} to {targetLangName} the text = '{srcText}' ";
 
             prompt += @"// --- Important: Ensure the JSON is valid and contains only the requested fields. Your answer is content of json.---";
-            var response =  await TranslateWithGeminiAsync(prompt, false);
+            var response =  await AskWithGeminiAsync(prompt, false);
             TranslatedTextClass returnedTranslate = new TranslatedTextClass(response);
             return returnedTranslate;
            // return await TranslateWithOpenAIAsync(prompt);
@@ -67,16 +68,16 @@ namespace TelegramWordBot.Services
             string prompt = $"Translate the text into language {targetLang}. " +
                 $"The answer should contain only the translation text, without comments. " +
                 $"The source text is: {text}";
-            return await TranslateWithGeminiAsync(prompt, true);
+            return await AskWithGeminiAsync(prompt, true);
         }
 
         
         public async Task<string>GetLangName(string text)
         {
             string prompt = $"Extract the language name from the following text: '{text}'." +
-                $" Give your answer strictly in the format of one word with a capital letter in english. " +
+                $" Give your answer strictly in the format of one originalWord with a capital letter in english. " +
                 $"If you can not do it - return only 'error'";
-            return await TranslateWithGeminiAsync(prompt, true);
+            return await AskWithGeminiAsync(prompt, true);
         }
 
         public async Task<string> GetLangName(string text, IEnumerable<Language> languages)
@@ -84,18 +85,18 @@ namespace TelegramWordBot.Services
             string prompt = "";
             if (languages == null || languages.Count() == 0) 
              prompt = $"Determine the language name of the following text: '{text}'." +
-                $" Give your answer strictly in the format of one word with a capital letter in english. " +
+                $" Give your answer strictly in the format of one originalWord with a capital letter in english. " +
                 $"If you can not do it - return only 'error'";
             else
             {
                 var langsString = string.Join(", ", languages.Select(x => x.Name));
                 prompt = $"Try to determine one language from ( {langsString} ) of the following text: '{text}'." +
-                $" Give your answer strictly in the format of one word with a capital letter in english. " +
+                $" Give your answer strictly in the format of one originalWord with a capital letter in english. " +
                 $"If you can not do it - return only 'error'";
 
             }
 
-            return await TranslateWithGeminiAsync(prompt, true);
+            return await AskWithGeminiAsync(prompt, true);
         }
 
         private async Task<string> TranslateWithOpenAIAsync(string prompt)
@@ -122,7 +123,7 @@ namespace TelegramWordBot.Services
             return result?.Trim() ?? "";
         }
 
-        private async Task<string> TranslateWithGeminiAsync(string prompt, bool lite)
+        private async Task<string> AskWithGeminiAsync(string prompt, bool lite)
         {
             var requestBody = new GeminiRequest
             {
@@ -175,6 +176,33 @@ namespace TelegramWordBot.Services
             // Simulate AI response generation
             // In a real-world scenario, this would involve calling an AI model or API
             return $"AI Response to: {input}";
+        }
+
+        public async Task<List<string>> GetVariants(string originalWord, string translatedWord, string target_lang)
+        {
+            //где первый элемент — правильный перевод, а остальные — отвлекающие.
+            string prompt = $@"
+Ты — ассистент по изучению языков.
+Дано слово: «{originalWord}» и его перевод на «{target_lang}» - «{translatedWord}».
+Задача: сгенерировать еще три варианта перевода этого слова:
+1) Первый элемент массива — единственно верный перевод.
+2) Оставшиеся три — правдоподобные, но неверные отвлекающие варианты.
+Все четыре варианта должны быть на языке «{target_lang}» и представлять собой одно слово или короткую фразу.
+Ответь строго в формате одной строки с разделением вариантов по ';', например:
+[правильный перевод; отвлечение1; отвлечение2; отвлечение3].
+Без каких-либо пояснений и вспомогательного текста.
+";
+            var result = await AskWithGeminiAsync(prompt, true);
+            if (string.IsNullOrWhiteSpace(result) || result.Split(';').Length != 4)
+            {
+                return new List<string> { translatedWord, "error", "error", "error" };
+            }
+            else
+            {
+                result = result.Trim('[',']','.');
+                var variants = result.Split(';').Select(x => x.Trim()).ToList();
+                return variants;
+            }
         }
     }
 }

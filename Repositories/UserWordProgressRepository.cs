@@ -59,5 +59,24 @@ public class UserWordProgressRepository
 
     }
 
+    public async Task InsertOrUpdateAsync(UserWordProgress progress)
+    {
+        using var conn = _factory.CreateConnection();
+        if (progress.Id == Guid.Empty)
+            progress.Id = Guid.NewGuid();
 
+        const string sql = @"
+                INSERT INTO user_word_progress
+                    (id, user_id, word_id, repetition, interval_days, ease_factor, next_review)
+                VALUES
+                    (@Id, @User_Id, @Word_Id, @Repetition, @Interval_Days, @Ease_Factor, @Next_Review)
+                ON CONFLICT (user_id, word_id) DO UPDATE
+                SET
+                    repetition    = EXCLUDED.repetition,
+                    interval_days = EXCLUDED.interval_days,
+                    ease_factor   = EXCLUDED.ease_factor,
+                    next_review   = EXCLUDED.next_review";
+
+        await conn.ExecuteAsync(sql, progress);
+    }
 }

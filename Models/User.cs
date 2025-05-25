@@ -6,5 +6,5 @@ public class User
     public long Telegram_Id { get; set; }
     public string Native_Language { get; set; } = "Russian";
     public string? Current_Language { get; set; }
-
+    public bool Prefer_Multiple_Choice { get; set; } = false;
 }

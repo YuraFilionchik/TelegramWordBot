@@ -25,6 +25,7 @@ builder.Services.AddHttpClient<IAIHelper, AIHelper>();
 builder.Services.AddSingleton<TranslationRepository>();
 builder.Services.AddSingleton<UserLanguageRepository>();
 builder.Services.AddSingleton<TelegramMessageHelper>();
+builder.Services.AddSingleton<SpacedRepetitionService>();
 builder.Services.AddHttpClient();
 
 

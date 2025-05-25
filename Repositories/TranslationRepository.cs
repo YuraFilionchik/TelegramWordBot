@@ -37,6 +37,13 @@ public class TranslationRepository
         return await conn.QueryAsync<Translation>(sql, new { Word_Id = wordId });
     }
 
+    public async Task<Translation> GetTranslationByIdAsync(Guid Id)
+    {
+        using var conn = _factory.CreateConnection();
+        var sql = "SELECT * FROM translations WHERE id = @Id";
+        return await conn.QueryFirstOrDefaultAsync<Translation>(sql, Id);
+    }
+
     public async Task<Translation?> GetTranslationAsync(Guid wordId, int targetLangId)
     {
         using var conn = _factory.CreateConnection();
