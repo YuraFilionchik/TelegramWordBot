@@ -79,4 +79,17 @@ public class UserWordProgressRepository
 
         await conn.ExecuteAsync(sql, progress);
     }
+
+    /// <summary>
+    /// Возвращает все записи прогресса для заданного пользователя.
+    /// </summary>
+    public async Task<IEnumerable<UserWordProgress>> GetByUserAsync(Guid userId)
+    {
+        using var conn = _factory.CreateConnection();
+        const string sql = @"
+        SELECT *
+        FROM user_word_progress
+        WHERE user_id = @User_Id";
+        return await conn.QueryAsync<UserWordProgress>(sql, new { User_Id = userId });
+    }
 }

@@ -7,135 +7,133 @@ using System.Threading.Tasks;
 
 namespace TelegramWordBot.Services 
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Text;
+    using System.Text.Json;
+
+    public class TranslatedItem
+    {
+        public string? Text { get; set; }
+        public string? Example { get; set; }
+        public string? Error { get; set; }
+    }
+
     public class TranslatedTextClass
     {
-        string? translatedText; 
-        string? error;
-        List<string>? examples;
+        /// <summary>
+        /// Множество пар (перевод → пример или ошибка на уровне элемента)
+        /// </summary>
+        public List<TranslatedItem> Items { get; } = new();
 
-        public string? TranslatedText { get => translatedText; set => translatedText = value; }
-        public List<string>? Examples { get => examples; set => examples = value; }
-        public string? Error { get => error; set => error = value; }
+        /// <summary>
+        /// Общая ошибка парсинга (например, отсутствует массив translations)
+        /// </summary>
+        public string? Error { get; private set; }
 
         public TranslatedTextClass(string json)
         {
-            examples = new List<string>();
-            json = json.Trim().Trim('`');
-            var startIndex = json.IndexOf('{');
-            var endIndex = json.LastIndexOf('}');
-            json = json.Substring(startIndex, endIndex - startIndex + 1);
+            // Очищаем обёртки
+            json = json?.Trim().Trim('`') ?? "";
+            var start = json.IndexOf('{');
+            var end = json.LastIndexOf('}');
+            if (start < 0 || end <= start)
+            {
+                Error = "Invalid JSON format";
+                return;
+            }
+            json = json.Substring(start, end - start + 1);
 
             try
             {
-                using (JsonDocument document = JsonDocument.Parse(json))
+                using var doc = JsonDocument.Parse(json);
+                var root = doc.RootElement;
+
+                // Если есть верхнеуровневая ошибка — фиксируем и выходим
+                if (root.TryGetProperty("error", out var topError)
+                    && topError.ValueKind == JsonValueKind.String)
                 {
-                    JsonElement root = document.RootElement;
+                    Error = topError.GetString();
+                    return;
+                }
 
-                    if (root.TryGetProperty("error", out JsonElement errorElement) && errorElement.ValueKind == JsonValueKind.String)
+                // Парсим массив translations
+                if (!root.TryGetProperty("translations", out var arr)
+                    || arr.ValueKind != JsonValueKind.Array)
+                {
+                    Error = "Missing or invalid 'translations' array.";
+                    return;
+                }
+
+                foreach (var el in arr.EnumerateArray())
+                {
+                    if (el.ValueKind != JsonValueKind.Object) continue;
+
+                    var item = new TranslatedItem();
+
+                    // text
+                    if (el.TryGetProperty("text", out var txt)
+                        && txt.ValueKind == JsonValueKind.String)
                     {
-                        this.error = errorElement.GetString();
-                        // Если есть ошибка верхнего уровня, остальное не парсим
-                        return; 
+                        item.Text = txt.GetString();
                     }
 
-                    //Парсим массив translations
-                    if (root.TryGetProperty("translations", out JsonElement translationsElement) && translationsElement.ValueKind == JsonValueKind.Array)
+                    // example
+                    if (el.TryGetProperty("example", out var ex)
+                        && ex.ValueKind == JsonValueKind.String)
                     {
-                        bool firstTextFound = false; // Флаг, чтобы взять только первый 'text'
-                        foreach (JsonElement translationItem in translationsElement.EnumerateArray())
-                        {
-                            if (translationItem.ValueKind == JsonValueKind.Object)
-                            {
-                                // Пытаемся извлечь 'text'
-                                if ( translationItem.TryGetProperty("text", out JsonElement textElement) && textElement.ValueKind == JsonValueKind.String)
-                                {
-                                    if (!firstTextFound)
-                                    {
-                                        this.translatedText = textElement.GetString();
-                                        firstTextFound = true; // Устанавливаем флаг, что основной текст найден
-                                    }
-                                    else
-                                    {
-                                        this.translatedText +=", " + textElement.GetString();
-                                    }
-                                }
-
-                                // Пытаемся извлечь 'example' (независимо от 'text')
-                                if (translationItem.TryGetProperty("example", out JsonElement exampleElement) && exampleElement.ValueKind == JsonValueKind.String)
-                                {
-                                    string? exampleValue = exampleElement.GetString();
-                                    if (!string.IsNullOrEmpty(exampleValue)) // Добавляем только непустые примеры
-                                    {
-                                        this.examples ??= new List<string>();
-                                        this.examples.Add(exampleValue);
-                                    }
-                                }
-
-                                // Обработка ошибки *внутри* элемента массива
-                                // Если основной текст еще не найден и есть ошибка в элементе
-                                if (!firstTextFound && string.IsNullOrEmpty(this.error) && translationItem.TryGetProperty("error", out JsonElement itemErrorElement) && itemErrorElement.ValueKind == JsonValueKind.String)
-                                {
-                                    this.error = itemErrorElement.GetString();
-                                    // Можно решить: прервать парсинг массива или продолжить собирать примеры?
-                                    // В данном варианте продолжаем, чтобы собрать все возможные данные
-                                }
-                            }
-                        }
-                        // Если после цикла не нашли ни одного 'text', а ошибки не было
-                        if (!firstTextFound && string.IsNullOrEmpty(this.error))
-                        {
-                         this.error = "Invalid response format: No 'text' found in translations array.";
-                        }
-
-                        // Если после парсинга массив примеров пуст, устанавливаем его в null для консистентности
-                        if (this.examples != null && this.examples.Count == 0)
-                        {
-                            this.examples = null;
-                        }
+                        var example = ex.GetString();
+                        if (!string.IsNullOrWhiteSpace(example))
+                            item.Example = example;
                     }
-                    else
+
+                    // ошибка внутри элемента
+                    if (el.TryGetProperty("error", out var itErr)
+                        && itErr.ValueKind == JsonValueKind.String)
                     {
-                        // Если нет поля 'translations' (и нет ошибки), считаем это проблемой формата
-                        // Либо это может быть случай одного перевода без массива (нужно уточнять формат)
-                        // Если формат ТОЛЬКО с массивом, то это ошибка:
-                        if (string.IsNullOrEmpty(this.error)) // Устанавливаем ошибку, только если ее еще нет
-                        {
-                            this.error = "Invalid response format: Missing or invalid 'translations' array.";
-                        }
+                        item.Error = itErr.GetString();
                     }
+
+                    // Добавляем, даже если только есть ошибка
+                    if (item.Text != null || item.Example != null || item.Error != null)
+                        Items.Add(item);
+                }
+
+                if (Items.Count == 0 && string.IsNullOrEmpty(Error))
+                {
+                    Error = "No translations found in response.";
                 }
             }
-            catch (JsonException ex)
+            catch (JsonException je)
             {
-                // Если JSON некорректный, записываем ошибку
-                Console.WriteLine($"JSON Parsing Error: {ex.Message}"); // Логирование для отладки
-                this.error = $"Failed to parse JSON response: {ex.Message}";
-                // Обнуляем остальные поля на всякий случай
-                this.translatedText = null;
-                this.examples = null;
+                Error = $"JSON parsing failed: {je.Message}";
             }
-            catch (Exception ex) // Ловим другие возможные ошибки
+            catch (Exception ex)
             {
-                Console.WriteLine($"Unexpected Error during translation object creation: {ex.Message}"); // Логирование
-                this.error = $"An unexpected error occurred while processing the translation: {ex.Message}";
-                this.translatedText = null;
-                this.examples = null;
+                Error = $"Unexpected error: {ex.Message}";
             }
         }
 
-        public string GetExampleString()
+        /// <summary>
+        /// Признак успешного разбора хотя бы одного перевода без ошибок
+        /// </summary>
+        public bool IsSuccess()
+            => string.IsNullOrEmpty(Error)
+               && Items.Exists(i => !string.IsNullOrEmpty(i.Text));
+
+        /// <summary>
+        /// Собирает все примеры в одну строку (при необходимости)
+        /// </summary>
+        public string GetAllExamples()
         {
-            StringBuilder sb = new StringBuilder();
-            if (Examples != null && Examples.Count != 0)
+            var sb = new StringBuilder();
+            foreach (var i in Items)
             {
-                foreach (var ex in Examples)
-                    sb.AppendLine(ex);                
+                if (!string.IsNullOrEmpty(i.Example))
+                    sb.AppendLine(i.Example);
             }
             return sb.ToString();
         }
-        public bool IsSuccess()
-        {
-            return string.IsNullOrEmpty(this.error) && !string.IsNullOrEmpty(this.translatedText);
-        }
     }
+
 }

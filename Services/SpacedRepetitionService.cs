@@ -23,7 +23,7 @@ namespace TelegramWordBot.Services
                 prog.Repetition = 0;
                 prog.Interval_Days = 1;
             }
-            else
+            else //TODO include ease factor for Interval_Days calculation
             {
                 prog.Repetition++;
                 if (prog.Repetition == 1)
