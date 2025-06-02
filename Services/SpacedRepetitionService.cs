@@ -16,30 +16,47 @@ namespace TelegramWordBot.Services
         /// </summary>
         public void UpdateProgress(UserWordProgress prog, bool success)
         {
-            int quality = success ? 5 : 2; // 5 — «хорошо вспомнил», 2 — «не вспомнил»
+            // Качество ответа: 5 — «хорошо вспомнил», 0 — «не вспомнил»
+            int quality = success ? 5 : 0;
 
             if (quality < 3)
             {
-                prog.Repetition = 0;
-                prog.Interval_Days = 1;
+                // Если не вспомнил — сбрасываем повторения и ставим следующий показ через 1 час
+                prog.Repetition --;
+                if (prog.Repetition < 0 ) prog.Repetition = 0; 
+                prog.Interval_Hours = 1;
             }
-            else //TODO include ease factor for Interval_Days calculation
+            else
             {
                 prog.Repetition++;
+
+                // Начальные интервалы в часах (более частые повторы внутри дня)
                 if (prog.Repetition == 1)
-                    prog.Interval_Days = 1;
+                {
+                    prog.Interval_Hours = 2;   // через 1 час
+                }
                 else if (prog.Repetition == 2)
-                    prog.Interval_Days = 6;
+                {
+                    prog.Interval_Hours = 6;   // через 6 часов
+                }
                 else
-                    prog.Interval_Days = (int)Math.Round(prog.Interval_Days * prog.Ease_Factor);
-                // Рассчитываем новый EF
-                prog.Ease_Factor += 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02);
-                if (prog.Ease_Factor < MinEase) prog.Ease_Factor = MinEase;
+                {
+                    // Для последующих повторов умножаем предыдущий интервал (в часах) на EF
+                    prog.Interval_Hours = (int)Math.Round(prog.Interval_Hours * prog.Ease_Factor);
+                }
+
+                // Пересчёт Ease Factor по SM-2 (минимум MinEase, обычно 1.3)
+                prog.Ease_Factor = prog.Ease_Factor
+                                   + (0.15 - (5 - quality) * (0.08 + (5 - quality) * 0.03));
+                if (prog.Ease_Factor < MinEase)
+                    prog.Ease_Factor = MinEase;
             }
 
-            prog.Next_Review = DateTime.UtcNow.AddDays(prog.Interval_Days);
+            // Обновляем дату последнего показа и рассчитываем следующий по интервалу в часах
             prog.Last_Review = DateTime.UtcNow;
+            prog.Next_Review = DateTime.UtcNow.AddHours(prog.Interval_Hours);
         }
+
     }
 
 }

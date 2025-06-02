@@ -11,7 +11,7 @@ public class UserWordProgress
     public int Count_Minus { get; set; } =0;
     public int Progress { get; set; } = 0;
     public int Repetition { get; set; }        // число подряд успешных повторений
-    public int Interval_Days { get; set; }          // текущий интервал в днях
+    public int Interval_Hours { get; set; }          // текущий интервал в днях
     public double Ease_Factor { get; set; }     // «коэффициент лёгкости» (обычно ≥1.3)
     public DateTime Next_Review { get; set; }   // дата следующего показа
 }

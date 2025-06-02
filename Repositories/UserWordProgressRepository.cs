@@ -1,95 +1,77 @@
 ﻿using Dapper;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using TelegramWordBot.Models;
 
-namespace TelegramWordBot.Repositories;
-
-public class UserWordProgressRepository
+namespace TelegramWordBot.Repositories
 {
-    private readonly DbConnectionFactory _factory;
-
-    public UserWordProgressRepository(DbConnectionFactory factory)
+    public class UserWordProgressRepository
     {
-        _factory = factory;
-    }
+        private readonly DbConnectionFactory _factory;
 
-    public async Task<UserWordProgress?> GetAsync(Guid userId, Guid wordId)
-    {
-        using var conn = _factory.CreateConnection();
-        return await conn.QueryFirstOrDefaultAsync<UserWordProgress>(
-            "SELECT * FROM user_word_progress WHERE user_id = @userId AND word_id = @wordId",
-            new { userId, wordId });
-    }
-
-    public async Task InsertOrUpdateAsync(UserWordProgress progress, bool success)
-    {
-        using var conn = _factory.CreateConnection();
-
-        var existing = await GetAsync(progress.User_Id, progress.Word_Id);
-
-        if (existing == null)
+        public UserWordProgressRepository(DbConnectionFactory factory)
         {
-            progress.Id = Guid.NewGuid();
-            progress.Count_Total_View = 1;
-            progress.Count_Plus = success ? 1 : 0;
-            progress.Count_Minus = success ? 0 : 1;
-            progress.Progress = success ? 10 : 0;
-            progress.Last_Review = DateTime.UtcNow;
-
-            await conn.ExecuteAsync(@"
-                INSERT INTO user_word_progress 
-                (id, user_id, word_id, last_review, count_total_view, count_plus, count_minus, progress) 
-                VALUES (@Id, @User_Id, @Word_Id, @Last_Review, @Count_Total_View, @Count_Plus, @Count_Minus, @Progress)", progress);
-        }
-        else
-        {
-            existing.Count_Total_View++;
-            existing.Last_Review = DateTime.UtcNow;
-            if (success) { existing.Count_Plus++; existing.Progress += 10; }
-            else { existing.Count_Minus++; existing.Progress -= 5; }
-
-            await conn.ExecuteAsync(@"
-                UPDATE user_word_progress SET 
-                    last_review = @Last_Review,
-                    count_total_view = @Count_Total_View,
-                    count_plus = @Count_Plus,
-                    count_minus = @Count_Minus,
-                    progress = @Progress
-                WHERE user_id = @User_Id AND word_id = @Word_Id", existing);
+            _factory = factory;
         }
 
-    }
+        public async Task<UserWordProgress?> GetAsync(Guid userId, Guid wordId)
+        {
+            using var conn = _factory.CreateConnection();
+            return await conn.QueryFirstOrDefaultAsync<UserWordProgress>(
+                @"SELECT * 
+                  FROM user_word_progress 
+                  WHERE user_id = @userId 
+                    AND word_id = @wordId",
+                new { userId, wordId });
+        }
 
-    public async Task InsertOrUpdateAsync(UserWordProgress progress)
-    {
-        using var conn = _factory.CreateConnection();
-        if (progress.Id == Guid.Empty)
-            progress.Id = Guid.NewGuid();
+        /// <summary>
+        /// Вставляет или обновляет запись прогресса (перезаписывает Repetition, Interval_Hours, Ease_Factor, Next_Review).
+        /// </summary>
+        public async Task InsertOrUpdateAsync(UserWordProgress progress)
+        {
+            using var conn = _factory.CreateConnection();
+            if (progress.Id == Guid.Empty)
+            {
+                progress.Id = Guid.NewGuid();
+            }
 
-        const string sql = @"
+            const string sql = @"
                 INSERT INTO user_word_progress
-                    (id, user_id, word_id, repetition, interval_days, ease_factor, next_review)
+                    (id, user_id, word_id, repetition, interval_hours, ease_factor, next_review)
                 VALUES
-                    (@Id, @User_Id, @Word_Id, @Repetition, @Interval_Days, @Ease_Factor, @Next_Review)
+                    (@Id, @User_Id, @Word_Id, @Repetition, @Interval_Hours, @Ease_Factor, @Next_Review)
                 ON CONFLICT (user_id, word_id) DO UPDATE
                 SET
-                    repetition    = EXCLUDED.repetition,
-                    interval_days = EXCLUDED.interval_days,
-                    ease_factor   = EXCLUDED.ease_factor,
-                    next_review   = EXCLUDED.next_review";
+                    repetition      = EXCLUDED.repetition,
+                    interval_hours  = EXCLUDED.interval_hours,
+                    ease_factor     = EXCLUDED.ease_factor,
+                    next_review     = EXCLUDED.next_review";
 
-        await conn.ExecuteAsync(sql, progress);
-    }
+            await conn.ExecuteAsync(sql, new
+            {
+                progress.Id,
+                progress.User_Id,
+                progress.Word_Id,
+                progress.Repetition,
+                progress.Interval_Hours,
+                progress.Ease_Factor,
+                progress.Next_Review
+            });
+        }
 
-    /// <summary>
-    /// Возвращает все записи прогресса для заданного пользователя.
-    /// </summary>
-    public async Task<IEnumerable<UserWordProgress>> GetByUserAsync(Guid userId)
-    {
-        using var conn = _factory.CreateConnection();
-        const string sql = @"
-        SELECT *
-        FROM user_word_progress
-        WHERE user_id = @User_Id";
-        return await conn.QueryAsync<UserWordProgress>(sql, new { User_Id = userId });
+        /// <summary>
+        /// Возвращает все записи прогресса для заданного пользователя.
+        /// </summary>
+        public async Task<IEnumerable<UserWordProgress>> GetByUserAsync(Guid userId)
+        {
+            using var conn = _factory.CreateConnection();
+            const string sql = @"
+                SELECT *
+                FROM user_word_progress
+                WHERE user_id = @User_Id";
+            return await conn.QueryAsync<UserWordProgress>(sql, new { User_Id = userId });
+        }
     }
 }

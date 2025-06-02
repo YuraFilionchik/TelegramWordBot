@@ -1205,7 +1205,7 @@ namespace TelegramWordBot
                 {
                     // Нашли перевод — получаем базовое слово
                     var foreignWord = await _wordRepo.GetWordById(match.Word_Id);
-                    if (foreignWord != null)
+                    if (foreignWord != null && foreignWord.Language_Id == current.Id)//чтобы не было ситуации, что пользователь ввёл перевод на родном языке, а в базе есть слово на другом иностранном
                     {
                         var has = await _userWordRepo.UserHasWordAsync(user.Id, foreignWord.Base_Text);
                         if (has)
@@ -1547,7 +1547,7 @@ namespace TelegramWordBot
             var progresses = (await _progressRepo.GetByUserAsync(user.Id)).ToList();
 
             // 3) Считаем fully learned (Repetition >= 3) и in progress
-            int fullyLearned = progresses.Count(p => p.Repetition >= 3);
+            int fullyLearned = progresses.Count(p => p.Repetition >= 8);
             int inProgress = totalWords - fullyLearned;
 
             // 4) Стартуем сборку текста
@@ -1576,9 +1576,9 @@ namespace TelegramWordBot
                     // Компактный формат: повторений, интервал, EF, дата следующего показа
                     sb.AppendLine(
                         $"{TelegramMessageHelper.EscapeHtml(text)} — " +
-                        $"реп.: {p.Repetition}, " +
-                        $"интервал: {p.Interval_Days} дн., " +
-                        $"EF: {Math.Round(p.Ease_Factor, 2)}, " +
+                        $"повторы.: {p.Repetition}, || " +
+                        $"интервал: {p.Interval_Hours} час., || " +
+                        $"коэф. легкости: {Math.Round(p.Ease_Factor, 2)}, || " +
                         $"след.: {p.Next_Review:yyyy-MM-dd}"
                     );
                 }
