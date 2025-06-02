@@ -251,6 +251,33 @@ public class TelegramMessageHelper
             replyMarkup: replyMarkup,
             cancellationToken: ct);
     }
+    public async Task<Message> SendText(
+    ChatId chatId,
+    string text,
+    string imageUrl,
+    InlineKeyboardMarkup replyMarkup,
+    CancellationToken ct = default)
+    {
+        if (!string.IsNullOrWhiteSpace(imageUrl))
+        {
+            return await _bot.SendPhoto(
+            chatId: chatId,
+            caption: text,
+            parseMode: ParseMode.Html,
+            replyMarkup: replyMarkup,
+            photo: InputFile.FromUri(imageUrl),
+            cancellationToken: ct);
+        }
+        else
+        {
+            return await _bot.SendMessage(
+                chatId: chatId,
+                text: text,
+                parseMode: ParseMode.Html,
+                replyMarkup: replyMarkup,
+                cancellationToken: ct);
+        }
+    }
 
     public async Task SendErrorAsync(ChatId chatId, string message, CancellationToken ct)
     {
@@ -271,6 +298,27 @@ public class TelegramMessageHelper
 
     public static string EscapeHtml(string input) =>
         input.Replace("&", "&amp;");//.Replace("<", "&lt;").Replace(">", "&gt;");
+
+
+    public async Task SendPhotoWithCaptionAsync(
+    ChatId chatId,
+    string filePath,
+    string caption,
+    ReplyMarkup replyMarkup,
+    CancellationToken ct)
+    {
+        await using var stream = File.OpenRead(filePath);
+        var inputFile = InputFile.FromStream(stream, Path.GetFileName(filePath));
+        await _bot.SendPhoto(
+            chatId: chatId,
+            photo: inputFile,
+            caption: caption,
+            parseMode: ParseMode.Html,
+            replyMarkup: replyMarkup,
+            cancellationToken: ct
+        );
+    }
+
 
     //private string EscapeHtml(string input) =>
     //    input.Replace("&", "&amp;")

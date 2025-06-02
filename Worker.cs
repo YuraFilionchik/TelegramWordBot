@@ -561,6 +561,7 @@ namespace TelegramWordBot
                 var translation = await _translationRepo.GetTranslationAsync(wordId, native_lang.Id);
                 // Обновляем прогресс (SM-2) точно так же, как в бинарном режиме
                 await UpdateLearningProgressAsync(user, wordId, success, ct);
+                var word = await _wordRepo.GetWordById(wordId);
                 if (success)
                 // Отвечаем на callback и сразу показываем следующее слово
                 await bot.AnswerCallbackQuery(
@@ -570,15 +571,14 @@ namespace TelegramWordBot
                 );
                 else
                 {
-                    var word = await _wordRepo.GetWordById(wordId);
                     //"❌ Неправильно!"
                     await bot.AnswerCallbackQuery(
                     callbackQueryId: callback.Id,
                     text: "❌ Неправильно!",
                     cancellationToken: ct
                 );
-                    _msg.SendWordCard(chatId, word.Base_Text, translation.Text, translation.Examples, null, null, ct);
                 }
+                    _msg.SendWordCard(chatId, word.Base_Text, translation.Text, translation.Examples, null, null, ct);
                     await SendNextLearningWordAsync(user, chatId, ct);
                 return;
             }
@@ -1067,11 +1067,13 @@ namespace TelegramWordBot
 
         private async Task SendNextLearningWordAsync(User user, long chatId, CancellationToken ct)
         {
+            var currentLang = await _languageRepo.GetByNameAsync(user.Current_Language!);
             var all = await _userWordRepo.GetWordsByUserId(user.Id);
+            all = all.Where(w => w.Language_Id == currentLang.Id);
             var due = new List<Word>();
 
             foreach (var w in all)
-            {
+            { 
                 var prog = await _progressRepo.GetAsync(user.Id, w.Id);
                 // Новые слова (prog==null) или просроченные
                 if (prog == null || prog.Next_Review <= DateTime.UtcNow)
@@ -1117,14 +1119,14 @@ namespace TelegramWordBot
                 .ToArray();
             // Разбиваем на 2 колонки
             var keyboard = new InlineKeyboardMarkup(buttons.Chunk(2));
-
-            // Отправляем сообщение
-            await _msg.SendText(
-                chatId: user.Telegram_Id,
-                text: $"Выберите правильный перевод для слова «{word.Base_Text}»:",
-                replyMarkup: keyboard,
-                ct: ct
-            );
+            var filePath = Path.Combine(AppContext.BaseDirectory, "Resources", "question_s.png");
+            string msg_text = $"Выберите правильный перевод для слова {Environment.NewLine}{Environment.NewLine}\t\t\t[\t\t" +
+                   word.Base_Text +"\t\t]" +Environment.NewLine;
+            if (File.Exists(filePath))
+                await _msg.SendPhotoWithCaptionAsync(user.Telegram_Id, filePath,
+                        msg_text, keyboard, ct);
+            else await _msg.SendText(user.Telegram_Id, msg_text, 
+                keyboard, ct);
         }
 
         private async Task ShowBinaryChoiceAsync(long chatId, Word word, CancellationToken ct)
@@ -1135,7 +1137,7 @@ namespace TelegramWordBot
                 new[] { InlineKeyboardButton.WithCallbackData("❌ Не вспомнил", $"learn:fail:{word.Id}") }
             });
 
-            await _botClient.SendMessage(chatId, $"Переведите слово: <b>{word.Base_Text}</b>", parseMode: ParseMode.Html, replyMarkup: inline, cancellationToken: ct);
+            await _botClient.SendMessage(chatId, $"Переведите слово: "+Environment.NewLine+"<b>{word.Base_Text}</b>", parseMode: ParseMode.Html, replyMarkup: inline, cancellationToken: ct);
         }
 
 
@@ -1560,7 +1562,7 @@ namespace TelegramWordBot
 
             // 5) Топ-10 самых «сложных» — сортируем по наименьшему числу повторений
             var hardest = progresses
-                .OrderBy(p => p.Repetition)
+                .OrderBy(p => p.Ease_Factor)
                 .Take(10)
                 .ToList();
 
