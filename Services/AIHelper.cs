@@ -29,39 +29,36 @@ namespace TelegramWordBot.Services
         public async Task<TranslatedTextClass> TranslateWordAsync(string srcText, string sourLangName, string targetLangName)
         {
             var oneWord = srcText.Split(' ').Count() == 1;
-            string prompt = $"You are an expert translator specializing in {sourLangName} and {targetLangName} . " +
-                $"Make all translations as accurately as possible.  ";
-                
-            if (oneWord)
-                prompt += @"Respond ONLY in JSON format like this, with no explanations or conversational text: 
-               {
-                {
-                    translations: [
-                    { { text: 'translation_1', example: 'example_sentence_1' } },
-                    { { text: 'translation_2_if_needed)', example: 'example_sentence_2' } },
-                    { { error: 'error_message_if_it_is' } }
-                                    ]
-                }
-            }" +
-            $" Give a translation from {sourLangName} to {targetLangName} of this originalWord - '{srcText}'. " ;
-            else
-                prompt += @"Respond ONLY in JSON format like this, with no explanations or conversational text: 
-               {
-                {
-                    translations: [
-                    { { text: 'translation' } },
-                    { { error: 'error_message_if_it_is' } }
-                                    ]
-                }
-            } "+
-            $"Translate from {sourLangName} to {targetLangName} the text = '{srcText}' ";
+            string prompt = $"You are an expert translator specializing in {sourLangName} and {targetLangName}. " +
+                $"Translate as accurately and naturally as possible. ";
 
-            prompt += @"// --- Important: Ensure the JSON is valid and contains only the requested fields. Your answer is content of json.---";
-            var response =  await AskWithGeminiAsync(prompt, false);
+            if (oneWord)
+                prompt += $@"Respond ONLY in JSON format, with no explanations or conversational text. 
+            {{
+              ""translations"": [
+                {{ ""originalText"": ""{srcText}"", ""translatedText"": ""..."", ""example"": ""..."", ""error"": null }},
+                {{ ""originalText"": ""{srcText}"", ""translatedText"": ""..."", ""example"": ""..."", ""error"": null }},
+                {{ ""originalText"": ""{srcText}"", ""translatedText"": null, ""example"": null, ""error"": ""error_message_if_any"" }}
+              ]
+            }}" +
+                        $" Give 1–2 most relevant translations from {sourLangName} to {targetLangName} for '{srcText}', each with a short example. If you cannot translate, provide error.";
+                        else
+                            prompt += $@"Respond ONLY in JSON format, with no explanations or conversational text.
+            {{
+              ""translations"": [
+                {{ ""originalText"": ""{srcText}"", ""translatedText"": ""..."", ""example"": null, ""error"": null }},
+                {{ ""originalText"": ""{srcText}"", ""translatedText"": null, ""example"": null, ""error"": ""error_message_if_any"" }}
+              ]
+            }}" +
+            $"Translate from {sourLangName} to {targetLangName} the phrase: '{srcText}'. If translation is not possible, provide error.";
+
+            prompt += @" // --- Important: Only return valid JSON in the specified format. Do not include explanations. ---";
+
+            var response = await AskWithGeminiAsync(prompt, false);
             TranslatedTextClass returnedTranslate = new TranslatedTextClass(response);
             return returnedTranslate;
-           // return await TranslateWithOpenAIAsync(prompt);
         }
+
 
         public async Task<string> SimpleTranslateText(string text, string targetLang)
         {
@@ -97,6 +94,13 @@ namespace TelegramWordBot.Services
             }
 
             return await AskWithGeminiAsync(prompt, true);
+        }
+
+        public async Task<TranslatedTextClass> GetWordByTheme(string theme, string targetLangName, string sourceLangName = "English")
+        {
+            string prompt = $"Provide a list of words related to the theme '{theme}' translated from {sourceLangName} to {targetLangName}.";
+            var response = await AskWithGeminiAsync(prompt, false);
+            return new TranslatedTextClass(response);
         }
 
         private async Task<string> TranslateWithOpenAIAsync(string prompt)

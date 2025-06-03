@@ -14,26 +14,19 @@ namespace TelegramWordBot.Services
 
     public class TranslatedItem
     {
-        public string? Text { get; set; }
+        public string? OriginalText { get; set; }
+        public string? TranslatedText { get; set; }
         public string? Example { get; set; }
         public string? Error { get; set; }
     }
 
     public class TranslatedTextClass
     {
-        /// <summary>
-        /// Множество пар (перевод → пример или ошибка на уровне элемента)
-        /// </summary>
         public List<TranslatedItem> Items { get; } = new();
-
-        /// <summary>
-        /// Общая ошибка парсинга (например, отсутствует массив translations)
-        /// </summary>
         public string? Error { get; private set; }
 
         public TranslatedTextClass(string json)
         {
-            // Очищаем обёртки
             json = json?.Trim().Trim('`') ?? "";
             var start = json.IndexOf('{');
             var end = json.LastIndexOf('}');
@@ -49,17 +42,14 @@ namespace TelegramWordBot.Services
                 using var doc = JsonDocument.Parse(json);
                 var root = doc.RootElement;
 
-                // Если есть верхнеуровневая ошибка — фиксируем и выходим
-                if (root.TryGetProperty("error", out var topError)
-                    && topError.ValueKind == JsonValueKind.String)
+                // Верхнеуровневая ошибка
+                if (root.TryGetProperty("error", out var topError) && topError.ValueKind == JsonValueKind.String)
                 {
                     Error = topError.GetString();
                     return;
                 }
 
-                // Парсим массив translations
-                if (!root.TryGetProperty("translations", out var arr)
-                    || arr.ValueKind != JsonValueKind.Array)
+                if (!root.TryGetProperty("translations", out var arr) || arr.ValueKind != JsonValueKind.Array)
                 {
                     Error = "Missing or invalid 'translations' array.";
                     return;
@@ -71,31 +61,34 @@ namespace TelegramWordBot.Services
 
                     var item = new TranslatedItem();
 
-                    // text
-                    if (el.TryGetProperty("text", out var txt)
-                        && txt.ValueKind == JsonValueKind.String)
+                    // OriginalText
+                    if (el.TryGetProperty("originalText", out var orig) && orig.ValueKind == JsonValueKind.String)
                     {
-                        item.Text = txt.GetString();
+                        item.OriginalText = orig.GetString();
                     }
 
-                    // example
-                    if (el.TryGetProperty("example", out var ex)
-                        && ex.ValueKind == JsonValueKind.String)
+                    // TranslatedText
+                    if (el.TryGetProperty("translatedText", out var trans) && trans.ValueKind == JsonValueKind.String)
+                    {
+                        item.TranslatedText = trans.GetString();
+                    }
+
+                    // Example
+                    if (el.TryGetProperty("example", out var ex) && ex.ValueKind == JsonValueKind.String)
                     {
                         var example = ex.GetString();
                         if (!string.IsNullOrWhiteSpace(example))
                             item.Example = example;
                     }
 
-                    // ошибка внутри элемента
-                    if (el.TryGetProperty("error", out var itErr)
-                        && itErr.ValueKind == JsonValueKind.String)
+                    // Error внутри элемента
+                    if (el.TryGetProperty("error", out var itErr) && itErr.ValueKind == JsonValueKind.String)
                     {
                         item.Error = itErr.GetString();
                     }
 
-                    // Добавляем, даже если только есть ошибка
-                    if (item.Text != null || item.Example != null || item.Error != null)
+                    // Добавляем элемент если есть хоть что-то
+                    if (item.OriginalText != null || item.TranslatedText != null || item.Example != null || item.Error != null)
                         Items.Add(item);
                 }
 
@@ -113,27 +106,7 @@ namespace TelegramWordBot.Services
                 Error = $"Unexpected error: {ex.Message}";
             }
         }
-
-        /// <summary>
-        /// Признак успешного разбора хотя бы одного перевода без ошибок
-        /// </summary>
-        public bool IsSuccess()
-            => string.IsNullOrEmpty(Error)
-               && Items.Exists(i => !string.IsNullOrEmpty(i.Text));
-
-        /// <summary>
-        /// Собирает все примеры в одну строку (при необходимости)
-        /// </summary>
-        public string GetAllExamples()
-        {
-            var sb = new StringBuilder();
-            foreach (var i in Items)
-            {
-                if (!string.IsNullOrEmpty(i.Example))
-                    sb.AppendLine(i.Example);
-            }
-            return sb.ToString();
-        }
     }
+
 
 }

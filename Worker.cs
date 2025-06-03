@@ -620,7 +620,7 @@ namespace TelegramWordBot
                 foreach (var idx in translationIndices)
                 {
                     var item = items[idx];
-                    var variant = item.Text!;
+                    var variant = item.TranslatedText!;
                     var examplesStr = !string.IsNullOrEmpty(item.Example)
                                         ? item.Example
                                         : null;
@@ -676,9 +676,9 @@ namespace TelegramWordBot
                 foreach (var idx in translationIndices)
                 {
                     var item = items[idx];
-                    if (string.IsNullOrEmpty(item.Text)) continue;
+                    if (string.IsNullOrEmpty(item.TranslatedText)) continue;
 
-                    savedTexts.Add(item.Text);
+                    savedTexts.Add(item.TranslatedText);
                     if (!string.IsNullOrEmpty(item.Example))
                         savedExamples.Add(item.Example);
 
@@ -687,7 +687,7 @@ namespace TelegramWordBot
                         Id = Guid.NewGuid(),
                         Word_Id = word.Id,
                         Language_Id = native!.Id,
-                        Text = item.Text,
+                        Text = item.TranslatedText,
                         Examples = item.Example
                     };
                     await _translationRepo.AddTranslationAsync(tr);
@@ -754,7 +754,7 @@ namespace TelegramWordBot
         private async Task ShowEditTranslationOptions(long chatId, TranslatedTextClass aiResult, CancellationToken ct)
         {
             var variants = aiResult.Items
-                .Select(t => t.Text)
+                .Select(t => t.TranslatedText)
                 .Where(t => !string.IsNullOrEmpty(t))
                 .Distinct()
                 .ToList();
@@ -842,7 +842,7 @@ namespace TelegramWordBot
             {
                 if (idx < 0 || idx >= items.Count) continue;
                 var item = items[idx];
-                var text = item.Text ?? string.Empty;
+                var text = item.TranslatedText ?? string.Empty;
                 var example = item.Example; // может быть null
 
                 var tr = new Translation
@@ -869,7 +869,7 @@ namespace TelegramWordBot
 
             // Формируем отображаемый перевод и пример (берём первый из выбранных)
             var firstText = translationIndices.Any() && translationIndices[0] < items.Count
-                ? items[translationIndices[0]].Text
+                ? items[translationIndices[0]].TranslatedText
                 : string.Empty;
             var firstExample = translationIndices.Any() && translationIndices[0] < items.Count
                 ? items[translationIndices[0]].Example
@@ -1237,7 +1237,7 @@ namespace TelegramWordBot
             // Получаем список вариантов и примеров из Items
             var items = aiResult.Items;
             var variants = items
-                .Select(i => i.Text)
+                .Select(i => i.TranslatedText)
                 .Where(t => !string.IsNullOrEmpty(t))
                 .ToList();
             var examples = items
@@ -1273,7 +1273,7 @@ namespace TelegramWordBot
         private async Task ShowTranslationOptions(long chatId, TranslatedTextClass aiResult, CancellationToken ct)
         {
             var variants = aiResult.Items
-                .Select(i => i.Text ?? string.Empty)
+                .Select(i => i.TranslatedText ?? string.Empty)
                 .ToList();
 
             var rows = variants
