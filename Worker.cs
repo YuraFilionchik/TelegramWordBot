@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -1132,12 +1133,27 @@ namespace TelegramWordBot
         private async Task ShowBinaryChoiceAsync(long chatId, Word word, CancellationToken ct)
         {
             var inline = new InlineKeyboardMarkup(new[]
-                        {
+            {
                 new[] { InlineKeyboardButton.WithCallbackData("✅ Вспомнил", $"learn:rem:{word.Id}") },
                 new[] { InlineKeyboardButton.WithCallbackData("❌ Не вспомнил", $"learn:fail:{word.Id}") }
             });
 
-            await _botClient.SendMessage(chatId, $"Переведите слово: "+Environment.NewLine+"<b>{word.Base_Text}</b>", parseMode: ParseMode.Html, replyMarkup: inline, cancellationToken: ct);
+            // Ensure word.Base_Text is escaped before including in HTML
+            string escapedWordBaseText = TelegramMessageHelper.EscapeHtml(word.Base_Text ?? string.Empty);
+            string msg_text = $"Переведите слово {Environment.NewLine}{Environment.NewLine}			[		<b>{escapedWordBaseText}</b>		]{Environment.NewLine}";
+
+            var filePath = Path.Combine(AppContext.BaseDirectory, "Resources", "question_s.png");
+
+            if (File.Exists(filePath))
+            {
+                await _msg.SendPhotoWithCaptionAsync(chatId, filePath, msg_text, inline, ct);
+            }
+            else
+            {
+                //Use _botClient.SendMessage for consistency with previous version, or _msg.SendText if that's preferred.
+                //The original instruction implies using _msg.SendText, so we'll use that.
+                await _msg.SendText(chatId, msg_text, inline, (int)ParseMode.Html, ct);
+            }
         }
 
 
