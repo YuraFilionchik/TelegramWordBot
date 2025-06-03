@@ -1573,16 +1573,23 @@ namespace TelegramWordBot
                 {
                     // Получаем текст слова
                     var word = await _wordRepo.GetWordById(p.Word_Id);
-                    var text = word?.Base_Text ?? "[?]";
+                    var wordText = word?.Base_Text; // Keep it nullable for now
 
-                    // Компактный формат: повторений, интервал, EF, дата следующего показа
-                    sb.AppendLine(
-                        $"{TelegramMessageHelper.EscapeHtml(text)} — " +
-                        $"повторы.: {p.Repetition}, || " +
-                        $"интервал: {p.Interval_Hours} час., || " +
-                        $"коэф. легкости: {Math.Round(p.Ease_Factor, 2)}, || " +
-                        $"след.: {p.Next_Review:yyyy-MM-dd}"
-                    );
+                    // Новый формат:
+                    // Word: [Word Text]
+                    //   - Repetitions: X
+                    //   - Interval: Y hours
+                    //   - Ease Factor: Z
+                    //   - Next Review: YYYY-MM-DD
+
+                    // Handle potential null word or Base_Text
+                    var displayWordText = !string.IsNullOrEmpty(wordText) ? TelegramMessageHelper.EscapeHtml(wordText) : "[Unknown Word]";
+
+                    sb.AppendLine($"Word: {displayWordText}");
+                    sb.AppendLine($"  - Repetitions: {p.Repetition}");
+                    sb.AppendLine($"  - Interval: {p.Interval_Hours} hours");
+                    sb.AppendLine($"  - Ease Factor: {Math.Round(p.Ease_Factor, 2)}");
+                    sb.AppendLine($"  - Next Review: {p.Next_Review:yyyy-MM-dd}");
                 }
             }
             else
