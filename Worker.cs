@@ -1152,7 +1152,7 @@ namespace TelegramWordBot
             {
                 //Use _botClient.SendMessage for consistency with previous version, or _msg.SendText if that's preferred.
                 //The original instruction implies using _msg.SendText, so we'll use that.
-                await _msg.SendText(chatId, msg_text, inline, (int)ParseMode.Html, ct);
+                await _msg.SendText(chatId, msg_text, inline, ct);
             }
         }
 
