@@ -106,6 +106,11 @@ namespace TelegramWordBot.Services
                 Error = $"Unexpected error: {ex.Message}";
             }
         }
+
+        public bool IsSuccess()
+        {
+             return string.IsNullOrEmpty(Error) && Items.Count > 0; 
+        }
     }
 
 

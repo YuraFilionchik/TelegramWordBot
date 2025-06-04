@@ -553,6 +553,7 @@ namespace TelegramWordBot
                 return;
             }
 
+            // --- Режим обучения: множественный выбор ---
             if (data.StartsWith("mc:"))
             {
                 // mc:correct:{wordId} или mc:wrong:{wordId}
@@ -1063,7 +1064,7 @@ namespace TelegramWordBot
             await _progressRepo.InsertOrUpdateAsync(prog);
 
             //отправка карточки и переход к next
-           // await SendNextLearningWordAsync(user, user.Telegram_Id, ct);
+           await SendNextLearningWordAsync(user, user.Telegram_Id, ct);
         }
 
         private async Task SendNextLearningWordAsync(User user, long chatId, CancellationToken ct)
