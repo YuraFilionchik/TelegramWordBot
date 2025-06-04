@@ -80,4 +80,12 @@ public class TranslationRepository
         WHERE word_id = @Word_Id";
         await conn.ExecuteAsync(sql, new { Word_Id = wordId.Value });
     }
+
+    internal async Task<Translation> GetTranslationAsync(Guid wordId, string langName)
+    {
+        if (string.IsNullOrEmpty(langName)) throw new ArgumentException("Language name cannot be null or empty.", nameof(langName));
+        using var conn = _factory.CreateConnection();
+        var sql = "SELECT * FROM translations WHERE word_id = @Word_Id AND language_id = (SELECT id FROM languages WHERE name = @LangName) LIMIT 1";
+        return await conn.QueryFirstOrDefaultAsync<Translation>(sql, new { Word_Id = wordId, LangName = langName });
+    }
 }
