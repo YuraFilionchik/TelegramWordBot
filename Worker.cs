@@ -1062,9 +1062,18 @@ namespace TelegramWordBot
 
             _sr.UpdateProgress(prog, success);
             await _progressRepo.InsertOrUpdateAsync(prog);
-
+            var word = await _wordRepo.GetWordById(wordId);
+            var translation = await _translationRepo.GetTranslationAsync(wordId, user.Native_Language!);
+            if (success)
+            {
+                await _msg.SendSuccessAsync(user.Telegram_Id, $"Верно!  {word.Base_Text} = {translation.Text}", ct);
+            }
+            else
+            {
+                await _msg.SendErrorAsync(user.Telegram_Id, $"Неправильно! {word.Base_Text} = {translation.Text}", ct);
+            }
             //отправка карточки и переход к next
-           await SendNextLearningWordAsync(user, user.Telegram_Id, ct);
+            await SendNextLearningWordAsync(user, user.Telegram_Id, ct);
         }
 
         private async Task SendNextLearningWordAsync(User user, long chatId, CancellationToken ct)
