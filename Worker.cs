@@ -32,7 +32,7 @@ namespace TelegramWordBot
         private readonly Dictionary<long, List<int>> _selectedTranslations = new();
         private readonly Dictionary<long, List<int>> _selectedExamples = new();
         private readonly Dictionary<long, string> _pendingOriginalText = new();
-        private readonly Dictionary<long, bool> _originalIsNative = new();
+        private readonly Dictionary<long, bool> _isNativeInput = new();
         private readonly SpacedRepetitionService _sr;
         // Для режима редактирования:
         private readonly Dictionary<long, Guid> _pendingEditWordId = new();
@@ -505,7 +505,10 @@ namespace TelegramWordBot
             {
                 if (data == "selectExDone")
                 {
-                    await FinalizeAddWord(user!, _inputLanguage[chatId], ct);
+                    if (_isNativeInput[chatId])
+                        await FinalizeAddWord(user!, null, ct);
+                    else
+                        await FinalizeAddWord(user!, _inputLanguage[chatId], ct);
                 }
                 else
                 {
@@ -592,7 +595,7 @@ namespace TelegramWordBot
         /// <summary>
         /// Сохраняет в БД новый Word + выбранные Translations + Examples.
         /// </summary>
-        private async Task FinalizeAddWord(User user, Language inputLang, CancellationToken ct)
+        private async Task FinalizeAddWord(User user, Language? inputLang, CancellationToken ct)
         {
             var chatId = user.Telegram_Id;
             if (!_pendingOriginalText.TryGetValue(chatId, out var originalText))
@@ -600,22 +603,23 @@ namespace TelegramWordBot
                 await _msg.SendErrorAsync(chatId, "Не найдено слово для сохранения", ct);
                 return;
             }
-            bool isNative = _originalIsNative[chatId];
+            bool isNative = _isNativeInput[chatId];
             var aiResult = _translationCandidates[chatId]; // TranslatedTextClass
             var items = aiResult.Items;
 
             // Индексы выбранных переводов
             var translationIndices = _selectedTranslations[chatId];
-
+            var examplesIndices = _selectedExamples[chatId];
             // Очистка временных данных
             _pendingOriginalText.Remove(chatId);
-            _originalIsNative.Remove(chatId);
+            _isNativeInput.Remove(chatId);
             _translationCandidates.Remove(chatId);
             _selectedTranslations.Remove(chatId);
             _selectedExamples.Remove(chatId);
 
             var native = await _languageRepo.GetByNameAsync(user.Native_Language);
-            var current = inputLang;
+
+            var current = inputLang ?? await _languageRepo.GetByNameAsync(user.Current_Language);
 
             if (isNative)
             {
@@ -624,9 +628,9 @@ namespace TelegramWordBot
                 {
                     var item = items[idx];
                     var variant = item.TranslatedText!;
-                    var examplesStr = !string.IsNullOrEmpty(item.Example)
-                                        ? item.Example
-                                        : null;
+                    //func to find example passing variant
+
+                    var examplesStr = findExamplesByWord(aiResult, variant, examplesIndices);
 
                     var word = new Word
                     {
@@ -717,6 +721,27 @@ namespace TelegramWordBot
                     ct: ct
                 );
             }
+        }
+
+        private string findExamplesByWord(TranslatedTextClass aiResult, string variant, List<int> examplesIndices)
+        {
+            string result = string.Empty;
+            for (int i = 0; i < aiResult.Items.Count; i++)
+            {
+                var item = aiResult.Items[i];
+                // Если перевод совпадает с вариантом и индекс в списке примеров
+                if (item.TranslatedText == variant && examplesIndices.Contains(i))
+                {
+                    result+= item.Example ?? string.Empty;
+                }
+
+                // Если пример содержит вариант и индекс в списке примеров
+                if (item.Example!= null && item.Example.Contains(variant) && examplesIndices.Contains(i))
+                {
+                    result+= item.Example ?? string.Empty;
+                }
+            }
+            return result;
         }
 
         /// <summary>
@@ -1183,7 +1208,7 @@ namespace TelegramWordBot
             var native = await _languageRepo.GetByNameAsync(user.Native_Language);
             var current = await _languageRepo.GetByNameAsync(user.Current_Language!);
             var userLangs = await _userLangRepository.GetUserLanguagesAsync(user.Id);
-            userLangs.Append(native);
+            userLangs = userLangs.Append(native);
             if (native == null || current == null)
             {
                 await _msg.SendErrorAsync(chatId, "Языки не настроены", ct);
@@ -1256,8 +1281,8 @@ namespace TelegramWordBot
 
             // 3) Иначе — запускаем AI-перевод
             var aiResult = isNativeInput
-                ? await _ai.TranslateWordAsync(text, native.Name, inputLang.Name)
-                : await _ai.TranslateWordAsync(text, inputLang.Name, native.Name);
+                ? await _ai.TranslateWordAsync(text, native.Name, current.Name) //родной → иностранный
+                : await _ai.TranslateWordAsync(text, inputLang.Name, native.Name);// иностранный(не только текущий в изучении) → родной
             if (aiResult == null || !aiResult.IsSuccess())
             {
                 await _msg.SendErrorAsync(chatId, "Ошибка AI-перевода", ct);
@@ -1279,7 +1304,7 @@ namespace TelegramWordBot
             if (variants.Count == 1 && examples.Count <= 1)
             {
                 _pendingOriginalText[chatId] = text;
-                _originalIsNative[chatId] = isNativeInput;
+                _isNativeInput[chatId] = isNativeInput;
                 _translationCandidates[chatId] = aiResult;
                 _selectedTranslations[chatId] = new List<int> { 0 };
                 _selectedExamples[chatId] = examples.Count == 1 ? new List<int> { 0 } : new List<int>();
@@ -1289,7 +1314,7 @@ namespace TelegramWordBot
             }
             _inputLanguage[chatId] = inputLang;
             _pendingOriginalText[chatId] = text;
-            _originalIsNative[chatId] = isNativeInput;
+            _isNativeInput[chatId] = isNativeInput;
             _translationCandidates[chatId] = aiResult;
             _selectedTranslations[chatId] = new List<int> { 0 };
             _selectedExamples[chatId] = new List<int>();
@@ -1615,7 +1640,7 @@ namespace TelegramWordBot
                     // Handle potential null word or Base_Text
                     var displayWordText = !string.IsNullOrEmpty(wordText) ? TelegramMessageHelper.EscapeHtml(wordText) : "[Unknown Word]";
 
-                    sb.AppendLine($"Word: {displayWordText}");
+                    sb.AppendLine($"-=| {displayWordText} |=-");
                     sb.AppendLine($"  - Repetitions: {p.Repetition}");
                     sb.AppendLine($"  - Interval: {p.Interval_Hours} hours");
                     sb.AppendLine($"  - Ease Factor: {Math.Round(p.Ease_Factor, 2)}");

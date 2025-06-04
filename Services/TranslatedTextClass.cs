@@ -20,10 +20,18 @@ namespace TelegramWordBot.Services
         public string? Error { get; set; }
     }
 
+
+
     public class TranslatedTextClass
     {
         public List<TranslatedItem> Items { get; } = new();
         public string? Error { get; private set; }
+        public static string JSONPropertyTranslatedText = "translatedText";
+        public static string JSONPropertyOriginalText = "originalText";
+        public static string JSONPropertyTranslations = "translations";
+        public static string JSONPropertyExample = "example";
+        public static string JSONPropertyError = "error";
+
 
         public TranslatedTextClass(string json)
         {
@@ -43,13 +51,13 @@ namespace TelegramWordBot.Services
                 var root = doc.RootElement;
 
                 // Верхнеуровневая ошибка
-                if (root.TryGetProperty("error", out var topError) && topError.ValueKind == JsonValueKind.String)
+                if (root.TryGetProperty(JSONPropertyError, out var topError) && topError.ValueKind == JsonValueKind.String)
                 {
                     Error = topError.GetString();
                     return;
                 }
 
-                if (!root.TryGetProperty("translations", out var arr) || arr.ValueKind != JsonValueKind.Array)
+                if (!root.TryGetProperty(JSONPropertyTranslations, out var arr) || arr.ValueKind != JsonValueKind.Array)
                 {
                     Error = "Missing or invalid 'translations' array.";
                     return;
@@ -62,19 +70,19 @@ namespace TelegramWordBot.Services
                     var item = new TranslatedItem();
 
                     // OriginalText
-                    if (el.TryGetProperty("originalText", out var orig) && orig.ValueKind == JsonValueKind.String)
+                    if (el.TryGetProperty(JSONPropertyOriginalText, out var orig) && orig.ValueKind == JsonValueKind.String)
                     {
                         item.OriginalText = orig.GetString();
                     }
 
                     // TranslatedText
-                    if (el.TryGetProperty("translatedText", out var trans) && trans.ValueKind == JsonValueKind.String)
+                    if (el.TryGetProperty(JSONPropertyTranslatedText, out var trans) && trans.ValueKind == JsonValueKind.String)
                     {
                         item.TranslatedText = trans.GetString();
                     }
 
                     // Example
-                    if (el.TryGetProperty("example", out var ex) && ex.ValueKind == JsonValueKind.String)
+                    if (el.TryGetProperty(JSONPropertyExample, out var ex) && ex.ValueKind == JsonValueKind.String)
                     {
                         var example = ex.GetString();
                         if (!string.IsNullOrWhiteSpace(example))
@@ -82,7 +90,7 @@ namespace TelegramWordBot.Services
                     }
 
                     // Error внутри элемента
-                    if (el.TryGetProperty("error", out var itErr) && itErr.ValueKind == JsonValueKind.String)
+                    if (el.TryGetProperty(JSONPropertyError, out var itErr) && itErr.ValueKind == JsonValueKind.String)
                     {
                         item.Error = itErr.GetString();
                     }

@@ -35,19 +35,19 @@ namespace TelegramWordBot.Services
             if (oneWord)
                 prompt += $@"Respond ONLY in JSON format, with no explanations or conversational text. 
             {{
-              ""translations"": [
-                {{ ""originalText"": ""{srcText}"", ""translatedText"": ""..."", ""example"": ""..."", ""error"": null }},
-                {{ ""originalText"": ""{srcText}"", ""translatedText"": ""..."", ""example"": ""..."", ""error"": null }},
-                {{ ""originalText"": ""{srcText}"", ""translatedText"": null, ""example"": null, ""error"": ""error_message_if_any"" }}
+              ""{TranslatedTextClass.JSONPropertyTranslations}"": [
+                {{ ""{TranslatedTextClass.JSONPropertyOriginalText}"": ""{srcText}"", ""{TranslatedTextClass.JSONPropertyTranslatedText}"": ""..."", ""{TranslatedTextClass.JSONPropertyExample}"": ""..."", ""{TranslatedTextClass.JSONPropertyError}"": null }},
+                {{ ""{TranslatedTextClass.JSONPropertyOriginalText}"": ""{srcText}"", ""{TranslatedTextClass.JSONPropertyTranslatedText}"": ""..."", ""{TranslatedTextClass.JSONPropertyExample}"": ""..."", ""{TranslatedTextClass.JSONPropertyError}"": null }},
+                {{ ""{TranslatedTextClass.JSONPropertyOriginalText}"": ""{srcText}"", ""{TranslatedTextClass.JSONPropertyTranslatedText}"": null, ""{TranslatedTextClass.JSONPropertyExample}"": null, ""{TranslatedTextClass.JSONPropertyError}"": ""error_message_if_any"" }}
               ]
             }}" +
                         $" Give 1–2 most relevant translations from {sourLangName} to {targetLangName} for '{srcText}', each with a short example. If you cannot translate, provide error.";
                         else
                             prompt += $@"Respond ONLY in JSON format, with no explanations or conversational text.
             {{
-              ""translations"": [
-                {{ ""originalText"": ""{srcText}"", ""translatedText"": ""..."", ""example"": null, ""error"": null }},
-                {{ ""originalText"": ""{srcText}"", ""translatedText"": null, ""example"": null, ""error"": ""error_message_if_any"" }}
+              ""{TranslatedTextClass.JSONPropertyTranslations}"": [
+                {{ ""{TranslatedTextClass.JSONPropertyOriginalText}"": ""{srcText}"", ""{TranslatedTextClass.JSONPropertyTranslatedText}"": ""..."", ""{TranslatedTextClass.JSONPropertyExample}"": null, ""{TranslatedTextClass.JSONPropertyError}"": null }},
+                {{ ""{TranslatedTextClass.JSONPropertyOriginalText}"": ""{srcText}"", ""{TranslatedTextClass.JSONPropertyTranslatedText}"": null, ""{TranslatedTextClass.JSONPropertyExample}"": null, ""{TranslatedTextClass.JSONPropertyError}"": ""error_message_if_any"" }}
               ]
             }}" +
             $"Translate from {sourLangName} to {targetLangName} the phrase: '{srcText}'. If translation is not possible, provide error.";
@@ -87,7 +87,7 @@ namespace TelegramWordBot.Services
             else
             {
                 var langsString = string.Join(", ", languages.Select(x => x.Name));
-                prompt = $"Try to determine one language from ( {langsString} ) of the following text: '{text}'." +
+                prompt = $"Determine one language from ( {langsString} ) of the following text: '{text}'." +
                 $" Give your answer strictly in the format of one Word with a capital letter in english. " +
                 $"If you can not do it - return only 'error'";
 
@@ -96,9 +96,17 @@ namespace TelegramWordBot.Services
             return await AskWithGeminiAsync(prompt, true);
         }
 
-        public async Task<TranslatedTextClass> GetWordByTheme(string theme, string targetLangName, string sourceLangName = "English")
+        public async Task<TranslatedTextClass> GetWordByTheme(string theme, int count,string targetLangName, string sourceLangName = "English")
         {
-            string prompt = $"Provide a list of words related to the theme '{theme}' translated from {sourceLangName} to {targetLangName}.";
+            string prompt = $"Provide a list of {count} words related to the theme '{theme}' translated from {sourceLangName} to {targetLangName}.";
+            prompt += $@"Respond ONLY in JSON format, with no explanations or conversational text. 
+            {{
+              ""{TranslatedTextClass.JSONPropertyTranslatedText}"": [
+                {{ ""{TranslatedTextClass.JSONPropertyOriginalText}"": ""{sourceLangName}_word"", ""{TranslatedTextClass.JSONPropertyTranslatedText}"": ""{targetLangName}_word"", ""{TranslatedTextClass.JSONPropertyExample}"": ""..."", ""{TranslatedTextClass.JSONPropertyError}"": null }},
+                ...
+                {{ ""{TranslatedTextClass.JSONPropertyOriginalText}"": ""{sourceLangName}_word"", ""{TranslatedTextClass.JSONPropertyTranslatedText}"": ""{targetLangName}_word"", ""{TranslatedTextClass.JSONPropertyExample}"": ""..."", ""{TranslatedTextClass.JSONPropertyError}"": null }},
+              ]
+            }}";
             var response = await AskWithGeminiAsync(prompt, false);
             return new TranslatedTextClass(response);
         }
