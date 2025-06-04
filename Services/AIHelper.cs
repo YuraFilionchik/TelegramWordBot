@@ -72,7 +72,7 @@ namespace TelegramWordBot.Services
         public async Task<string>GetLangName(string text)
         {
             string prompt = $"Extract the language name from the following text: '{text}'." +
-                $" Give your answer strictly in the format of one originalWord with a capital letter in english. " +
+                $" Give your answer strictly in the format of one Word with a capital letter in english. " +
                 $"If you can not do it - return only 'error'";
             return await AskWithGeminiAsync(prompt, true);
         }
@@ -88,7 +88,7 @@ namespace TelegramWordBot.Services
             {
                 var langsString = string.Join(", ", languages.Select(x => x.Name));
                 prompt = $"Try to determine one language from ( {langsString} ) of the following text: '{text}'." +
-                $" Give your answer strictly in the format of one originalWord with a capital letter in english. " +
+                $" Give your answer strictly in the format of one Word with a capital letter in english. " +
                 $"If you can not do it - return only 'error'";
 
             }

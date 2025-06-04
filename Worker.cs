@@ -27,6 +27,7 @@ namespace TelegramWordBot
         private readonly IAIHelper _ai;
         private readonly TelegramMessageHelper _msg;
         private readonly Dictionary<long, string> _userStates = new();
+        private readonly Dictionary<long, Language> _inputLanguage = new();
         private readonly Dictionary<long, TranslatedTextClass> _translationCandidates = new();
         private readonly Dictionary<long, List<int>> _selectedTranslations = new();
         private readonly Dictionary<long, List<int>> _selectedExamples = new();
@@ -504,7 +505,7 @@ namespace TelegramWordBot
             {
                 if (data == "selectExDone")
                 {
-                    await FinalizeAddWord(user!, ct);
+                    await FinalizeAddWord(user!, _inputLanguage[chatId], ct);
                 }
                 else
                 {
@@ -591,7 +592,7 @@ namespace TelegramWordBot
         /// <summary>
         /// Сохраняет в БД новый Word + выбранные Translations + Examples.
         /// </summary>
-        private async Task FinalizeAddWord(User user, CancellationToken ct)
+        private async Task FinalizeAddWord(User user, Language inputLang, CancellationToken ct)
         {
             var chatId = user.Telegram_Id;
             if (!_pendingOriginalText.TryGetValue(chatId, out var originalText))
@@ -614,7 +615,7 @@ namespace TelegramWordBot
             _selectedExamples.Remove(chatId);
 
             var native = await _languageRepo.GetByNameAsync(user.Native_Language);
-            var current = await _languageRepo.GetByNameAsync(user.Current_Language!);
+            var current = inputLang;
 
             if (isNative)
             {
@@ -1181,6 +1182,8 @@ namespace TelegramWordBot
             var chatId = user.Telegram_Id;
             var native = await _languageRepo.GetByNameAsync(user.Native_Language);
             var current = await _languageRepo.GetByNameAsync(user.Current_Language!);
+            var userLangs = await _userLangRepository.GetUserLanguagesAsync(user.Id);
+            userLangs.Append(native);
             if (native == null || current == null)
             {
                 await _msg.SendErrorAsync(chatId, "Языки не настроены", ct);
@@ -1188,7 +1191,7 @@ namespace TelegramWordBot
             }
 
             // 1) Определяем язык ввода
-            var inputLangName = await _ai.GetLangName(text);
+            var inputLangName = await _ai.GetLangName(text, userLangs);
             if (string.IsNullOrWhiteSpace(inputLangName) || inputLangName.ToLower() == "error")
             {
                 await _msg.SendErrorAsync(chatId, "Не удалось определить язык слова", ct);
@@ -1206,7 +1209,7 @@ namespace TelegramWordBot
             if (!isNativeInput)
             {
                 // Пользователь ввёл слово на изучаемом языке
-                var existingWord = await _wordRepo.GetByTextAndLanguageAsync(text, current.Id);
+                var existingWord = await _wordRepo.GetByTextAndLanguageAsync(text, inputLang.Id);
                 if (existingWord != null)
                 {
                     // Слово есть в базе — проверим у пользователя
@@ -1219,7 +1222,8 @@ namespace TelegramWordBot
                     {
                         // Привязываем к пользователю
                         await _userWordRepo.AddUserWordAsync(user.Id, existingWord.Id);
-                        await _msg.SendSuccessAsync(chatId, $"«{text}» добавлено в ваш словарь.", ct);
+                        Translation? translation = await _translationRepo.GetTranslationAsync(existingWord.Id, inputLang.Id);
+                        await _msg.SendSuccessAsync(chatId, $"«{text} - {translation?.Text}» добавлено в ваш словарь.", ct);
                     }
                     return;
                 }
@@ -1252,8 +1256,8 @@ namespace TelegramWordBot
 
             // 3) Иначе — запускаем AI-перевод
             var aiResult = isNativeInput
-                ? await _ai.TranslateWordAsync(text, native.Name, current.Name)
-                : await _ai.TranslateWordAsync(text, current.Name, native.Name);
+                ? await _ai.TranslateWordAsync(text, native.Name, inputLang.Name)
+                : await _ai.TranslateWordAsync(text, inputLang.Name, native.Name);
             if (aiResult == null || !aiResult.IsSuccess())
             {
                 await _msg.SendErrorAsync(chatId, "Ошибка AI-перевода", ct);
@@ -1280,10 +1284,10 @@ namespace TelegramWordBot
                 _selectedTranslations[chatId] = new List<int> { 0 };
                 _selectedExamples[chatId] = examples.Count == 1 ? new List<int> { 0 } : new List<int>();
 
-                await FinalizeAddWord(user, ct);
+                await FinalizeAddWord(user, inputLang, ct);
                 return;
             }
-
+            _inputLanguage[chatId] = inputLang;
             _pendingOriginalText[chatId] = text;
             _originalIsNative[chatId] = isNativeInput;
             _translationCandidates[chatId] = aiResult;
