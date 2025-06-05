@@ -27,8 +27,7 @@ builder.Services.AddSingleton<UserLanguageRepository>();
 builder.Services.AddSingleton<TelegramMessageHelper>();
 builder.Services.AddSingleton<SpacedRepetitionService>();
 builder.Services.AddSingleton<WordImageRepository>();
-builder.Services.AddSingleton<IImageService, ImageService>();
-builder.Services.AddHttpClient();
+builder.Services.AddHttpClient<IImageService, ImageService>();
 
 
 
