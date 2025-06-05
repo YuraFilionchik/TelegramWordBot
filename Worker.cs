@@ -144,6 +144,9 @@ namespace TelegramWordBot
                         case "awaiting_currentlanguage":
                             await ProcessChangeCurrentLanguage(user, text, ct);
                             break;
+                        case "awaiting_editsearch":
+                            await ProcessEditSearch(user, text, ct);
+                            break;
                     }
                     return;
                 }
@@ -371,6 +374,31 @@ namespace TelegramWordBot
             }
         }
 
+        private async Task ShowMyWordsForEdit(long chatId, User user, CancellationToken ct)
+        {
+            var native = await _languageRepo.GetByNameAsync(user.Native_Language);
+            var langs = (await _userLangRepository.GetUserLanguagesAsync(user.Id)).ToList();
+
+            foreach (var lang in langs)
+            {
+                var words = (await _userWordRepo.GetWordsByUserId(user.Id, lang.Id)).ToList();
+                foreach (var w in words)
+                {
+                    var tr = await _translationRepo.GetTranslationAsync(w.Id, native.Id);
+                    var imgPath = await GetImagePathAsync(w);
+                    await _msg.SendWordCardWithEdit(
+                        chatId: new ChatId(chatId),
+                        word: w.Base_Text,
+                        translation: tr?.Text ?? string.Empty,
+                        wordId: w.Id,
+                        example: tr?.Examples,
+                        category: lang.Name,
+                        imageUrl: imgPath,
+                        ct: ct);
+                }
+            }
+        }
+
 
         private Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken ct)
         {
@@ -425,6 +453,10 @@ namespace TelegramWordBot
                     var favText = parts[1];
                     await _msg.SendSuccessAsync(chatId, $"Слово '{favText}' добавлено в избранное", ct);
                     break;
+                case "edit":
+                    var editId = Guid.Parse(parts[1]);
+                    await ProcessEditWord(user, editId, ct);
+                    break;
                 case "set_native":
                     _userStates[userTelegramId] = "awaiting_nativelanguage";
                     await _msg.SendInfoAsync(chatId, "Введите ваш родной язык:", ct);
@@ -449,6 +481,10 @@ namespace TelegramWordBot
                     break;
                 case "switch_lang":
                     await ProcessSwitchLanguage(callback, chatId, user, parts, ct);
+                    break;
+                case "startedit":
+                    var sid = Guid.Parse(parts[1]);
+                    await ProcessEditWord(user, sid, ct);
                     break;
                 case "prev":
                 case "next":
@@ -664,15 +700,15 @@ namespace TelegramWordBot
 
                     await _msg.SendSuccessAsync(chatId, $"Добавлено «{word.Base_Text}»", ct);
                     var imgPath = await GetImagePathAsync(word);
-                    await _msg.SendWordCard(
+                    await _msg.SendWordCardWithEdit(
                         chatId: new ChatId(chatId),
                         word: word.Base_Text,
                         translation: originalText,
+                        wordId: word.Id,
                         example: examplesStr,
                         category: current.Name,
                         imageUrl: imgPath,
-                        ct: ct
-                    );
+                        ct: ct);
                 }
             }
             else
@@ -722,15 +758,15 @@ namespace TelegramWordBot
 
                 await _msg.SendSuccessAsync(chatId, $"Добавлено «{word.Base_Text}»", ct);
                 var imgPath = await GetImagePathAsync(word);
-                await _msg.SendWordCard(
+                await _msg.SendWordCardWithEdit(
                     chatId: new ChatId(chatId),
                     word: word.Base_Text,
                     translation: combinedTranslations,
+                    wordId: word.Id,
                     example: combinedExamples,
                     category: current.Name,
                     imageUrl: imgPath,
-                    ct: ct
-                );
+                    ct: ct);
             }
         }
 
@@ -933,15 +969,45 @@ namespace TelegramWordBot
 
             await _msg.SendSuccessAsync(chatId, $"Обновлено «{word!.Base_Text}»", ct);
             var imgPath = await GetImagePathAsync(word);
-            await _msg.SendWordCard(
+            await _msg.SendWordCardWithEdit(
                 chatId: new ChatId(chatId),
                 word: word.Base_Text,
                 translation: firstText ?? string.Empty,
+                wordId: word.Id,
                 example: firstExample,
                 category: current!.Name,
                 imageUrl: imgPath,
-                ct: ct
-            );
+                ct: ct);
+        }
+
+        private async Task ProcessEditSearch(User user, string query, CancellationToken ct)
+        {
+            var chatId = user.Telegram_Id;
+            query = query.Trim();
+            if (string.IsNullOrEmpty(query))
+            {
+                await _msg.SendErrorAsync(chatId, "Пустой запрос", ct);
+                return;
+            }
+
+            var words = (await _userWordRepo.GetWordsByUserId(user.Id))
+                .Where(w => w.Base_Text.Contains(query, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            if (!words.Any())
+            {
+                await _msg.SendErrorAsync(chatId, "Ничего не найдено", ct);
+                return;
+            }
+
+            var buttons = words.Select(w =>
+                new[] { InlineKeyboardButton.WithCallbackData(w.Base_Text, $"startedit:{w.Id}") }).ToList();
+
+            await _botClient.SendMessage(
+                chatId: chatId,
+                text: "Выберите слово:",
+                replyMarkup: new InlineKeyboardMarkup(buttons),
+                cancellationToken: ct);
         }
 
 
@@ -1074,7 +1140,23 @@ namespace TelegramWordBot
             switch (command.ToLowerInvariant())
             {
                 case "📚 мои слова":
+                    await KeyboardFactory.ShowMyWordsMenuAsync(_botClient, chatId, ct);
+                    return (true, string.Empty);
+
+                case "показать мои слова":
                     await ShowMyWords(chatId, user, ct);
+                    return (true, string.Empty);
+
+                case "редактировать список":
+                    await ShowMyWordsForEdit(chatId, user, ct);
+                    return (true, string.Empty);
+
+                case "изменить слово":
+                    await _msg.SendInfoAsync(chatId, "Введите слово или его часть:", ct);
+                    return (true, "awaiting_editsearch");
+
+                case "⬅️ назад":
+                    await KeyboardFactory.ShowMainMenuAsync(_botClient, chatId, ct);
                     return (true, string.Empty);
 
                 case "➕ добавить слово":
