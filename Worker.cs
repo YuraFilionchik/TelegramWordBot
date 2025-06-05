@@ -34,6 +34,8 @@ namespace TelegramWordBot
         private readonly Dictionary<long, string> _pendingOriginalText = new();
         private readonly Dictionary<long, bool> _isNativeInput = new();
         private readonly SpacedRepetitionService _sr;
+        private readonly IImageService _imageService;
+        private readonly WordImageRepository _imageRepo;
         // Для режима редактирования:
         private readonly Dictionary<long, Guid> _pendingEditWordId = new();
         private readonly Dictionary<long, TranslatedTextClass> _editTranslationCandidates = new();
@@ -52,7 +54,9 @@ namespace TelegramWordBot
             UserLanguageRepository userLanguageRepository,
             TelegramMessageHelper msg,
             ITelegramBotClient botClient,
-            SpacedRepetitionService sr)
+            SpacedRepetitionService sr,
+            IImageService imageService,
+            WordImageRepository imageRepo)
         {
             _logger = logger;
             _wordRepo = wordRepo;
@@ -66,6 +70,8 @@ namespace TelegramWordBot
             _msg = msg;
             _botClient = botClient;
             _sr = sr;
+            _imageService = imageService;
+            _imageRepo = imageRepo;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -348,6 +354,7 @@ namespace TelegramWordBot
                     // Первая карточка в слайдере
                     var first = words[0];
                     var firstTr = await _translationRepo.GetTranslationAsync(first.Id, native.Id);
+                    var imgPath = await GetImagePathAsync(first);
                     await _msg.ShowWordSlider(
                         new ChatId(chatId),
                         langId: lang.Id,
@@ -357,7 +364,7 @@ namespace TelegramWordBot
                         translation: firstTr?.Text ?? "-",
                         example: firstTr?.Examples ?? null,
                         category: lang.Name,
-                        imageUrl: null,
+                        imageUrl: imgPath,
                         ct: ct
                     );
                 }
@@ -410,7 +417,8 @@ namespace TelegramWordBot
                     {
                         var native = await _languageRepo.GetByNameAsync(user.Native_Language);
                         var tr = await _translationRepo.GetTranslationAsync(w.Id, native.Id);
-                        await _msg.SendWordCardAsync(chatId, w.Base_Text, tr?.Text, null, ct);
+                        var imgPath = await GetImagePathAsync(w);
+                        await _msg.SendWordCardAsync(chatId, w.Base_Text, tr?.Text ?? string.Empty, imgPath, ct);
                     }
                     break;
                 case "favorite":
@@ -584,7 +592,8 @@ namespace TelegramWordBot
                     cancellationToken: ct
                 );
                 }
-                    _msg.SendWordCard(chatId, word.Base_Text, translation.Text, translation.Examples, null, null, ct);
+                    var imgPath = await GetImagePathAsync(word);
+                    await _msg.SendWordCard(chatId, word.Base_Text, translation.Text, translation.Examples, null, imgPath, ct);
                     await SendNextLearningWordAsync(user, chatId, ct);
                 return;
             }
@@ -654,13 +663,14 @@ namespace TelegramWordBot
                     await _userWordRepo.UpdateTranslationIdAsync(user.Id, word.Id, tr.Id);
 
                     await _msg.SendSuccessAsync(chatId, $"Добавлено «{word.Base_Text}»", ct);
+                    var imgPath = await GetImagePathAsync(word);
                     await _msg.SendWordCard(
                         chatId: new ChatId(chatId),
                         word: word.Base_Text,
                         translation: originalText,
                         example: examplesStr,
                         category: current.Name,
-                        imageUrl: null,
+                        imageUrl: imgPath,
                         ct: ct
                     );
                 }
@@ -711,13 +721,14 @@ namespace TelegramWordBot
                     : null;
 
                 await _msg.SendSuccessAsync(chatId, $"Добавлено «{word.Base_Text}»", ct);
+                var imgPath = await GetImagePathAsync(word);
                 await _msg.SendWordCard(
                     chatId: new ChatId(chatId),
                     word: word.Base_Text,
                     translation: combinedTranslations,
                     example: combinedExamples,
                     category: current.Name,
-                    imageUrl: null,
+                    imageUrl: imgPath,
                     ct: ct
                 );
             }
@@ -742,6 +753,22 @@ namespace TelegramWordBot
                 }
             }
             return result;
+        }
+
+        private async Task<string?> GetImagePathAsync(Word word)
+        {
+            var existing = await _imageRepo.GetByWordAsync(word.Id);
+            if (existing != null && File.Exists(existing.FilePath))
+                return existing.FilePath;
+
+            try
+            {
+                return await _imageService.FetchFromPixabayAsync(word.Id, word.Base_Text);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -904,13 +931,14 @@ namespace TelegramWordBot
                 : null;
 
             await _msg.SendSuccessAsync(chatId, $"Обновлено «{word!.Base_Text}»", ct);
+            var imgPath = await GetImagePathAsync(word);
             await _msg.SendWordCard(
                 chatId: new ChatId(chatId),
                 word: word.Base_Text,
                 translation: firstText ?? string.Empty,
                 example: firstExample,
                 category: current!.Name,
-                imageUrl: null,
+                imageUrl: imgPath,
                 ct: ct
             );
         }
@@ -942,6 +970,7 @@ namespace TelegramWordBot
                        .FirstOrDefault(l => l.Id == langId);
             var category = lang?.Name ?? string.Empty;
 
+            var imgPath = await GetImagePathAsync(word);
             await _msg.ShowWordSlider(
                 new ChatId(chatId),
                 langId: langId,
@@ -951,7 +980,7 @@ namespace TelegramWordBot
                 translation: tr?.Text,
                 example: tr?.Examples,
                 category: category,
-                imageUrl: null,
+                imageUrl: imgPath,
                 ct: ct
             );
         }
