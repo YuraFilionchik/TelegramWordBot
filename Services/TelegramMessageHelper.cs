@@ -50,7 +50,7 @@ public class TelegramMessageHelper
             else if (File.Exists(imageUrl))
             {
                 await using var stream = File.OpenRead(imageUrl);
-                var file = new InputFile(stream, Path.GetFileName(imageUrl));
+                var file = InputFile.FromStream(stream, Path.GetFileName(imageUrl));
                 return await _bot.SendPhoto(
                     chatId: chatId,
                     photo: file,
@@ -100,7 +100,7 @@ public class TelegramMessageHelper
             else if (File.Exists(imageUrl))
             {
                 await using var stream = File.OpenRead(imageUrl);
-                var file = new InputFile(stream, Path.GetFileName(imageUrl));
+                var file = InputFile.FromStream(stream, Path.GetFileName(imageUrl));
                 return await _bot.SendPhoto(
                     chatId: chatId,
                     photo: file,
@@ -137,7 +137,7 @@ public class TelegramMessageHelper
             else if (File.Exists(imageUrl))
             {
                 await using var stream = File.OpenRead(imageUrl);
-                media = new InputMediaPhoto(new InputFile(stream, Path.GetFileName(imageUrl)))
+                media = new InputMediaPhoto(InputFile.FromStream(stream, Path.GetFileName(imageUrl)))
                 {
                     Caption = text,
                     ParseMode = ParseMode.Html
@@ -209,7 +209,7 @@ public class TelegramMessageHelper
             else if (File.Exists(imageUrl))
             {
                 await using var stream = File.OpenRead(imageUrl);
-                var file = new InputFile(stream, Path.GetFileName(imageUrl));
+                var file = InputFile.FromStream(stream, Path.GetFileName(imageUrl));
                 return await _bot.SendPhoto(
                     chatId: chatId,
                     photo: file,
@@ -331,7 +331,7 @@ public class TelegramMessageHelper
         else if (File.Exists(imageUrl))
         {
             await using var stream = File.OpenRead(imageUrl);
-            var file = new InputFile(stream, Path.GetFileName(imageUrl));
+            var file = InputFile.FromStream(stream, Path.GetFileName(imageUrl));
             return await _bot.SendPhoto(
                 chatId: chatId,
                 caption: text,
