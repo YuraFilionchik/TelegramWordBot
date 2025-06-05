@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>dotnet-TelegramWordBot-6af5d2f6-e6f6-4c8d-9b3c-b6564d7d9d49</UserSecretsId>
@@ -23,6 +23,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="TelegramWordBot.Tests/**/*.cs" />
   </ItemGroup>
 
   <ItemGroup>
