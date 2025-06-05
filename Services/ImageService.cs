@@ -100,6 +100,16 @@ namespace TelegramWordBot.Services
             return path;
         }
 
+        public Task DeleteAllLocalImages()
+        {
+            var folder = Path.Combine(_env.ContentRootPath, "Images");
+            if (Directory.Exists(folder))
+                Directory.Delete(folder, true);
+
+            Directory.CreateDirectory(folder);
+            return Task.CompletedTask;
+        }
+
         public async Task DeleteAsync(Guid wordId)
         {
             var existing = await _repo.GetByWordAsync(wordId);

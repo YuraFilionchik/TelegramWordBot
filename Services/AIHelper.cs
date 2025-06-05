@@ -12,6 +12,7 @@ namespace TelegramWordBot.Services
         Task<string> GetLangName(string text);
         Task<string> GetLangName(string text, IEnumerable<Language> languages);
         Task<List<string>> GetVariants(string originalWord, string translatedWord, string target_lang);
+        Task<string> GetSearchStringForPicture(string word);
     }
 
     class AIHelper: IAIHelper
@@ -68,6 +69,13 @@ namespace TelegramWordBot.Services
             return await AskWithGeminiAsync(prompt, true);
         }
 
+        public async Task<string> GetSearchStringForPicture(string word)
+        {
+            string prompt = $"Generate a search query for finding a picture of the word '{word}'." +
+                $" The query should be concise and relevant to the word, suitable for image search engines." +
+                $" Provide only the search query without any additional text or explanations.";
+            return await AskWithGeminiAsync(prompt, true);
+        }
         
         public async Task<string>GetLangName(string text)
         {
