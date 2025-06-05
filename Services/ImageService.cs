@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Json;
 using TelegramWordBot.Models;
 using TelegramWordBot.Repositories;
 using Microsoft.AspNetCore.Hosting;
@@ -14,6 +16,7 @@ namespace TelegramWordBot.Services
     public interface IImageService
     {
         Task<string> FetchAndSaveAsync(Guid wordId, string imageUrl);
+        Task<string?> FetchFromPixabayAsync(Guid wordId, string query);
         Task<string> SaveUploadedAsync(Guid wordId, Stream fileStream, string fileName);
         Task DeleteAsync(Guid wordId);
     }
@@ -22,27 +25,56 @@ namespace TelegramWordBot.Services
     {
         private readonly IHostEnvironment _env;
         private readonly WordImageRepository _repo;
+        private readonly HttpClient _http;
+        private readonly string? _pixabayKey;
 
-        public ImageService(IHostEnvironment env, WordImageRepository repo)
+        public ImageService(HttpClient http, IHostEnvironment env, WordImageRepository repo)
         {
+            _http = http;
             _env = env;
             _repo = repo;
+            _pixabayKey = Environment.GetEnvironmentVariable("PIXABAY_API_KEY");
         }
 
         public async Task<string> FetchAndSaveAsync(Guid wordId, string imageUrl)
         {
-            // позже: получить байты через HttpClient, пока заглушка
             var folder = Path.Combine(_env.ContentRootPath, "Images");
             Directory.CreateDirectory(folder);
-            var fileName = $"{wordId}{Path.GetExtension(imageUrl)}";
+            var ext = Path.GetExtension(new Uri(imageUrl).AbsolutePath);
+            if (string.IsNullOrEmpty(ext)) ext = ".jpg";
+            var fileName = $"{wordId}{ext}";
             var path = Path.Combine(folder, fileName);
 
-            // TODO: загрузка из imageUrl → fileBytes
-            // await File.WriteAllBytesAsync(path, fileBytes);
+            var bytes = await _http.GetByteArrayAsync(imageUrl);
+            await File.WriteAllBytesAsync(path, bytes);
 
-            var img = new WordImage { Id = Guid.NewGuid(), WordId = wordId, FilePath = path };
-            await _repo.AddAsync(img);
+            var existing = await _repo.GetByWordAsync(wordId);
+            if (existing != null)
+            {
+                if (File.Exists(existing.FilePath)) File.Delete(existing.FilePath);
+                existing.FilePath = path;
+                await _repo.UpdateAsync(existing);
+            }
+            else
+            {
+                await _repo.AddAsync(new WordImage { Id = Guid.NewGuid(), WordId = wordId, FilePath = path });
+            }
+
             return path;
+        }
+
+        public async Task<string?> FetchFromPixabayAsync(Guid wordId, string query)
+        {
+            if (string.IsNullOrEmpty(_pixabayKey))
+                throw new InvalidOperationException("PIXABAY_API_KEY is not set.");
+
+            var requestUrl = $"https://pixabay.com/api/?key={_pixabayKey}&q={Uri.EscapeDataString(query)}&image_type=photo&per_page=3&safesearch=true";
+            var response = await _http.GetFromJsonAsync<PixabayResponse>(requestUrl);
+            var imageUrl = response?.Hits?.FirstOrDefault()?.LargeImageURL;
+            if (string.IsNullOrEmpty(imageUrl))
+                return null;
+
+            return await FetchAndSaveAsync(wordId, imageUrl);
         }
 
         public async Task<string> SaveUploadedAsync(Guid wordId, Stream fileStream, string fileName)
