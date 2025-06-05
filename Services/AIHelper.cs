@@ -26,10 +26,10 @@ namespace TelegramWordBot.Services
             _openAiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");// ?? throw new InvalidOperationException("OPENAI_API_KEY is not set.");
             _geminiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY") ?? throw new InvalidOperationException("GEMINI_API_KEY is not set.");
         }
-        public async Task<TranslatedTextClass> TranslateWordAsync(string srcText, string sourLangName, string targetLangName)
+        public async Task<TranslatedTextClass> TranslateWordAsync(string srcText, string sourceLangName, string targetLangName)
         {
             var oneWord = srcText.Split(' ').Count() == 1;
-            string prompt = $"You are an expert translator specializing in {sourLangName} and {targetLangName}. " +
+            string prompt = $"You are an expert translator specializing in {sourceLangName} and {targetLangName}. " +
                 $"Translate as accurately and naturally as possible. ";
 
             if (oneWord)
@@ -41,7 +41,7 @@ namespace TelegramWordBot.Services
                 {{ ""{TranslatedTextClass.JSONPropertyOriginalText}"": ""{srcText}"", ""{TranslatedTextClass.JSONPropertyTranslatedText}"": null, ""{TranslatedTextClass.JSONPropertyExample}"": null, ""{TranslatedTextClass.JSONPropertyError}"": ""error_message_if_any"" }}
               ]
             }}" +
-                        $" Give 1–2 most relevant translations from {sourLangName} to {targetLangName} for '{srcText}', each with a short example. If you cannot translate, provide error.";
+                        $" Give 1–2 most relevant translations from {sourceLangName} to {targetLangName} for '{srcText}', each with a short example. If you cannot translate, provide error.";
                         else
                             prompt += $@"Respond ONLY in JSON format, with no explanations or conversational text.
             {{
@@ -50,7 +50,7 @@ namespace TelegramWordBot.Services
                 {{ ""{TranslatedTextClass.JSONPropertyOriginalText}"": ""{srcText}"", ""{TranslatedTextClass.JSONPropertyTranslatedText}"": null, ""{TranslatedTextClass.JSONPropertyExample}"": null, ""{TranslatedTextClass.JSONPropertyError}"": ""error_message_if_any"" }}
               ]
             }}" +
-            $"Translate from {sourLangName} to {targetLangName} the phrase: '{srcText}'. If translation is not possible, provide error.";
+            $"Translate from {sourceLangName} to {targetLangName} the phrase: '{srcText}'. If translation is not possible, provide error.";
 
             prompt += @" // --- Important: Only return valid JSON in the specified format. Do not include explanations. ---";
 
