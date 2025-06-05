@@ -53,6 +53,14 @@ public class UserWordRepository
         return affectedRows > 0;
     }
 
+    public async Task<bool> RemoveUserWordAsync(Guid userId, Guid wordId)
+    {
+        using var conn = _factory.CreateConnection();
+        const string sql = @"DELETE FROM user_words WHERE user_id = @User_Id AND word_id = @Word_Id";
+        var affectedRows = await conn.ExecuteAsync(sql, new { User_Id = userId, Word_Id = wordId });
+        return affectedRows > 0;
+    }
+
 
     public async Task<IEnumerable<Word>> GetWordsByUserId(Guid? userId)
     {

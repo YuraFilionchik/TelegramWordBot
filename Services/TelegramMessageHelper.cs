@@ -119,6 +119,47 @@ public class TelegramMessageHelper
             cancellationToken: ct);
     }
 
+    public async Task<Message> SendWordCardWithEdit(ChatId chatId, string word, string translation, Guid wordId, string? example = null, string? category = null, string? imageUrl = null, CancellationToken ct = default)
+    {
+        var keyboard = new InlineKeyboardMarkup(
+            InlineKeyboardButton.WithCallbackData("✏️ Изменить", $"edit:{wordId}"));
+
+        var text = GenerateWordCardText(word, translation, example, category);
+
+        if (!string.IsNullOrWhiteSpace(imageUrl))
+        {
+            if (IsHttpUrl(imageUrl))
+            {
+                return await _bot.SendPhoto(
+                    chatId: chatId,
+                    photo: new InputFileUrl(imageUrl),
+                    caption: text,
+                    parseMode: ParseMode.Html,
+                    replyMarkup: keyboard,
+                    cancellationToken: ct);
+            }
+            else if (File.Exists(imageUrl))
+            {
+                await using var stream = File.OpenRead(imageUrl);
+                var file = InputFile.FromStream(stream, Path.GetFileName(imageUrl));
+                return await _bot.SendPhoto(
+                    chatId: chatId,
+                    photo: file,
+                    caption: text,
+                    parseMode: ParseMode.Html,
+                    replyMarkup: keyboard,
+                    cancellationToken: ct);
+            }
+        }
+
+        return await _bot.SendMessage(
+            chatId: chatId,
+            text: text,
+            parseMode: ParseMode.Html,
+            replyMarkup: keyboard,
+            cancellationToken: ct);
+    }
+
     public async Task<Message> EditWordCard(ChatId chatId, int messageId, string word, string translation, string? example = null, string? category = null, string? imageUrl = null, CancellationToken ct = default)
     {
         var text = GenerateWordCardText(word, translation, example, category);
