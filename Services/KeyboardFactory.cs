@@ -20,6 +20,21 @@ public static class KeyboardFactory
         };
     }
 
+    // Подменю для раздела "Мои слова"
+    public static ReplyKeyboardMarkup GetMyWordsMenu()
+    {
+        return new ReplyKeyboardMarkup(new[]
+        {
+            new[] { new KeyboardButton("Показать мои слова") },
+            new[] { new KeyboardButton("Редактировать список") },
+            new[] { new KeyboardButton("Изменить слово") },
+            new[] { new KeyboardButton("⬅️ Назад") }
+        })
+        {
+            ResizeKeyboard = true
+        };
+    }
+
     // Инлайн-кнопки для конкретного слова (например, на карточке)
     public static InlineKeyboardMarkup GetWordCardInline(string word)
     {
@@ -73,6 +88,11 @@ public static class KeyboardFactory
     public static async Task ShowConfigMenuAsync(ITelegramBotClient botClient, ChatId chatId, CancellationToken ct)
     {
         await botClient.SendMessage(chatId, "Настройки:", replyMarkup: GetConfigInline(), cancellationToken: ct);
+    }
+
+    public static async Task ShowMyWordsMenuAsync(ITelegramBotClient botClient, ChatId chatId, CancellationToken ct)
+    {
+        await botClient.SendMessage(chatId, "Мои слова:", replyMarkup: GetMyWordsMenu(), cancellationToken: ct);
     }
 
     public static async Task ShowLearnConfig(ITelegramBotClient botClient, ChatId chatId, Models.User user, CancellationToken ct)
