@@ -763,7 +763,8 @@ namespace TelegramWordBot
 
             try
             {
-                return await _imageService.FetchFromPixabayAsync(word.Id, word.Base_Text);
+                string searchQuery = await _ai.GetSearchStringForPicture(word.Base_Text);
+                return await _imageService.FetchFromPixabayAsync(word.Id, searchQuery);
             }
             catch
             {
