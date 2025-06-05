@@ -72,7 +72,7 @@ namespace TelegramWordBot.Services
         public async Task<string> GetSearchStringForPicture(string word)
         {
             string prompt = $"Generate a search query for finding a picture of the word '{word}'." +
-                $" The query should be concise and relevant to the word, suitable for image search engines." +
+                $" The query should be concise and relevant to the word, in English, suitable for image search engines." +
                 $" Provide only the search query without any additional text or explanations.";
             return await AskWithGeminiAsync(prompt, true);
         }
