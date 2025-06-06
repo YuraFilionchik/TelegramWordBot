@@ -12,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 var appUrl = Environment.GetEnvironmentVariable("APP_URL")+":2311";
 if (!string.IsNullOrEmpty(appUrl) && !appUrl.StartsWith("http"))
-    appUrl = "https://" + appUrl;
+    appUrl = "http://" + appUrl;
 if (!string.IsNullOrEmpty(appUrl))
 {
     builder.WebHost.UseUrls(appUrl);
