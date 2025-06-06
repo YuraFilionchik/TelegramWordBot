@@ -18,6 +18,7 @@ namespace TelegramWordBot.Services
         Task<string> FetchAndSaveAsync(Guid wordId, string imageUrl);
         Task<string?> FetchFromPixabayAsync(Guid wordId, string query);
         Task<string?> FetchFromFlickrAsync(Guid wordId, string query);
+        Task<string?> FetchImageFromInternetAsync(Guid wordId, string query, string service);
         Task<string> SaveUploadedAsync(Guid wordId, Stream fileStream, string fileName);
         Task DeleteAsync(Guid wordId);
     }
@@ -93,6 +94,19 @@ namespace TelegramWordBot.Services
 
             var imageUrl = $"https://live.staticflickr.com/{photo.Server}/{photo.Id}_{photo.Secret}_b.jpg";
             return await FetchAndSaveAsync(wordId, imageUrl);
+        }
+
+        public Task<string?> FetchImageFromInternetAsync(Guid wordId, string query, string service)
+        {
+            switch (service.ToLowerInvariant())
+            {
+                case "pixabay":
+                    return FetchFromPixabayAsync(wordId, query);
+                case "flickr":
+                    return FetchFromFlickrAsync(wordId, query);
+                default:
+                    throw new ArgumentException($"Unsupported image service: {service}");
+            }
         }
 
         public async Task<string> SaveUploadedAsync(Guid wordId, Stream fileStream, string fileName)
