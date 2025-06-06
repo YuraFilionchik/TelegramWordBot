@@ -35,6 +35,7 @@ namespace TelegramWordBot.Services
 
             if (oneWord)
                 prompt += $@"Respond ONLY in JSON format, with no explanations or conversational text. 
+Correct mistakes in {srcText} if it necessary.
             {{
               ""{TranslatedTextClass.JSONPropertyTranslations}"": [
                 {{ ""{TranslatedTextClass.JSONPropertyOriginalText}"": ""{srcText}"", ""{TranslatedTextClass.JSONPropertyTranslatedText}"": ""..."", ""{TranslatedTextClass.JSONPropertyExample}"": ""..."", ""{TranslatedTextClass.JSONPropertyError}"": null }},
