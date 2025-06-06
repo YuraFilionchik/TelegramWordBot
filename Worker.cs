@@ -897,7 +897,7 @@ namespace TelegramWordBot
             try
             {
                 string searchQuery = await _ai.GetSearchStringForPicture(word.Base_Text);
-                return await _imageService.FetchImageFromInternetAsync(word.Id, searchQuery, "flickr") ??
+                return await _imageService.FetchImageFromInternetAsync(word.Id, searchQuery, "unsplash") ??
                        await _imageService.FetchImageFromInternetAsync(word.Id, searchQuery, "pixabay");
             }
             catch(Exception ex)

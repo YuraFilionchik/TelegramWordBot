@@ -17,7 +17,7 @@ namespace TelegramWordBot.Services
     {
         Task<string> FetchAndSaveAsync(Guid wordId, string imageUrl);
         Task<string?> FetchFromPixabayAsync(Guid wordId, string query);
-        Task<string?> FetchFromFlickrAsync(Guid wordId, string query);
+        Task<string?> FetchFromUnsplashAsync(Guid wordId, string query);
         Task<string?> FetchImageFromInternetAsync(Guid wordId, string query, string service);
         Task<string> SaveUploadedAsync(Guid wordId, Stream fileStream, string fileName);
         Task DeleteAsync(Guid wordId);
@@ -29,7 +29,7 @@ namespace TelegramWordBot.Services
         private readonly WordImageRepository _repo;
         private readonly HttpClient _http;
         private readonly string? _pixabayKey;
-        private readonly string? _flickrKey;
+        private readonly string? _unsplashKey;
 
         public ImageService(HttpClient http, IHostEnvironment env, WordImageRepository repo)
         {
@@ -37,7 +37,7 @@ namespace TelegramWordBot.Services
             _env = env;
             _repo = repo;
             _pixabayKey = Environment.GetEnvironmentVariable("PIXABAY_API_KEY");
-            _flickrKey = Environment.GetEnvironmentVariable("FLICKR_API_KEY");
+            _unsplashKey = Environment.GetEnvironmentVariable("UNSPLASH_ACCESS_KEY");
         }
 
         public async Task<string> FetchAndSaveAsync(Guid wordId, string imageUrl)
@@ -81,18 +81,17 @@ namespace TelegramWordBot.Services
             return await FetchAndSaveAsync(wordId, imageUrl);
         }
 
-        public async Task<string?> FetchFromFlickrAsync(Guid wordId, string query)
+        public async Task<string?> FetchFromUnsplashAsync(Guid wordId, string query)
         {
-            if (string.IsNullOrEmpty(_flickrKey))
-                throw new InvalidOperationException("FLICKR_API_KEY is not set.");
+            if (string.IsNullOrEmpty(_unsplashKey))
+                throw new InvalidOperationException("UNSPLASH_ACCESS_KEY is not set.");
 
-            var requestUrl = $"https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key={_flickrKey}&text={Uri.EscapeDataString(query)}&per_page=1&sort=relevance&content_type=1&media=photos&safe_search=1&format=json&nojsoncallback=1";
-            var response = await _http.GetFromJsonAsync<FlickrSearchResponse>(requestUrl);
-            var photo = response?.Photos?.Photo?.FirstOrDefault();
-            if (photo == null)
+            var requestUrl = $"https://api.unsplash.com/photos/random?query={Uri.EscapeDataString(query)}&client_id={_unsplashKey}";
+            var response = await _http.GetFromJsonAsync<UnsplashRandomResponse>(requestUrl);
+            var imageUrl = response?.Urls?.Regular;
+            if (string.IsNullOrEmpty(imageUrl))
                 return null;
 
-            var imageUrl = $"https://live.staticflickr.com/{photo.Server}/{photo.Id}_{photo.Secret}_b.jpg";
             return await FetchAndSaveAsync(wordId, imageUrl);
         }
 
@@ -102,8 +101,8 @@ namespace TelegramWordBot.Services
             {
                 case "pixabay":
                     return FetchFromPixabayAsync(wordId, query);
-                case "flickr":
-                    return FetchFromFlickrAsync(wordId, query);
+                case "unsplash":
+                    return FetchFromUnsplashAsync(wordId, query);
                 default:
                     throw new ArgumentException($"Unsupported image service: {service}");
             }
