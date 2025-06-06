@@ -15,7 +15,10 @@ public class TodoItemRepository
     public async Task<IEnumerable<TodoItem>> GetAllAsync()
     {
         using var conn = _factory.CreateConnection();
-        return await conn.QueryAsync<TodoItem>("SELECT * FROM todo_items");
+        IEnumerable<TodoItem> items = await conn.QueryAsync<TodoItem>(
+    "SELECT * FROM todo_items ORDER BY is_complete ASC, created_at DESC"
+);
+        return items;
     }
 
     public async Task AddAsync(TodoItem item)
