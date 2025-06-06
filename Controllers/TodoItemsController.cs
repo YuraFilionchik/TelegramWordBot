@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using TelegramWordBot.Models;
 using TelegramWordBot.Repositories;
 
@@ -82,5 +82,4 @@ public class TodoItemsController : ControllerBase
     </html>";
         return Content(html, "text/html; charset=utf-8");
     }
-
 }
