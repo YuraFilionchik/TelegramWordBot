@@ -17,6 +17,8 @@ namespace TelegramWordBot.Services
     {
         Task<string> FetchAndSaveAsync(Guid wordId, string imageUrl);
         Task<string?> FetchFromPixabayAsync(Guid wordId, string query);
+        Task<string?> FetchFromUnsplashAsync(Guid wordId, string query);
+        Task<string?> FetchImageFromInternetAsync(Guid wordId, string query, string service);
         Task<string> SaveUploadedAsync(Guid wordId, Stream fileStream, string fileName);
         Task DeleteAsync(Guid wordId);
     }
@@ -27,6 +29,7 @@ namespace TelegramWordBot.Services
         private readonly WordImageRepository _repo;
         private readonly HttpClient _http;
         private readonly string? _pixabayKey;
+        private readonly string? _unsplashKey;
 
         public ImageService(HttpClient http, IHostEnvironment env, WordImageRepository repo)
         {
@@ -34,6 +37,7 @@ namespace TelegramWordBot.Services
             _env = env;
             _repo = repo;
             _pixabayKey = Environment.GetEnvironmentVariable("PIXABAY_API_KEY");
+            _unsplashKey = Environment.GetEnvironmentVariable("UNSPLASH_ACCESS_KEY");
         }
 
         public async Task<string> FetchAndSaveAsync(Guid wordId, string imageUrl)
@@ -75,6 +79,33 @@ namespace TelegramWordBot.Services
                 return null;
 
             return await FetchAndSaveAsync(wordId, imageUrl);
+        }
+
+        public async Task<string?> FetchFromUnsplashAsync(Guid wordId, string query)
+        {
+            if (string.IsNullOrEmpty(_unsplashKey))
+                throw new InvalidOperationException("UNSPLASH_ACCESS_KEY is not set.");
+
+            var requestUrl = $"https://api.unsplash.com/search/photos?query={Uri.EscapeDataString(query)}&client_id={_unsplashKey}&per_page=1";
+            var response = await _http.GetFromJsonAsync<UnsplashSearchResponse>(requestUrl);
+            var imageUrl = response?.Results?.FirstOrDefault()?.Urls?.Regular;
+            if (string.IsNullOrEmpty(imageUrl))
+                return null;
+
+            return await FetchAndSaveAsync(wordId, imageUrl);
+        }
+
+        public Task<string?> FetchImageFromInternetAsync(Guid wordId, string query, string service)
+        {
+            switch (service.ToLowerInvariant())
+            {
+                case "pixabay":
+                    return FetchFromPixabayAsync(wordId, query);
+                case "unsplash":
+                    return FetchFromUnsplashAsync(wordId, query);
+                default:
+                    throw new ArgumentException($"Unsupported image service: {service}");
+            }
         }
 
         public async Task<string> SaveUploadedAsync(Guid wordId, Stream fileStream, string fileName)

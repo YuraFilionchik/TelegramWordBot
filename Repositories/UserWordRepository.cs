@@ -26,15 +26,15 @@ public class UserWordRepository
         return await conn.ExecuteScalarAsync<bool>(sql, new { User_Id = userId, Base_Text = baseText });
     }
 
-    public async Task AddUserWordAsync(Guid userId, Guid wordId)
+    public async Task AddUserWordAsync(Guid userId, Guid wordId, Guid? translationId)
     {
         using var conn = _factory.CreateConnection();
         var sql = @"
-        INSERT INTO user_words (user_id, word_id)
-        VALUES (@User_Id, @Word_Id)
-        ON CONFLICT DO NOTHING;
+        INSERT INTO user_words (user_id, word_id, translation_id)
+        VALUES (@User_Id, @Word_Id, @Translation_Id)
+        ON CONFLICT (user_id, word_id) DO UPDATE SET translation_id = EXCLUDED.translation_id
     ";
-        await conn.ExecuteAsync(sql, new { User_Id = userId, Word_Id = wordId });
+        await conn.ExecuteAsync(sql, new { User_Id = userId, Word_Id = wordId, Translation_Id = translationId });
     }
 
     public async Task<bool> RemoveUserWordAsync(Guid userId, string word)
@@ -107,14 +107,15 @@ public class UserWordRepository
 
     }
 
-
-    public async Task UpdateTranslationIdAsync(Guid userId, Guid wordId, Guid translationId)
+   
+    public async Task UpdateUserTranslationIdAsync(Guid userId, Guid wordId, Guid translationId)
     {
         using var conn = _factory.CreateConnection();
         var sql = @"
-        UPDATE user_words
-        SET translation_id = @Translation_Id
-        WHERE user_id = @User_Id AND word_id = @Word_Id;
+        INSERT INTO user_words (user_id, word_id, translation_id)
+        VALUES (@User_Id, @Word_Id, @Translation_Id)
+        ON CONFLICT (user_id, word_id)
+        DO UPDATE SET translation_id = EXCLUDED.translation_id;
         ";
 
         await conn.ExecuteAsync(sql, new
