@@ -2,8 +2,19 @@ using Telegram.Bot;
 using TelegramWordBot;
 using TelegramWordBot.Repositories;
 using TelegramWordBot.Services;
+using TelegramWordBot.Models;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 
-var builder = Host.CreateApplicationBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
+
+var appUrl = Environment.GetEnvironmentVariable("APP_URL");
+if (!string.IsNullOrEmpty(appUrl))
+{
+    builder.WebHost.UseUrls(appUrl);
+}
 
 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING")
     ?? throw new InvalidOperationException("CONNECTION_STRING environment variable is not set.");
@@ -30,11 +41,14 @@ builder.Services.AddSingleton<TelegramMessageHelper>();
 builder.Services.AddSingleton<SpacedRepetitionService>();
 builder.Services.AddSingleton<WordImageRepository>();
 builder.Services.AddHttpClient<IImageService, ImageService>();
+builder.Services.AddSingleton<TodoItemRepository>();
 
-
-
+builder.Services.AddControllers();
 
 builder.Services.AddHostedService<Worker>();
 
-var host = builder.Build();
-host.Run();
+var app = builder.Build();
+
+app.MapControllers();
+
+app.Run();
