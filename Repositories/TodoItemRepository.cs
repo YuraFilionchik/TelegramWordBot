@@ -15,7 +15,10 @@ public class TodoItemRepository
     public async Task<IEnumerable<TodoItem>> GetAllAsync()
     {
         using var conn = _factory.CreateConnection();
-        return await conn.QueryAsync<TodoItem>("SELECT * FROM todo_items");
+        IEnumerable<TodoItem> items = await conn.QueryAsync<TodoItem>(
+    "SELECT * FROM todo_items ORDER BY is_complete ASC, created_at DESC"
+);
+        return items;
     }
 
     public async Task AddAsync(TodoItem item)
@@ -23,5 +26,24 @@ public class TodoItemRepository
         using var conn = _factory.CreateConnection();
         const string sql = "INSERT INTO todo_items (id, title, description, created_at, is_complete) VALUES (@Id, @Title, @Description, @Created_At, @Is_Complete)";
         await conn.ExecuteAsync(sql, item);
+    }
+
+    public async Task UpdateAsync(TodoItem item)
+    {
+        using var conn = _factory.CreateConnection();
+        await conn.ExecuteAsync(
+            @"UPDATE todo_items SET 
+            title = @Title, 
+            description = @Description, 
+            is_complete = @Is_Complete,
+            created_at = @Created_At
+          WHERE id = @Id",
+            item);
+    }
+
+    internal async Task<TodoItem> GetByIdAsync(Guid id)
+    {
+        using var conn = _factory.CreateConnection();
+        return await conn.QueryFirstAsync<TodoItem>("SELECT * FROM todo_items WHERE id=@Id", new { Id = id });
     }
 }
