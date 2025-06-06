@@ -13,6 +13,7 @@ builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(tokenTG)
 
 connectionString = DbConnectionFactory.ConvertDatabaseUrl(connectionString);
 var dbFactory = new DbConnectionFactory(connectionString);
+await DatabaseInitializer.EnsureTablesAsync(dbFactory);
 builder.Services.AddSingleton<IConnectionFactory>(new DbConnectionFactory(connectionString));
 builder.Services.AddSingleton(dbFactory);
 builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(tokenTG));
