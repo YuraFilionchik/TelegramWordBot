@@ -62,6 +62,13 @@ public static class DatabaseInitializer
                 id UUID PRIMARY KEY,
                 word_id UUID REFERENCES words(id) ON DELETE CASCADE,
                 file_path TEXT NOT NULL
+            );",
+            @"CREATE TABLE IF NOT EXISTS todo_items (
+                id UUID PRIMARY KEY,
+                title TEXT NOT NULL,
+                description TEXT NOT NULL,
+                created_at TIMESTAMPTZ NOT NULL,
+                is_complete BOOLEAN NOT NULL DEFAULT FALSE
             );"
         };
 
