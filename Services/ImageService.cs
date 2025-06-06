@@ -17,6 +17,7 @@ namespace TelegramWordBot.Services
     {
         Task<string> FetchAndSaveAsync(Guid wordId, string imageUrl);
         Task<string?> FetchFromPixabayAsync(Guid wordId, string query);
+        Task<string?> FetchFromFlickrAsync(Guid wordId, string query);
         Task<string> SaveUploadedAsync(Guid wordId, Stream fileStream, string fileName);
         Task DeleteAsync(Guid wordId);
     }
@@ -27,6 +28,7 @@ namespace TelegramWordBot.Services
         private readonly WordImageRepository _repo;
         private readonly HttpClient _http;
         private readonly string? _pixabayKey;
+        private readonly string? _flickrKey;
 
         public ImageService(HttpClient http, IHostEnvironment env, WordImageRepository repo)
         {
@@ -34,6 +36,7 @@ namespace TelegramWordBot.Services
             _env = env;
             _repo = repo;
             _pixabayKey = Environment.GetEnvironmentVariable("PIXABAY_API_KEY");
+            _flickrKey = Environment.GetEnvironmentVariable("FLICKR_API_KEY");
         }
 
         public async Task<string> FetchAndSaveAsync(Guid wordId, string imageUrl)
@@ -74,6 +77,21 @@ namespace TelegramWordBot.Services
             if (string.IsNullOrEmpty(imageUrl))
                 return null;
 
+            return await FetchAndSaveAsync(wordId, imageUrl);
+        }
+
+        public async Task<string?> FetchFromFlickrAsync(Guid wordId, string query)
+        {
+            if (string.IsNullOrEmpty(_flickrKey))
+                throw new InvalidOperationException("FLICKR_API_KEY is not set.");
+
+            var requestUrl = $"https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key={_flickrKey}&text={Uri.EscapeDataString(query)}&per_page=1&sort=relevance&content_type=1&media=photos&safe_search=1&format=json&nojsoncallback=1";
+            var response = await _http.GetFromJsonAsync<FlickrSearchResponse>(requestUrl);
+            var photo = response?.Photos?.Photo?.FirstOrDefault();
+            if (photo == null)
+                return null;
+
+            var imageUrl = $"https://live.staticflickr.com/{photo.Server}/{photo.Id}_{photo.Secret}_b.jpg";
             return await FetchAndSaveAsync(wordId, imageUrl);
         }
 
