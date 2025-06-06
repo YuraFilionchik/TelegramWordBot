@@ -50,7 +50,8 @@ public static class DatabaseInitializer
                 interval_hours INTEGER NOT NULL DEFAULT 0,
                 ease_factor DOUBLE PRECISION NOT NULL DEFAULT 2.5,
                 next_review TIMESTAMPTZ NOT NULL,
-                last_review TIMESTAMPTZ
+                last_review TIMESTAMPTZ,
+                UNIQUE(user_id, word_id) 
             );",
             @"CREATE TABLE IF NOT EXISTS user_languages (
                 user_id UUID REFERENCES users(id) ON DELETE CASCADE,
