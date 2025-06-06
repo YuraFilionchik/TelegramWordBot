@@ -85,7 +85,9 @@ public class TranslationRepository
     {
         if (string.IsNullOrEmpty(langName)) throw new ArgumentException("Language name cannot be null or empty.", nameof(langName));
         using var conn = _factory.CreateConnection();
-        var sql = "SELECT * FROM translations WHERE word_id = @Word_Id AND language_id = (SELECT id FROM languages WHERE name = @LangName) LIMIT 1";
+        var sql = "SELECT * FROM translations WHERE word_id = @Word_Id AND" +
+            " language_id = (SELECT id FROM languages WHERE name = @LangName LIMIT 1)";
+        
         return await conn.QueryFirstOrDefaultAsync<Translation>(sql, new { Word_Id = wordId, LangName = langName });
     }
 }

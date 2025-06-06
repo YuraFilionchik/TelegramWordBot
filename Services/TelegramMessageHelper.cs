@@ -28,45 +28,7 @@ public class TelegramMessageHelper
 
         return text;
     }
-
     
-
-    // === Базовые методы отправки сообщений ===
-    public async Task<Message> SendWordCard(ChatId chatId, string word, string translation, string? example = null, string? category = null, string? imageUrl = null, CancellationToken ct = default)
-    {
-        var text = GenerateWordCardText(word, translation, example, category);
-
-        if (!string.IsNullOrWhiteSpace(imageUrl))
-        {
-            if (IsHttpUrl(imageUrl))
-            {
-                return await _bot.SendPhoto(
-                    chatId: chatId,
-                    photo: new InputFileUrl(imageUrl),
-                    caption: text,
-                    parseMode: ParseMode.Html,
-                    cancellationToken: ct);
-            }
-            else if (File.Exists(imageUrl))
-            {
-                await using var stream = File.OpenRead(imageUrl);
-                var file = InputFile.FromStream(stream, Path.GetFileName(imageUrl));
-                return await _bot.SendPhoto(
-                    chatId: chatId,
-                    photo: file,
-                    caption: text,
-                    parseMode: ParseMode.Html,
-                    cancellationToken: ct);
-            }
-        }
-
-        return await _bot.SendMessage(
-            chatId: chatId,
-            text: text,
-            parseMode: ParseMode.Html,
-            cancellationToken: ct);
-    }
-
     public async Task<Message> SendWordCardWithActions(ChatId chatId, string word, string translation, int wordId, string? example = null, string? category = null, string? imageUrl = null, CancellationToken ct = default)
     {
         var keyboard = new InlineKeyboardMarkup(new[]
@@ -299,27 +261,39 @@ public class TelegramMessageHelper
             cancellationToken: ct);
     }
 
-    public async Task SendWordCardAsync(ChatId chatId, string word, string translation, string? imageUrl, CancellationToken ct)
+    public async Task<Message> SendWordCardAsync(ChatId chatId, string word, string translation, string? examples, string? imageUrl, CancellationToken ct)
     {
-        var text = $"<b>{EscapeHtml(word)}</b>\n<i>{EscapeHtml(translation)}</i>";
+        var text = GenerateWordCardText(word, translation, examples, null);
 
         if (!string.IsNullOrWhiteSpace(imageUrl))
         {
-            await _bot.SendPhoto(
-                chatId: chatId,
-                photo: InputFile.FromUri(imageUrl),
-                caption: text,
-                parseMode: ParseMode.Html,
-                cancellationToken: ct);
+            if (IsHttpUrl(imageUrl))
+            {
+                return await _bot.SendPhoto(
+                    chatId: chatId,
+                    photo: new InputFileUrl(imageUrl),
+                    caption: text,
+                    parseMode: ParseMode.Html,
+                    cancellationToken: ct);
+            }
+            else if (File.Exists(imageUrl))
+            {
+                await using var stream = File.OpenRead(imageUrl);
+                var file = InputFile.FromStream(stream, Path.GetFileName(imageUrl));
+                return await _bot.SendPhoto(
+                    chatId: chatId,
+                    photo: file,
+                    caption: text,
+                    parseMode: ParseMode.Html,
+                    cancellationToken: ct);
+            }
         }
-        else
-        {
-            await _bot.SendMessage(
-                chatId: chatId,
-                text: text,
-                parseMode: ParseMode.Html,
-                cancellationToken: ct);
-        }
+
+        return await _bot.SendMessage(
+            chatId: chatId,
+            text: text,
+            parseMode: ParseMode.Html,
+            cancellationToken: ct);
     }
 
     /// <summary>

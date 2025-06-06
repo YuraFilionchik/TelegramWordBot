@@ -10,9 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var appUrl = Environment.GetEnvironmentVariable("APP_URL")+":2311";
-if (!string.IsNullOrEmpty(appUrl) && !appUrl.StartsWith("http"))
-    appUrl = "http://" + appUrl;
+var appUrl = Environment.GetEnvironmentVariable("APP_URL");
+appUrl = FixUrlAndPort(appUrl);
+
 if (!string.IsNullOrEmpty(appUrl))
 {
     builder.WebHost.UseUrls(appUrl);
@@ -54,3 +54,18 @@ var app = builder.Build();
 app.MapControllers();
 
 app.Run();
+
+string FixUrlAndPort(string? url)
+{
+    if (string.IsNullOrEmpty(url)) return string.Empty;
+    if (!url.StartsWith("http://") && !url.StartsWith("https://"))
+        url = "http://" + url;
+    
+    var segments = url.Split(':');
+    if (segments.Length == 2) //нет порта, добавляем 2311
+    {
+        url += ":2311";
+    }
+    
+    return url.TrimEnd('/');
+}
