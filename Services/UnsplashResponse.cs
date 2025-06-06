@@ -13,4 +13,17 @@ namespace TelegramWordBot.Services
         [JsonPropertyName("regular")]
         public string Regular { get; set; } = string.Empty;
     }
+
+    public class UnsplashSearchResponse
+    {
+        public List<Result> Results { get; set; }
+        public class Result
+        {
+            public Urls Urls { get; set; }
+        }
+        public class Urls
+        {
+            public string Regular { get; set; }
+        }
+    }
 }

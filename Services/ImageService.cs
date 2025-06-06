@@ -86,9 +86,9 @@ namespace TelegramWordBot.Services
             if (string.IsNullOrEmpty(_unsplashKey))
                 throw new InvalidOperationException("UNSPLASH_ACCESS_KEY is not set.");
 
-            var requestUrl = $"https://api.unsplash.com/photos/random?query={Uri.EscapeDataString(query)}&client_id={_unsplashKey}";
-            var response = await _http.GetFromJsonAsync<UnsplashRandomResponse>(requestUrl);
-            var imageUrl = response?.Urls?.Regular;
+            var requestUrl = $"https://api.unsplash.com/search/photos?query={Uri.EscapeDataString(query)}&client_id={_unsplashKey}&per_page=1";
+            var response = await _http.GetFromJsonAsync<UnsplashSearchResponse>(requestUrl);
+            var imageUrl = response?.Results?.FirstOrDefault()?.Urls?.Regular;
             if (string.IsNullOrEmpty(imageUrl))
                 return null;
 
