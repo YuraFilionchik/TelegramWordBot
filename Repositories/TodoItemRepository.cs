@@ -41,7 +41,7 @@ public class TodoItemRepository
             item);
     }
 
-    internal async Task<TodoItem> GetByIdAsync(Guid id)
+    public async Task<TodoItem> GetByIdAsync(Guid id)
     {
         using var conn = _factory.CreateConnection();
         return await conn.QueryFirstAsync<TodoItem>("SELECT * FROM todo_items WHERE id=@Id", new { Id = id });
