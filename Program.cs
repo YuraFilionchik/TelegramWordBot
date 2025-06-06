@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var appUrl = Environment.GetEnvironmentVariable("APP_URL")+":2311";
+var appUrl = Environment.GetEnvironmentVariable("APP_URL");// +":2311";
 if (!string.IsNullOrEmpty(appUrl) && !appUrl.StartsWith("http"))
     appUrl = "https://" + appUrl;
 if (!string.IsNullOrEmpty(appUrl))
