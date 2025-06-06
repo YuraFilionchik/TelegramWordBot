@@ -112,10 +112,10 @@ public class UserWordRepository
     {
         using var conn = _factory.CreateConnection();
         var sql = @"
-        UPDATE user_words
-        SET translation_id = @Translation_Id
-        WHERE user_id = @User_Id AND word_id = @Word_Id
-        ON CONFLICT (user_id, word_id) DO UPDATE SET translation_id = EXCLUDED.translation_id;
+        INSERT INTO user_words (user_id, word_id, translation_id)
+        VALUES (@User_Id, @Word_Id, @Translation_Id)
+        ON CONFLICT (user_id, word_id)
+        DO UPDATE SET translation_id = EXCLUDED.translation_id;
         ";
 
         await conn.ExecuteAsync(sql, new

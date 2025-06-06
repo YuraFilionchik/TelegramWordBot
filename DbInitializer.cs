@@ -69,4 +69,50 @@ public static class DatabaseInitializer
             await connection.ExecuteAsync(cmd);
         }
     }
+
+    public static async Task EnsureLanguagesAsync(DbConnectionFactory factory)
+    {
+        using var connection = factory.CreateConnection();
+
+        var languages = new (string Code, string Name)[]
+        {
+            ("en", "English"),
+            ("zh", "Chinese"),
+            ("hi", "Hindi"),
+            ("es", "Spanish"),
+            ("fr", "French"),
+            ("ar", "Arabic"),
+            ("bn", "Bengali"),
+            ("ru", "Russian"),
+            ("pt", "Portuguese"),
+            ("id", "Indonesian"),
+            ("ur", "Urdu"),
+            ("de", "German"),
+            ("ja", "Japanese"),
+            ("sw", "Swahili"),
+            ("mr", "Marathi"),
+            ("te", "Telugu"),
+            ("tr", "Turkish"),
+            ("ta", "Tamil"),
+            ("vi", "Vietnamese"),
+            ("ko", "Korean"),
+            ("it", "Italian"),
+            ("pl", "Polish"),
+            ("uk", "Ukrainian"),
+            ("nl", "Dutch"),
+            ("gu", "Gujarati"),
+            ("fa", "Persian"),
+            ("ml", "Malayalam"),
+            ("th", "Thai"),
+            ("fil", "Filipino"),
+            ("my", "Burmese"),
+        };
+
+        foreach (var lang in languages)
+        {
+            await connection.ExecuteAsync(
+                "INSERT INTO languages (code, name) VALUES (@Code, @Name) ON CONFLICT DO NOTHING",
+                new { Code = lang.Code, Name = lang.Name });
+        }
+    }
 }
