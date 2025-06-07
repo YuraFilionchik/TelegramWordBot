@@ -1817,7 +1817,7 @@ namespace TelegramWordBot
             var progresses = (await _progressRepo.GetByUserAsync(user.Id)).ToList();
 
             // 3) Считаем fully learned (Repetition >= 3) и in progress
-            int fullyLearned = progresses.Count(p => p.Repetition >= 8);
+            int fullyLearned = progresses.Count(p => p.Repetition >= 8);//TODO set limit to 8 repetitions for fully learned
             int inProgress = totalWords - fullyLearned;
 
             // 4) Стартуем сборку текста
@@ -1830,6 +1830,7 @@ namespace TelegramWordBot
 
             // 5) Топ-10 самых «сложных» — сортируем по наименьшему числу повторений
             var hardest = progresses
+                .Where(p => p.Repetition > 0 && p.Interval_Hours > 0 && p.Ease_Factor > 0)
                 .OrderBy(p => p.Ease_Factor)
                 .Take(10)
                 .ToList();
@@ -1853,16 +1854,15 @@ namespace TelegramWordBot
                     // Handle potential null word or Base_Text
                     var displayWordText = !string.IsNullOrEmpty(wordText) ? TelegramMessageHelper.EscapeHtml(wordText) : "[Unknown Word]";
 
-                    sb.AppendLine($"-=| {displayWordText} |=-");
-                    sb.AppendLine($"  - Repetitions: {p.Repetition}");
-                    sb.AppendLine($"  - Interval: {p.Interval_Hours} hours");
-                    sb.AppendLine($"  - Ease Factor: {Math.Round(p.Ease_Factor, 2)}");
-                    sb.AppendLine($"  - Next Review: {p.Next_Review:yyyy-MM-dd}");
+                    sb.AppendLine($"  |--> {displayWordText}");
+                    sb.AppendLine($"  |- Ease Factor: {Math.Round(p.Ease_Factor, 2)}");
+                    sb.AppendLine($"  |- Repetitions: {p.Repetition}");
+                    sb.AppendLine("_______________________________");
                 }
             }
             else
             {
-                sb.AppendLine("Нет данных о сложности слов.");
+                sb.AppendLine("Нет слов.");
             }
 
             // 6) Отправляем одним сообщением
