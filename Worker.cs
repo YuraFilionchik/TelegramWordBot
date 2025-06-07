@@ -585,6 +585,33 @@ namespace TelegramWordBot
                 case "next":
                     await HandleSliderNavigationAsync(callback, user, parts, ct);
                     break;
+                case "stat_today":
+                    await ShowTodayStatistics(user, chatId, ct); // TODO implement statistics for today
+                    break;
+                case "stat_total":
+                    await ShowStatisticsAsync(user, chatId, ct);
+                    break;
+                case "stat_languages":
+                    await ShowStatisticsByLanguages(user, chatId, ct); // TODO implement stats grouped by languages
+                    break;
+                case "profile_info":
+                    await ShowProfileInfo(user, chatId, ct); // TODO implement profile info display
+                    break;
+                case "reset_profile_stats":
+                    await ResetProfileStatistics(user, chatId, ct); // TODO implement profile stats reset
+                    break;
+                case "edit_dict":
+                    await EditDictionary(parts[1], chatId, ct); // TODO implement dictionary editing
+                    break;
+                case "reset_dict":
+                    await ResetDictionaryProgress(parts[1], chatId, ct); // TODO implement dictionary progress reset
+                    break;
+                case "delete_dict":
+                    await DeleteDictionary(parts[1], chatId, ct); // TODO implement dictionary deletion
+                    break;
+                case "help_info":
+                    await ShowHelpInformation(chatId, ct); // TODO implement help output
+                    break;
                 case "config_learn":
                     switch (parts[1])
                     {
@@ -1223,17 +1250,25 @@ namespace TelegramWordBot
                     await KeyboardFactory.ShowMyWordsMenuAsync(_botClient, chatId, ct);
                     return (true, string.Empty);
 
-                case "показать мои слова":
+                case "🔍 показать все слова":
                     await ShowMyWords(chatId, user, ct);
                     return (true, string.Empty);
 
-                case "редактировать список":
-                    await ShowMyWordsForEdit(chatId, user, ct);
+                case "📁 словари по темам":
+                    await ShowDictionariesByTopics(chatId, ct); // TODO implement listing dictionaries by topics
                     return (true, string.Empty);
 
-                case "изменить слово":
+                case "🏧 словари по языкам":
+                    await ShowDictionariesByLanguages(chatId, ct); // TODO implement listing dictionaries by languages
+                    return (true, string.Empty);
+
+                case "📝 изменить слово":
                     await _msg.SendInfoAsync(chatId, "Введите слово или его часть:", ct);
                     return (true, "awaiting_editsearch");
+
+                case "♻️ обнулить прогресс слов":
+                    await ResetAllWordProgress(chatId, user, ct); // TODO reset learning progress for all words
+                    return (true, string.Empty);
 
                 case "⬅️ назад":
                     await KeyboardFactory.ShowMainMenuAsync(_botClient, chatId, ct);
@@ -1248,19 +1283,16 @@ namespace TelegramWordBot
                     await StartLearningAsync(user, ct);
                     return (true, string.Empty);
 
-                case "⚙️ настройки":
+                case "🌐 настройки":
                     await KeyboardFactory.ShowConfigMenuAsync(_botClient, chatId, ct);
                     return (true, string.Empty);
 
                 case "📊 статистика":
-                    await ShowStatisticsAsync(user, chatId, ct);
+                    await KeyboardFactory.ShowStatisticsMenuAsync(_botClient, chatId, ct);
                     return (true, string.Empty);
 
-                case "❓ помощь":
-                    await _botClient.SendMessage(
-                        chatId,
-                        "Я бот для изучения слов. Используй меню или команды: /addword, /learn, /config",
-                        cancellationToken: ct);
+                case "👤 профиль":
+                    await KeyboardFactory.ShowProfileMenuAsync(_botClient, chatId, ct);
                     return (true, string.Empty);
 
                 default:
@@ -1867,6 +1899,74 @@ namespace TelegramWordBot
 
             // 6) Отправляем одним сообщением
             await _msg.SendText(chatId, sb.ToString(), ct);
+        }
+
+        // === New stub methods ===
+
+        private Task ShowTodayStatistics(User user, ChatId chatId, CancellationToken ct)
+        {
+            // TODO: calculate and display statistics only for current day
+            return _msg.SendInfoAsync(chatId, "Статистика за сегодня в разработке", ct);
+        }
+
+        private Task ShowStatisticsByLanguages(User user, ChatId chatId, CancellationToken ct)
+        {
+            // TODO: group statistics by learning languages and display separate blocks
+            return _msg.SendInfoAsync(chatId, "Статистика по языкам в разработке", ct);
+        }
+
+        private Task ShowDictionariesByTopics(long chatId, CancellationToken ct)
+        {
+            // TODO: show list of user dictionaries grouped by topics
+            return _msg.SendInfoAsync(chatId, "Списки словарей по темам в разработке", ct);
+        }
+
+        private Task ShowDictionariesByLanguages(long chatId, CancellationToken ct)
+        {
+            // TODO: show list of dictionaries grouped by languages
+            return _msg.SendInfoAsync(chatId, "Списки словарей по языкам в разработке", ct);
+        }
+
+        private Task ResetAllWordProgress(long chatId, User user, CancellationToken ct)
+        {
+            // TODO: reset spaced repetition progress for all words of the user
+            return _msg.SendInfoAsync(chatId, "Сброс прогресса слов в разработке", ct);
+        }
+
+        private Task ShowProfileInfo(User user, ChatId chatId, CancellationToken ct)
+        {
+            // TODO: display detailed profile information
+            return _msg.SendInfoAsync(chatId, "Профиль пользователя в разработке", ct);
+        }
+
+        private Task ResetProfileStatistics(User user, ChatId chatId, CancellationToken ct)
+        {
+            // TODO: clear all learning statistics for the user
+            return _msg.SendInfoAsync(chatId, "Сброс статистики профиля в разработке", ct);
+        }
+
+        private Task EditDictionary(string id, long chatId, CancellationToken ct)
+        {
+            // TODO: open dictionary editing flow by id
+            return _msg.SendInfoAsync(chatId, $"Редактирование словаря {id} в разработке", ct);
+        }
+
+        private Task ResetDictionaryProgress(string id, long chatId, CancellationToken ct)
+        {
+            // TODO: reset spaced repetition progress for all words inside dictionary
+            return _msg.SendInfoAsync(chatId, $"Сброс прогресса словаря {id} в разработке", ct);
+        }
+
+        private Task DeleteDictionary(string id, long chatId, CancellationToken ct)
+        {
+            // TODO: remove dictionary by id
+            return _msg.SendInfoAsync(chatId, $"Удаление словаря {id} в разработке", ct);
+        }
+
+        private Task ShowHelpInformation(long chatId, CancellationToken ct)
+        {
+            // TODO: show help information about using the bot
+            return _msg.SendInfoAsync(chatId, "Справочная информация в разработке", ct);
         }
     }
 }
