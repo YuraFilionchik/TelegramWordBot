@@ -36,6 +36,7 @@ builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<UserWordProgressRepository>();
 builder.Services.AddSingleton<LanguageRepository>();
 builder.Services.AddSingleton<UserWordRepository>();
+builder.Services.AddSingleton<DictionaryRepository>();
 builder.Services.AddHttpClient<IAIHelper, AIHelper>();
 builder.Services.AddSingleton<TranslationRepository>();
 builder.Services.AddSingleton<UserLanguageRepository>();
