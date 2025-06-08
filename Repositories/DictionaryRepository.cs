@@ -46,4 +46,11 @@ public class DictionaryRepository
         const string sql = @"SELECT w.id AS Id, w.base_text AS Base_Text, w.language_id AS Language_Id FROM dictionary_words dw JOIN words w ON dw.word_id = w.id WHERE dw.dictionary_id = @Dictionary_Id";
         return await conn.QueryAsync<Word>(sql, new { Dictionary_Id = dictionaryId });
     }
+
+    public async Task DeleteAsync(Guid dictionaryId)
+    {
+        using var conn = _factory.CreateConnection();
+        const string sql = "DELETE FROM dictionaries WHERE id = @Id";
+        await conn.ExecuteAsync(sql, new { Id = dictionaryId });
+    }
 }

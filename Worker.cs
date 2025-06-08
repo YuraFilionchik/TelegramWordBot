@@ -24,6 +24,7 @@ namespace TelegramWordBot
         private readonly UserWordProgressRepository _progressRepo;
         private readonly LanguageRepository _languageRepo;
         private readonly TranslationRepository _translationRepo;
+        private readonly DictionaryRepository _dictionaryRepo;
         private readonly UserLanguageRepository _userLangRepository;
         private readonly IAIHelper _ai;
         private readonly TelegramMessageHelper _msg;
@@ -55,6 +56,7 @@ namespace TelegramWordBot
             UserWordRepository userWordRepo,
             IAIHelper aiHelper,
             TranslationRepository translationRepository,
+            DictionaryRepository dictionaryRepository,
             UserLanguageRepository userLanguageRepository,
             TelegramMessageHelper msg,
             ITelegramBotClient botClient,
@@ -70,6 +72,7 @@ namespace TelegramWordBot
             _userWordRepo = userWordRepo;
             _ai = aiHelper;
             _translationRepo = translationRepository;
+            _dictionaryRepo = dictionaryRepository;
             _userLangRepository = userLanguageRepository;
             _msg = msg;
             _botClient = botClient;
@@ -586,31 +589,31 @@ namespace TelegramWordBot
                     await HandleSliderNavigationAsync(callback, user, parts, ct);
                     break;
                 case "stat_today":
-                    await ShowTodayStatistics(user, chatId, ct); // TODO implement statistics for today
+                    await ShowTodayStatistics(user, chatId, ct);
                     break;
                 case "stat_total":
                     await ShowStatisticsAsync(user, chatId, ct);
                     break;
                 case "stat_languages":
-                    await ShowStatisticsByLanguages(user, chatId, ct); // TODO implement stats grouped by languages
+                    await ShowStatisticsByLanguages(user, chatId, ct);
                     break;
                 case "profile_info":
-                    await ShowProfileInfo(user, chatId, ct); // TODO implement profile info display
+                    await ShowProfileInfo(user, chatId, ct);
                     break;
                 case "reset_profile_stats":
-                    await ResetProfileStatistics(user, chatId, ct); // TODO implement profile stats reset
+                    await ResetProfileStatistics(user, chatId, ct);
                     break;
                 case "edit_dict":
-                    await EditDictionary(parts[1], chatId, ct); // TODO implement dictionary editing
+                    await EditDictionary(parts[1], chatId, ct);
                     break;
                 case "reset_dict":
-                    await ResetDictionaryProgress(parts[1], chatId, ct); // TODO implement dictionary progress reset
+                    await ResetDictionaryProgress(parts[1], chatId, ct);
                     break;
                 case "delete_dict":
-                    await DeleteDictionary(parts[1], chatId, ct); // TODO implement dictionary deletion
+                    await DeleteDictionary(parts[1], chatId, ct);
                     break;
                 case "help_info":
-                    await ShowHelpInformation(chatId, ct); // TODO implement help output
+                    await ShowHelpInformation(chatId, ct);
                     break;
                 case "config_learn":
                     switch (parts[1])
@@ -1255,11 +1258,11 @@ namespace TelegramWordBot
                     return (true, string.Empty);
 
                 case "📁 словари по темам":
-                    await ShowDictionariesByTopics(chatId, ct); // TODO implement listing dictionaries by topics
+                    await ShowDictionariesByTopics(chatId, ct);
                     return (true, string.Empty);
 
                 case "🏧 словари по языкам":
-                    await ShowDictionariesByLanguages(chatId, ct); // TODO implement listing dictionaries by languages
+                    await ShowDictionariesByLanguages(chatId, ct);
                     return (true, string.Empty);
 
                 case "📝 изменить слово":
@@ -1267,7 +1270,7 @@ namespace TelegramWordBot
                     return (true, "awaiting_editsearch");
 
                 case "♻️ обнулить прогресс слов":
-                    await ResetAllWordProgress(chatId, user, ct); // TODO reset learning progress for all words
+                    await ResetAllWordProgress(chatId, user, ct);
                     return (true, string.Empty);
 
                 case "⬅️ назад":
@@ -1903,70 +1906,326 @@ namespace TelegramWordBot
 
         // === New stub methods ===
 
-        private Task ShowTodayStatistics(User user, ChatId chatId, CancellationToken ct)
+        private async Task ShowTodayStatistics(User user, ChatId chatId, CancellationToken ct)
         {
-            // TODO: calculate and display statistics only for current day
-            return _msg.SendInfoAsync(chatId, "Статистика за сегодня в разработке", ct);
+            // Calculate statistics only for words reviewed today
+            var today = DateTime.UtcNow.Date;
+            var progresses = (await _progressRepo.GetByUserAsync(user.Id))
+                .Where(p => p.Last_Review.HasValue && p.Last_Review.Value.Date == today)
+                .ToList();
+
+            if (!progresses.Any())
+            {
+                await _msg.SendInfoAsync(chatId, "Сегодня вы ещё не занимались.", ct);
+                return;
+            }
+
+            int reviewed = progresses.Count;
+            int learned = progresses.Count(p => p.Repetition >= 8);
+
+            var hardest = progresses
+                .Where(p => p.Ease_Factor > 0)
+                .OrderBy(p => p.Ease_Factor)
+                .Take(5)
+                .ToList();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("📈 <b>Статистика за сегодня</b>");
+            sb.AppendLine($"Повторено слов: <b>{reviewed}</b>");
+            sb.AppendLine($"Выучено: <b>{learned}</b>");
+
+            if (hardest.Any())
+            {
+                sb.AppendLine();
+                sb.AppendLine("<b>Сложные слова:</b>");
+                foreach (var p in hardest)
+                {
+                    var word = await _wordRepo.GetWordById(p.Word_Id);
+                    if (word != null)
+                        sb.AppendLine($"- {TelegramMessageHelper.EscapeHtml(word.Base_Text)}");
+                }
+            }
+
+            await _msg.SendText(chatId, sb.ToString(), ct);
         }
 
-        private Task ShowStatisticsByLanguages(User user, ChatId chatId, CancellationToken ct)
+        private async Task ShowStatisticsByLanguages(User user, ChatId chatId, CancellationToken ct)
         {
-            // TODO: group statistics by learning languages and display separate blocks
-            return _msg.SendInfoAsync(chatId, "Статистика по языкам в разработке", ct);
+            var languages = (await _userLangRepository.GetUserLanguagesAsync(user.Id)).ToList();
+            if (!languages.Any())
+            {
+                await _msg.SendInfoAsync(chatId, "У вас нет добавленных языков.", ct);
+                return;
+            }
+
+            var progressMap = (await _progressRepo.GetByUserAsync(user.Id)).ToDictionary(p => p.Word_Id);
+
+            var sb = new StringBuilder();
+            sb.AppendLine("📊 <b>Статистика по языкам</b>");
+
+            foreach (var lang in languages)
+            {
+                var words = (await _userWordRepo.GetWordsByUserId(user.Id, lang.Id)).ToList();
+                int total = words.Count;
+                int learned = words.Count(w => progressMap.TryGetValue(w.Id, out var p) && p.Repetition >= 8);
+                int inProgress = total - learned;
+
+                sb.AppendLine();
+                sb.AppendLine($"<b>{TelegramMessageHelper.EscapeHtml(lang.Name)}</b>");
+                sb.AppendLine($"Всего слов: <b>{total}</b>");
+                sb.AppendLine($"Выучено: <b>{learned}</b>");
+                sb.AppendLine($"В процессе: <b>{inProgress}</b>");
+            }
+
+            await _msg.SendText(chatId, sb.ToString(), ct);
         }
 
-        private Task ShowDictionariesByTopics(long chatId, CancellationToken ct)
+        private async Task ShowDictionariesByTopics(long chatId, CancellationToken ct)
         {
-            // TODO: show list of user dictionaries grouped by topics
-            return _msg.SendInfoAsync(chatId, "Списки словарей по темам в разработке", ct);
+            var user = await _userRepo.GetByTelegramIdAsync(chatId);
+            if (user == null)
+            {
+                await _msg.SendErrorAsync(chatId, "Пользователь не найден", ct);
+                return;
+            }
+
+            var dictionaries = (await _dictionaryRepo.GetByUserAsync(user.Id)).ToList();
+            if (!dictionaries.Any())
+            {
+                await _msg.SendInfoAsync(chatId, "У вас нет словарей.", ct);
+                return;
+            }
+
+            var groups = dictionaries.GroupBy(d => d.Name.Contains(':') ? d.Name.Split(':')[0].Trim() : "Без темы");
+            var sb = new StringBuilder();
+            sb.AppendLine("📁 <b>Словари по темам</b>");
+
+            foreach (var g in groups)
+            {
+                sb.AppendLine($"\n<b>{TelegramMessageHelper.EscapeHtml(g.Key)}</b>");
+                foreach (var d in g)
+                    sb.AppendLine($"- {TelegramMessageHelper.EscapeHtml(d.Name)} ({d.Id})");
+            }
+
+            await _msg.SendText(chatId, sb.ToString(), ct);
         }
 
-        private Task ShowDictionariesByLanguages(long chatId, CancellationToken ct)
+        private async Task ShowDictionariesByLanguages(long chatId, CancellationToken ct)
         {
-            // TODO: show list of dictionaries grouped by languages
-            return _msg.SendInfoAsync(chatId, "Списки словарей по языкам в разработке", ct);
+            var user = await _userRepo.GetByTelegramIdAsync(chatId);
+            if (user == null)
+            {
+                await _msg.SendErrorAsync(chatId, "Пользователь не найден", ct);
+                return;
+            }
+
+            var dictionaries = (await _dictionaryRepo.GetByUserAsync(user.Id)).ToList();
+            if (!dictionaries.Any())
+            {
+                await _msg.SendInfoAsync(chatId, "У вас нет словарей.", ct);
+                return;
+            }
+
+            var langGroups = new Dictionary<string, List<Models.Dictionary>>();
+            foreach (var d in dictionaries)
+            {
+                var words = (await _dictionaryRepo.GetWordsAsync(d.Id)).ToList();
+                if (!words.Any())
+                {
+                    if (!langGroups.TryGetValue("Неизвестный", out var unknownList))
+                    {
+                        unknownList = new List<Models.Dictionary>();
+                        langGroups["Неизвестный"] = unknownList;
+                    }
+                    unknownList.Add(d);
+                    continue;
+                }
+
+                var langId = words.First().Language_Id;
+                var lang = await _languageRepo.GetByIdAsync(langId);
+                var key = lang?.Name ?? "Неизвестный";
+
+                if (!langGroups.TryGetValue(key, out var langList))
+                {
+                    langList = new List<Models.Dictionary>();
+                    langGroups[key] = langList;
+                }
+                langList.Add(d);
+            }
+
+            var sb = new StringBuilder();
+            sb.AppendLine("📚 <b>Словари по языкам</b>");
+            foreach (var kvp in langGroups)
+            {
+                sb.AppendLine($"\n<b>{TelegramMessageHelper.EscapeHtml(kvp.Key)}</b>");
+                foreach (var d in kvp.Value)
+                    sb.AppendLine($"- {TelegramMessageHelper.EscapeHtml(d.Name)} ({d.Id})");
+            }
+
+            await _msg.SendText(chatId, sb.ToString(), ct);
         }
 
-        private Task ResetAllWordProgress(long chatId, User user, CancellationToken ct)
+        private async Task ResetAllWordProgress(long chatId, User user, CancellationToken ct)
         {
-            // TODO: reset spaced repetition progress for all words of the user
-            return _msg.SendInfoAsync(chatId, "Сброс прогресса слов в разработке", ct);
+            var progresses = await _progressRepo.GetByUserAsync(user.Id);
+            foreach (var p in progresses)
+            {
+                p.Repetition = 0;
+                p.Interval_Hours = 0;
+                p.Ease_Factor = 2.5;
+                p.Next_Review = DateTime.UtcNow;
+                await _progressRepo.InsertOrUpdateAsync(p);
+            }
+
+            await _msg.SendSuccessAsync(chatId, "Прогресс по всем словам сброшен", ct);
         }
 
-        private Task ShowProfileInfo(User user, ChatId chatId, CancellationToken ct)
+        private async Task ShowProfileInfo(User user, ChatId chatId, CancellationToken ct)
         {
-            // TODO: display detailed profile information
-            return _msg.SendInfoAsync(chatId, "Профиль пользователя в разработке", ct);
+            var langs = (await _userLangRepository.GetUserLanguageNamesAsync(user.Id)).ToList();
+            var totalWords = (await _userWordRepo.GetWordsByUserId(user.Id)).Count();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("👤 <b>Профиль пользователя</b>");
+            sb.AppendLine($"ID: <code>{user.Telegram_Id}</code>");
+            sb.AppendLine($"Родной язык: <b>{TelegramMessageHelper.EscapeHtml(user.Native_Language)}</b>");
+            sb.AppendLine($"Текущий язык: <b>{TelegramMessageHelper.EscapeHtml(user.Current_Language ?? user.Native_Language)}</b>");
+            sb.AppendLine($"Режим обучения: <b>{(user.Prefer_Multiple_Choice ? "множественный выбор" : "бинарный")}</b>");
+            sb.AppendLine();
+            sb.AppendLine("Изучаемые языки: " + (langs.Any() ? string.Join(", ", langs) : "нет"));
+            sb.AppendLine($"Всего слов: <b>{totalWords}</b>");
+
+            await _msg.SendText(chatId, sb.ToString(), ct);
         }
 
-        private Task ResetProfileStatistics(User user, ChatId chatId, CancellationToken ct)
+        private async Task ResetProfileStatistics(User user, ChatId chatId, CancellationToken ct)
         {
-            // TODO: clear all learning statistics for the user
-            return _msg.SendInfoAsync(chatId, "Сброс статистики профиля в разработке", ct);
+            var progresses = await _progressRepo.GetByUserAsync(user.Id);
+            foreach (var p in progresses)
+            {
+                p.Repetition = 0;
+                p.Interval_Hours = 0;
+                p.Ease_Factor = 2.5;
+                p.Next_Review = DateTime.UtcNow;
+                await _progressRepo.InsertOrUpdateAsync(p);
+            }
+
+            await _msg.SendSuccessAsync(chatId, "Вся статистика сброшена", ct);
         }
 
-        private Task EditDictionary(string id, long chatId, CancellationToken ct)
+        private async Task EditDictionary(string id, long chatId, CancellationToken ct)
         {
-            // TODO: open dictionary editing flow by id
-            return _msg.SendInfoAsync(chatId, $"Редактирование словаря {id} в разработке", ct);
+            if (!Guid.TryParse(id, out var dictId))
+            {
+                await _msg.SendErrorAsync(chatId, "Некорректный идентификатор", ct);
+                return;
+            }
+
+            var user = await _userRepo.GetByTelegramIdAsync(chatId);
+            if (user == null)
+            {
+                await _msg.SendErrorAsync(chatId, "Пользователь не найден", ct);
+                return;
+            }
+
+            var dictionaries = await _dictionaryRepo.GetByUserAsync(user.Id);
+            var dictionary = dictionaries.FirstOrDefault(d => d.Id == dictId);
+            if (dictionary == null)
+            {
+                await _msg.SendErrorAsync(chatId, "Словарь не найден", ct);
+                return;
+            }
+
+            var words = (await _dictionaryRepo.GetWordsAsync(dictId)).ToList();
+            if (!words.Any())
+            {
+                await _msg.SendInfoAsync(chatId, "Словарь пуст.", ct);
+                return;
+            }
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"<b>{TelegramMessageHelper.EscapeHtml(dictionary.Name)}</b>");
+            foreach (var w in words)
+            {
+                sb.AppendLine($"- {TelegramMessageHelper.EscapeHtml(w.Base_Text)}");
+            }
+
+            await _msg.SendText(chatId, sb.ToString(), ct);
         }
 
-        private Task ResetDictionaryProgress(string id, long chatId, CancellationToken ct)
+        private async Task ResetDictionaryProgress(string id, long chatId, CancellationToken ct)
         {
-            // TODO: reset spaced repetition progress for all words inside dictionary
-            return _msg.SendInfoAsync(chatId, $"Сброс прогресса словаря {id} в разработке", ct);
+            if (!Guid.TryParse(id, out var dictId))
+            {
+                await _msg.SendErrorAsync(chatId, "Некорректный идентификатор", ct);
+                return;
+            }
+
+            var user = await _userRepo.GetByTelegramIdAsync(chatId);
+            if (user == null)
+            {
+                await _msg.SendErrorAsync(chatId, "Пользователь не найден", ct);
+                return;
+            }
+
+            var words = (await _dictionaryRepo.GetWordsAsync(dictId)).ToList();
+            if (!words.Any())
+            {
+                await _msg.SendInfoAsync(chatId, "В словаре нет слов.", ct);
+                return;
+            }
+
+            foreach (var w in words)
+            {
+                var prog = await _progressRepo.GetAsync(user.Id, w.Id);
+                if (prog == null) continue;
+                prog.Repetition = 0;
+                prog.Interval_Hours = 0;
+                prog.Ease_Factor = 2.5;
+                prog.Next_Review = DateTime.UtcNow;
+                await _progressRepo.InsertOrUpdateAsync(prog);
+            }
+
+            await _msg.SendSuccessAsync(chatId, "Прогресс словаря сброшен", ct);
         }
 
-        private Task DeleteDictionary(string id, long chatId, CancellationToken ct)
+        private async Task DeleteDictionary(string id, long chatId, CancellationToken ct)
         {
-            // TODO: remove dictionary by id
-            return _msg.SendInfoAsync(chatId, $"Удаление словаря {id} в разработке", ct);
+            if (!Guid.TryParse(id, out var dictId))
+            {
+                await _msg.SendErrorAsync(chatId, "Некорректный идентификатор", ct);
+                return;
+            }
+
+            var user = await _userRepo.GetByTelegramIdAsync(chatId);
+            if (user == null)
+            {
+                await _msg.SendErrorAsync(chatId, "Пользователь не найден", ct);
+                return;
+            }
+
+            var dictionaries = await _dictionaryRepo.GetByUserAsync(user.Id);
+            var dictionary = dictionaries.FirstOrDefault(d => d.Id == dictId);
+            if (dictionary == null)
+            {
+                await _msg.SendErrorAsync(chatId, "Словарь не найден", ct);
+                return;
+            }
+
+            await _dictionaryRepo.DeleteAsync(dictId);
+            await _msg.SendSuccessAsync(chatId, "Словарь удалён", ct);
         }
 
         private Task ShowHelpInformation(long chatId, CancellationToken ct)
         {
-            // TODO: show help information about using the bot
-            return _msg.SendInfoAsync(chatId, "Справочная информация в разработке", ct);
+            var help = new StringBuilder();
+            help.AppendLine("<b>Помощь</b>");
+            help.AppendLine("/addword - добавить новое слово");
+            help.AppendLine("/mywords - показать все слова");
+            help.AppendLine("/learn - начать обучение");
+            help.AppendLine();
+            help.AppendLine("Используйте меню бота для остальных действий.");
+            return _msg.SendText(chatId, help.ToString(), ct);
         }
     }
 }
