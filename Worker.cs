@@ -2038,6 +2038,7 @@ namespace TelegramWordBot
                         langGroups["Неизвестный"] = unknownList;
                     }
                     unknownList.Add(d);
+
                     continue;
                 }
 
