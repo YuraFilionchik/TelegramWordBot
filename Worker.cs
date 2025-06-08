@@ -589,31 +589,31 @@ namespace TelegramWordBot
                     await HandleSliderNavigationAsync(callback, user, parts, ct);
                     break;
                 case "stat_today":
-                    await ShowTodayStatistics(user, chatId, ct); // TODO implement statistics for today
+                    await ShowTodayStatistics(user, chatId, ct);
                     break;
                 case "stat_total":
                     await ShowStatisticsAsync(user, chatId, ct);
                     break;
                 case "stat_languages":
-                    await ShowStatisticsByLanguages(user, chatId, ct); // TODO implement stats grouped by languages
+                    await ShowStatisticsByLanguages(user, chatId, ct);
                     break;
                 case "profile_info":
-                    await ShowProfileInfo(user, chatId, ct); // TODO implement profile info display
+                    await ShowProfileInfo(user, chatId, ct);
                     break;
                 case "reset_profile_stats":
-                    await ResetProfileStatistics(user, chatId, ct); // TODO implement profile stats reset
+                    await ResetProfileStatistics(user, chatId, ct);
                     break;
                 case "edit_dict":
-                    await EditDictionary(parts[1], chatId, ct); // TODO implement dictionary editing
+                    await EditDictionary(parts[1], chatId, ct);
                     break;
                 case "reset_dict":
-                    await ResetDictionaryProgress(parts[1], chatId, ct); // TODO implement dictionary progress reset
+                    await ResetDictionaryProgress(parts[1], chatId, ct);
                     break;
                 case "delete_dict":
-                    await DeleteDictionary(parts[1], chatId, ct); // TODO implement dictionary deletion
+                    await DeleteDictionary(parts[1], chatId, ct);
                     break;
                 case "help_info":
-                    await ShowHelpInformation(chatId, ct); // TODO implement help output
+                    await ShowHelpInformation(chatId, ct);
                     break;
                 case "config_learn":
                     switch (parts[1])
@@ -1258,11 +1258,11 @@ namespace TelegramWordBot
                     return (true, string.Empty);
 
                 case "📁 словари по темам":
-                    await ShowDictionariesByTopics(chatId, ct); // TODO implement listing dictionaries by topics
+                    await ShowDictionariesByTopics(chatId, ct);
                     return (true, string.Empty);
 
                 case "🏧 словари по языкам":
-                    await ShowDictionariesByLanguages(chatId, ct); // TODO implement listing dictionaries by languages
+                    await ShowDictionariesByLanguages(chatId, ct);
                     return (true, string.Empty);
 
                 case "📝 изменить слово":
@@ -1270,7 +1270,7 @@ namespace TelegramWordBot
                     return (true, "awaiting_editsearch");
 
                 case "♻️ обнулить прогресс слов":
-                    await ResetAllWordProgress(chatId, user, ct); // TODO reset learning progress for all words
+                    await ResetAllWordProgress(chatId, user, ct);
                     return (true, string.Empty);
 
                 case "⬅️ назад":
@@ -2032,12 +2032,12 @@ namespace TelegramWordBot
                 var words = (await _dictionaryRepo.GetWordsAsync(d.Id)).ToList();
                 if (!words.Any())
                 {
-                    if (!langGroups.TryGetValue("Неизвестный", out var list))
+                    if (!langGroups.TryGetValue("Неизвестный", out var unknownList))
                     {
-                        list = new List<Models.Dictionary>();
-                        langGroups["Неизвестный"] = list;
+                        unknownList = new List<Models.Dictionary>();
+                        langGroups["Неизвестный"] = unknownList;
                     }
-                    list.Add(d);
+                    unknownList.Add(d);
                     continue;
                 }
 
@@ -2045,12 +2045,12 @@ namespace TelegramWordBot
                 var lang = await _languageRepo.GetByIdAsync(langId);
                 var key = lang?.Name ?? "Неизвестный";
 
-                if (!langGroups.TryGetValue(key, out var list))
+                if (!langGroups.TryGetValue(key, out var langList))
                 {
-                    list = new List<Models.Dictionary>();
-                    langGroups[key] = list;
+                    langList = new List<Models.Dictionary>();
+                    langGroups[key] = langList;
                 }
-                list.Add(d);
+                langList.Add(d);
             }
 
             var sb = new StringBuilder();
