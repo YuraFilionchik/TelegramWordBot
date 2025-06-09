@@ -76,6 +76,7 @@ public static class DatabaseInitializer
             );",
             @"CREATE TABLE IF NOT EXISTS todo_items (
                 id UUID PRIMARY KEY,
+                user_id UUID REFERENCES users(id) ON DELETE CASCADE,
                 title TEXT NOT NULL,
                 description TEXT NOT NULL,
                 created_at TIMESTAMPTZ NOT NULL,
