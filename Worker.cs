@@ -847,7 +847,7 @@ namespace TelegramWordBot
                     };
                     await _translationRepo.AddTranslationAsync(tr);
 
-                    await _userWordRepo.AddUserWordAsync(user.Id, word.Id, tr.Id);
+                    await AddWordToUserDictionary(user, "default", tr, word);
 
                     var imgPath = await GetImagePathAsync(word);
                     await _msg.SendSuccessAsync(chatId, $"Добавлено «{word.Base_Text}»", ct);
@@ -872,40 +872,10 @@ namespace TelegramWordBot
                     Language_Id = current!.Id
                 };
                 await _wordRepo.AddWordAsync(word);
-
-                var savedTrIds = new List<Guid>();
-                var savedTexts = new List<string>();
-                var savedExamples = new List<string>();
-
-                foreach (var idx in translationIndices)
-                {
-                    var itranslated_item = translated_items[idx];
-                    if (string.IsNullOrEmpty(itranslated_item.TranslatedText)) continue;
-
-                    savedTexts.Add(itranslated_item.TranslatedText);
-                    
-                }
-
-                foreach(var idx in examplesIndices)
-                {
-                    var iexample = aiResult.Items[idx].Example;
-                    if (!string.IsNullOrEmpty(iexample))
-                    {
-                        savedExamples.Add(iexample);
-                    }
-                }
-                    var tr = new Translation
-                    {
-                        Id = Guid.NewGuid(),
-                        Word_Id = word.Id,
-                        Language_Id = native!.Id,
-                        Text = string.Join(", ", savedTexts),
-                        Examples = string.Join("\n", savedExamples)
-                    };
-                    await _translationRepo.AddTranslationAsync(tr);
+                Translation tr = await SaveTranslations(aiResult, translationIndices, examplesIndices, native, word);
 
                 var imgPath = await GetImagePathAsync(word);
-                await _userWordRepo.AddUserWordAsync(user.Id, word.Id, tr.Id);
+                await AddWordToUserDictionary(user, "default", tr, word);
                 await _msg.SendSuccessAsync(chatId, $"Добавлено «{word.Base_Text}»", ct);
                 await _msg.SendWordCardWithEdit(
                     chatId: new ChatId(chatId),
@@ -917,6 +887,40 @@ namespace TelegramWordBot
                     imageUrl: imgPath,
                     ct: ct);
             }
+        }
+
+        private async Task<Translation> SaveTranslations(TranslatedTextClass aiResult, List<int> translationIndices, List<int> examplesIndices, Language native,  Word word)
+        {
+            var savedTrIds = new List<Guid>();
+            var savedTexts = new List<string>();
+            var savedExamples = new List<string>();
+            foreach (var idx in translationIndices)
+            {
+                var itranslated_item = aiResult.Items[idx];
+                if (string.IsNullOrEmpty(itranslated_item.TranslatedText)) continue;
+
+                savedTexts.Add(itranslated_item.TranslatedText);
+
+            }
+
+            foreach (var idx in examplesIndices)
+            {
+                var iexample = aiResult.Items[idx].Example;
+                if (!string.IsNullOrEmpty(iexample))
+                {
+                    savedExamples.Add(iexample);
+                }
+            }
+            var tr = new Translation
+            {
+                Id = Guid.NewGuid(),
+                Word_Id = word.Id,
+                Language_Id = native!.Id,
+                Text = string.Join(", ", savedTexts),
+                Examples = string.Join("\n", savedExamples)
+            };
+            await _translationRepo.AddTranslationAsync(tr);
+            return tr;
         }
 
         private string findExamplesByWord(TranslatedTextClass aiResult, string variant, List<int> examplesIndices)
@@ -934,7 +938,8 @@ namespace TelegramWordBot
                 // Если пример содержит вариант и индекс в списке примеров
                 if (item.Example!= null && item.Example.Contains(variant) && examplesIndices.Contains(i))
                 {
-                    result+= item.Example ?? string.Empty;
+                    if (!result.Contains(item.Example))
+                        result += item.Example ?? string.Empty;
                 }
             }
             return result;
@@ -1072,6 +1077,7 @@ namespace TelegramWordBot
 
             // Индексы выбранных переводов
             var translationIndices = _selectedEditTranslations[chatId];
+            var examplesIndices = _selectedEditExamples[chatId];
 
             // Очищаем кешированные состояния
             _pendingEditWordId.Remove(chatId);
@@ -1082,57 +1088,19 @@ namespace TelegramWordBot
             // Удаляем все старые переводы для этого слова
             await _translationRepo.RemoveByWordIdAsync(wordId);
 
-            // Получаем ID родного языка
             var native = await _languageRepo.GetByNameAsync(user.Native_Language);
-            Guid firstTransId = Guid.Empty;
-
-            // Для каждого выбранного перевода создаём новую запись Translation,
-            // прикрепляя к нему именно тот пример, который хранится в item.Example
-            foreach (var idx in translationIndices)
-            {
-                if (idx < 0 || idx >= items.Count) continue;
-                var item = items[idx];
-                var text = item.TranslatedText ?? string.Empty;
-                var example = item.Example; // может быть null
-
-                var tr = new Translation
-                {
-                    Id = Guid.NewGuid(),
-                    Word_Id = wordId,
-                    Language_Id = native!.Id,
-                    Text = text,
-                    Examples = example
-                };
-                await _translationRepo.AddTranslationAsync(tr);
-
-                if (firstTransId == Guid.Empty)
-                    firstTransId = tr.Id;
-            }
-
-            // Обновляем UserWord.translation_id на первый из новых переводов
-            if (firstTransId != Guid.Empty)
-                await _userWordRepo.UpdateUserTranslationIdAsync(user.Id, wordId, firstTransId);
-
-            // Отправляем пользователю обновлённую карточку
             var word = await _wordRepo.GetWordById(wordId);
             var current = await _languageRepo.GetByNameAsync(user.Current_Language!);
-
-            // Формируем отображаемый перевод и пример (берём первый из выбранных)
-            var firstText = translationIndices.Any() && translationIndices[0] < items.Count
-                ? items[translationIndices[0]].TranslatedText
-                : string.Empty;
-            var firstExample = translationIndices.Any() && translationIndices[0] < items.Count
-                ? items[translationIndices[0]].Example
-                : null;
+            var tr = await SaveTranslations(aiResult, translationIndices, examplesIndices, native, word);
 
             await _msg.SendSuccessAsync(chatId, $"Обновлено «{word!.Base_Text}»", ct);
             var imgPath = await GetImagePathAsync(word);
             await _msg.SendWordCardWithEdit(
                 chatId: new ChatId(chatId),
                 word: word.Base_Text,
-                translation: firstText ?? string.Empty,
+                translation: tr.Text,
                 wordId: word.Id,
-                example: firstExample,
+                example: tr.Examples,
                 category: current!.Name,
                 imageUrl: imgPath,
                 ct: ct);
@@ -1525,9 +1493,9 @@ namespace TelegramWordBot
                     else
                     {
                         // Привязываем к пользователю
-                        Translation? translation = await _translationRepo.GetTranslationAsync(existingWord.Id, inputLang.Id);
-                        await _userWordRepo.AddUserWordAsync(user.Id, existingWord.Id, translation?.Id);
-                        await _msg.SendSuccessAsync(chatId, $"«{text} - {translation?.Text}» добавлено в ваш словарь.", ct);
+                        Translation? translation = await _translationRepo.GetTranslationAsync(existingWord.Id, inputLang.Id);//TODO check if translation is null and create it if needed
+                        await AddWordToUserDictionary(user, "default", translation, existingWord);
+                        await _msg.SendSuccessAsync(chatId, $"«{text} - {translation?.Text}» добавлено в ваш общий словарь.", ct);
                     }
                     return;
                 }
@@ -1550,7 +1518,8 @@ namespace TelegramWordBot
                         }
                         else
                         {
-                            await _userWordRepo.AddUserWordAsync(user.Id, foreignWord.Id, match.Id);
+                            await AddWordToUserDictionary(user,"default", match, foreignWord);
+
                             var wordImage = await _imageRepo.GetByWordAsync(foreignWord.Id);
                             if (wordImage == null || !File.Exists(wordImage.FilePath))
                             {
@@ -1568,7 +1537,7 @@ namespace TelegramWordBot
                                         ct: ct);
                                 }
                             }
-                            await _msg.SendSuccessAsync(chatId, $"«{foreignWord.Base_Text} - {text}» добавлено в ваш словарь.", ct);
+                            await _msg.SendSuccessAsync(chatId, $"«{foreignWord.Base_Text} - {text}» добавлено в ваш общий словарь.", ct);
                         }
                         return;
                     }
@@ -1604,7 +1573,7 @@ namespace TelegramWordBot
                 _translationCandidates[chatId] = aiResult;
                 _selectedTranslations[chatId] = new List<int> { 0 };
                 _selectedExamples[chatId] = examples.Count == 1 ? new List<int> { 0 } : new List<int>();
-
+                _inputLanguage[chatId] = inputLang;
                 await FinalizeAddWord(user, inputLang, ct);
                 return;
             }
@@ -1616,6 +1585,12 @@ namespace TelegramWordBot
             _selectedExamples[chatId] = new List<int>();
 
             await ShowTranslationOptions(chatId, aiResult, ct);
+        }
+
+        private async Task AddWordToUserDictionary(User user,string dictionaryName, Translation match, Word foreignWord)
+        {
+            await _userWordRepo.AddUserWordAsync(user.Id, foreignWord.Id, match.Id);
+            await _dictionaryRepo.AddWordAsync(dictionaryName, foreignWord.Id, user.Id);
         }
 
         /// <summary>
