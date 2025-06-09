@@ -93,11 +93,15 @@ public static class KeyboardFactory
     }
 
     // Инлайн-клавиатура для профиля
-    public static InlineKeyboardMarkup GetProfileInline()
+    public static InlineKeyboardMarkup GetProfileInline(Guid userId, string appUrl)
     {
+        var baseUrl = string.IsNullOrEmpty(appUrl) ? string.Empty : appUrl.TrimEnd('/');
+        var todoUrl = $"{baseUrl}/todoitems/pretty?userId={userId}";
+
         return new InlineKeyboardMarkup(new[]
         {
             new[] { InlineKeyboardButton.WithCallbackData("👤 Инфо о пользователе", "profile_info") },
+            new[] { InlineKeyboardButton.WithWebApp("📝 Todo App", new WebAppInfo(todoUrl)) },
             new[] { InlineKeyboardButton.WithCallbackData("🔄 Сбросить статистику", "reset_profile_stats") }
         });
     }
@@ -145,9 +149,9 @@ public static class KeyboardFactory
     }
 
     // Отображение меню профиля
-    public static async Task ShowProfileMenuAsync(ITelegramBotClient botClient, ChatId chatId, CancellationToken ct)
+    public static async Task ShowProfileMenuAsync(ITelegramBotClient botClient, ChatId chatId, Guid userId, string appUrl, CancellationToken ct)
     {
-        await botClient.SendMessage(chatId, "Профиль:", replyMarkup: GetProfileInline(), cancellationToken: ct);
+        await botClient.SendMessage(chatId, "Профиль:", replyMarkup: GetProfileInline(userId, appUrl), cancellationToken: ct);
     }
 
 
