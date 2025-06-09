@@ -48,6 +48,8 @@ namespace TelegramWordBot
         private readonly Dictionary<long, List<(Guid Id, string Display)>> _editListCache = new();
         private readonly Dictionary<long, int> _editListPage = new();
         private const int EditListPageSize = 30;
+        private readonly Dictionary<long, Guid> _pendingDeleteWordsDict = new();
+        private readonly Dictionary<long, Guid> _pendingDeleteDict = new();
 
         public Worker(
             ILogger<Worker> logger,
@@ -461,6 +463,57 @@ namespace TelegramWordBot
             _userStates[chatId] = "awaiting_listdelete";
         }
 
+        private async Task ShowDictionaryWordsForEdit(long chatId, Guid dictId, User user, CancellationToken ct)
+        {
+            var native = await _languageRepo.GetByNameAsync(user.Native_Language);
+            var words = (await _dictionaryRepo.GetWordsAsync(dictId)).ToList();
+
+            var list = new List<(Guid Id, string Display)>();
+            foreach (var w in words)
+            {
+                var tr = await _translationRepo.GetTranslationAsync(w.Id, native.Id);
+                var display = $"{w.Base_Text} - {tr?.Text ?? "-"}";
+                list.Add((w.Id, display));
+            }
+
+            if (!list.Any())
+            {
+                await _msg.SendText(new ChatId(chatId), "❌ Нет слов.", ct);
+                return;
+            }
+
+            _editListCache[chatId] = list;
+            await SendEditListPage(chatId, 0, ct);
+            _pendingDeleteWordsDict[chatId] = dictId;
+            _userStates[chatId] = "awaiting_listdelete";
+        }
+
+        private async Task ShowDictionariesForAction(long chatId, string action, CancellationToken ct)
+        {
+            var user = await _userRepo.GetByTelegramIdAsync(chatId);
+            if (user == null)
+            {
+                await _msg.SendErrorAsync(chatId, "Пользователь не найден", ct);
+                return;
+            }
+
+            var dictionaries = (await _dictionaryRepo.GetByUserAsync(user.Id)).ToList();
+            if (!dictionaries.Any())
+            {
+                await _msg.SendInfoAsync(chatId, "У вас нет словарей.", ct);
+                return;
+            }
+
+            var buttons = dictionaries
+                .Where(d => action != "delete_dict" || d.Name != "default")
+                .Select(d =>
+                    new[] { InlineKeyboardButton.WithCallbackData(d.Name == "default" ? "Общий" : d.Name, $"{action}:{d.Id}") })
+                .ToArray();
+
+            var kb = new InlineKeyboardMarkup(buttons);
+            await _msg.SendText(chatId, "Выберите словарь:", kb, ct);
+        }
+
         private async Task SendEditListPage(long chatId, int page, CancellationToken ct)
         {
             if (!_editListCache.TryGetValue(chatId, out var list)) return;
@@ -536,11 +589,23 @@ namespace TelegramWordBot
             foreach (var id in ids.Distinct())
             {
                 if (await _userWordRepo.RemoveUserWordAsync(user.Id, id))
+                {
                     removed++;
+                    if (_pendingDeleteWordsDict.TryGetValue(chatId, out var dId))
+                        await _dictionaryRepo.RemoveWordAsync(dId, id);
+                }
             }
 
             await _msg.SendSuccessAsync(chatId, $"Удалено слов: {removed}", ct);
-            await ShowMyWordsForEdit(chatId, user, ct);
+
+            if (_pendingDeleteWordsDict.TryGetValue(chatId, out var dictId))
+            {
+                await ShowDictionaryWordsForEdit(chatId, dictId, user, ct);
+            }
+            else
+            {
+                await ShowMyWordsForEdit(chatId, user, ct);
+            }
         }
 
 
@@ -664,6 +729,17 @@ namespace TelegramWordBot
                     break;
                 case "delete_dict":
                     await DeleteDictionary(parts[1], chatId, ct);
+                    break;
+                case "show_dict":
+                    if (Guid.TryParse(parts[1], out var sd))
+                        await ShowDictionary(sd, chatId, ct);
+                    break;
+                case "delete_words":
+                    if (Guid.TryParse(parts[1], out var dw))
+                        await ShowDictionaryWordsForEdit(chatId, dw, user, ct);
+                    break;
+                case "cancel":
+                    await _botClient.AnswerCallbackQuery(callback.Id, cancellationToken: ct);
                     break;
                 case "help_info":
                     await ShowHelpInformation(chatId, ct);
@@ -1282,6 +1358,14 @@ namespace TelegramWordBot
                     await ShowDictionariesByTopics(chatId, ct);
                     return (true, string.Empty);
 
+                case "🗑️ удалить словарь":
+                    await ShowDictionariesForAction(chatId, "delete_dict", ct);
+                    return (true, string.Empty);
+
+                case "🗑️ удалить слова":
+                    await ShowDictionariesForAction(chatId, "delete_words", ct);
+                    return (true, string.Empty);
+
                 case "🏧 словари по языкам":
                     await ShowDictionariesByLanguages(chatId, ct);
                     return (true, string.Empty);
@@ -1869,26 +1953,9 @@ namespace TelegramWordBot
                 return;
             }
 
-            var native = await _languageRepo.GetByNameAsync(user.Native_Language);
-            var sb = new StringBuilder();
-            sb.AppendLine("📁 <b>Словари по темам</b>");
-            sb.AppendLine("----------------------------");
-
-            foreach (var d in dictionaries)
-                {
-                    var words = (await _dictionaryRepo.GetWordsAsync(d.Id)).ToList();
-                    var dictName = d.Name == "default" ? "Общий" : d.Name;
-                    sb.AppendLine($"-[ <b>{TelegramMessageHelper.EscapeHtml(dictName)}</b>]-");
-                sb.AppendLine("");
-                foreach (var w in words)
-                    {
-                        var tr = await _translationRepo.GetTranslationAsync(w.Id, native.Id);
-                        var right = tr?.Text ?? "-";
-                        sb.AppendLine($"{TelegramMessageHelper.EscapeHtml(w.Base_Text)} — {TelegramMessageHelper.EscapeHtml(right)}");
-                    }
-                }
-
-            await _msg.SendText(chatId, sb.ToString(), ct);
+            var inline = KeyboardFactory.GetDictionaryListInline(dictionaries);
+            await _msg.SendText(chatId, "📁 <b>Словари по темам</b>", inline, ct);
+            await KeyboardFactory.ShowTopicDictionaryMenuAsync(_botClient, chatId, ct);
         }
 
         private async Task ShowDictionariesByLanguages(long chatId, CancellationToken ct)
@@ -2035,6 +2102,40 @@ namespace TelegramWordBot
             await _msg.SendText(chatId, sb.ToString(), ct);
         }
 
+        private async Task ShowDictionary(Guid dictId, long chatId, CancellationToken ct)
+        {
+            var user = await _userRepo.GetByTelegramIdAsync(chatId);
+            if (user == null)
+            {
+                await _msg.SendErrorAsync(chatId, "Пользователь не найден", ct);
+                return;
+            }
+
+            var dictionaries = await _dictionaryRepo.GetByUserAsync(user.Id);
+            var dictionary = dictionaries.FirstOrDefault(d => d.Id == dictId);
+            if (dictionary == null)
+            {
+                await _msg.SendErrorAsync(chatId, "Словарь не найден", ct);
+                return;
+            }
+
+            var words = (await _dictionaryRepo.GetWordsAsync(dictId)).ToList();
+            var native = await _languageRepo.GetByNameAsync(user.Native_Language);
+
+            var sb = new StringBuilder();
+            var dictName = dictionary.Name == "default" ? "Общий" : dictionary.Name;
+            sb.AppendLine($"📁 <b>{TelegramMessageHelper.EscapeHtml(dictName)}</b>");
+            foreach (var w in words)
+            {
+                var tr = await _translationRepo.GetTranslationAsync(w.Id, native.Id);
+                var right = tr?.Text ?? "-";
+                sb.AppendLine($"{TelegramMessageHelper.EscapeHtml(w.Base_Text)} — {TelegramMessageHelper.EscapeHtml(right)}");
+            }
+
+            var actions = KeyboardFactory.GetTopicDictionaryActions(dictId);
+            await _msg.SendText(chatId, sb.ToString(), actions, ct);
+        }
+
         private async Task ResetDictionaryProgress(string id, long chatId, CancellationToken ct)
         {
             if (!Guid.TryParse(id, out var dictId))
@@ -2073,6 +2174,14 @@ namespace TelegramWordBot
 
         private async Task DeleteDictionary(string id, long chatId, CancellationToken ct)
         {
+            if (id.StartsWith("confirm_"))
+            {
+                var strId = id.Substring("confirm_".Length);
+                if (!Guid.TryParse(strId, out var dId)) return;
+                await PerformDictionaryDeletion(dId, chatId, ct);
+                return;
+            }
+
             if (!Guid.TryParse(id, out var dictId))
             {
                 await _msg.SendErrorAsync(chatId, "Некорректный идентификатор", ct);
@@ -2094,7 +2203,40 @@ namespace TelegramWordBot
                 return;
             }
 
+            if (dictionary.Name == "default")
+            {
+                await _msg.SendErrorAsync(chatId, "Нельзя удалить общий словарь", ct);
+                return;
+            }
+
+            _pendingDeleteDict[chatId] = dictId;
+
+            var kb = new InlineKeyboardMarkup(new[]
+            {
+                new[]{ InlineKeyboardButton.WithCallbackData("Да", $"delete_dict:confirm_{dictId}") },
+                new[]{ InlineKeyboardButton.WithCallbackData("Нет", "cancel") }
+            });
+            await _msg.SendText(chatId, "Удалить словарь? Слова будут перенесены в общий.", kb, ct);
+        }
+
+        private async Task PerformDictionaryDeletion(Guid dictId, long chatId, CancellationToken ct)
+        {
+            var user = await _userRepo.GetByTelegramIdAsync(chatId);
+            if (user == null) return;
+
+            var dictionaries = await _dictionaryRepo.GetByUserAsync(user.Id);
+            var dictionary = dictionaries.FirstOrDefault(d => d.Id == dictId);
+            if (dictionary == null) return;
+
+            var words = (await _dictionaryRepo.GetWordsAsync(dictId)).ToList();
+            var defaultDict = await _dictionaryRepo.GetDefaultDictionary(user.Id);
+            foreach (var w in words)
+            {
+                await _dictionaryRepo.AddWordAsync(defaultDict.Id, w.Id);
+            }
+
             await _dictionaryRepo.DeleteAsync(dictId);
+            _pendingDeleteDict.Remove(chatId);
             await _msg.SendSuccessAsync(chatId, "Словарь удалён", ct);
         }
 

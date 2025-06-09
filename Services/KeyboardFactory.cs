@@ -121,6 +121,47 @@ public static class KeyboardFactory
         });
     }
 
+    public static InlineKeyboardMarkup GetDictionaryListInline(IEnumerable<Models.Dictionary> dictionaries)
+    {
+        var rows = new List<InlineKeyboardButton[]>();
+        foreach (var d in dictionaries)
+        {
+            var name = d.Name == "default" ? "Общий" : d.Name;
+            rows.Add(new[]
+            {
+                InlineKeyboardButton.WithCallbackData(name, $"show_dict:{d.Id}")
+            });
+        }
+        return new InlineKeyboardMarkup(rows);
+    }
+
+    public static InlineKeyboardMarkup GetTopicDictionaryActions(Guid dictId)
+    {
+        return new InlineKeyboardMarkup(new[]
+        {
+            new[] { InlineKeyboardButton.WithCallbackData("🗑️ Удалить словарь", $"delete_dict:{dictId}") },
+            new[] { InlineKeyboardButton.WithCallbackData("🗑️ Удалить слова", $"delete_words:{dictId}") }
+        });
+    }
+
+    public static ReplyKeyboardMarkup GetTopicDictionaryMenu()
+    {
+        return new ReplyKeyboardMarkup(new[]
+        {
+            new[] { new KeyboardButton("🗑️ Удалить словарь") },
+            new[] { new KeyboardButton("🗑️ Удалить слова") },
+            new[] { new KeyboardButton("⬅️ Назад") }
+        })
+        {
+            ResizeKeyboard = true
+        };
+    }
+
+    public static async Task ShowTopicDictionaryMenuAsync(ITelegramBotClient botClient, ChatId chatId, CancellationToken ct)
+    {
+        await botClient.SendMessage(chatId, "Словари по темам:", replyMarkup: GetTopicDictionaryMenu(), cancellationToken: ct);
+    }
+
     // Отображение главного меню пользователю
     public static async Task ShowMainMenuAsync(ITelegramBotClient botClient, ChatId chatId, CancellationToken ct)
     {
