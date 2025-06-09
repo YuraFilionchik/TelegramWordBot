@@ -26,6 +26,8 @@ namespace TelegramWordBot
         private readonly TranslationRepository _translationRepo;
         private readonly DictionaryRepository _dictionaryRepo;
         private readonly UserLanguageRepository _userLangRepository;
+        private readonly TodoItemRepository _todoRepo;
+        private readonly string _appUrl;
         private readonly IAIHelper _ai;
         private readonly TelegramMessageHelper _msg;
         private readonly Dictionary<long, string> _userStates = new();
@@ -58,6 +60,7 @@ namespace TelegramWordBot
             TranslationRepository translationRepository,
             DictionaryRepository dictionaryRepository,
             UserLanguageRepository userLanguageRepository,
+            TodoItemRepository todoItemRepository,
             TelegramMessageHelper msg,
             ITelegramBotClient botClient,
             SpacedRepetitionService sr,
@@ -74,11 +77,13 @@ namespace TelegramWordBot
             _translationRepo = translationRepository;
             _dictionaryRepo = dictionaryRepository;
             _userLangRepository = userLanguageRepository;
+            _todoRepo = todoItemRepository;
             _msg = msg;
             _botClient = botClient;
             _sr = sr;
             _imageService = imageService;
             _imageRepo = imageRepo;
+            _appUrl = Environment.GetEnvironmentVariable("APP_URL") ?? string.Empty;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -277,6 +282,49 @@ namespace TelegramWordBot
                             else
                                 await _msg.SendInfoAsync(chatId, $"Слово '{sw[1]}' не найдено", ct);
                         }
+                        break;
+
+                    case "/todo":
+                        var todoContent = text.Substring(5).Trim();
+                        if (string.IsNullOrWhiteSpace(todoContent))
+                        {
+                            await _msg.SendErrorAsync(chatId, "Используйте /todo Текст : Описание", ct);
+                            break;
+                        }
+                        var split = todoContent.Split(':', 2);
+                        var title = split[0].Trim();
+                        var desc = split.Length > 1 ? split[1].Trim() : string.Empty;
+                        var todo = new TodoItem
+                        {
+                            Id = Guid.NewGuid(),
+                            User_Id = user.Id,
+                            Title = title,
+                            Description = desc,
+                            Created_At = DateTime.UtcNow
+                        };
+                        await _todoRepo.AddAsync(todo);
+                        await _msg.SendSuccessAsync(chatId, "Задача добавлена", ct);
+                        break;
+
+                    case "/todos":
+                        var items = (await _todoRepo.GetAllAsync(user.Id)).ToList();
+                        if (!items.Any())
+                        {
+                            await _msg.SendInfoAsync(chatId, "Список пуст", ct);
+                            break;
+                        }
+                        var sbList = new StringBuilder();
+                        foreach (var it in items)
+                        {
+                            var t = TelegramMessageHelper.EscapeHtml(it.Title);
+                            var d = TelegramMessageHelper.EscapeHtml(it.Description);
+                            var link = string.IsNullOrEmpty(_appUrl) ? $"/todoitems/{it.Id}/complete" : $"{_appUrl}/todoitems/{it.Id}/complete";
+                            if (!it.Is_Complete)
+                                sbList.AppendLine($"<a href='{link}'>[✓]</a> <b>{t}</b> {d}");
+                            else
+                                sbList.AppendLine($"✔️ <b>{t}</b> {d}");
+                        }
+                        await _msg.SendText(new ChatId(chatId), sbList.ToString(), ct);
                         break;
 
                     case "/mywords":

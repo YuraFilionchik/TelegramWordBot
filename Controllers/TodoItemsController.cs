@@ -16,18 +16,19 @@ public class TodoItemsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IEnumerable<TodoItem>> Get()
+    public async Task<IEnumerable<TodoItem>> Get([FromQuery] Guid userId)
     {
-        return await _repo.GetAllAsync();
+        return await _repo.GetAllAsync(userId);
     }
 
     [HttpPost]
-    public async Task<ActionResult<TodoItem>> Post([FromBody] TodoItem item)
+    public async Task<ActionResult<TodoItem>> Post([FromQuery] Guid userId, [FromBody] TodoItem item)
     {
         item.Id = Guid.NewGuid();
+        item.User_Id = userId;
         item.Created_At = DateTime.UtcNow;
         await _repo.AddAsync(item);
-        return CreatedAtAction(nameof(Get), new { id = item.Id }, item);
+        return CreatedAtAction(nameof(Get), new { id = item.Id, userId = userId }, item);
     }
 
     [HttpPost("{id}/complete")]
@@ -40,14 +41,14 @@ public class TodoItemsController : ControllerBase
         item.Is_Complete = true;
         await _repo.UpdateAsync(item);
 
-        return RedirectToAction(nameof(GetPretty));
+        return RedirectToAction(nameof(GetPretty), new { userId = item.User_Id });
     }
 
 
     [HttpGet("pretty")]
-    public async Task<IActionResult> GetPretty()
+    public async Task<IActionResult> GetPretty([FromQuery] Guid userId)
     {
-        var items = await _repo.GetAllAsync();
+        var items = await _repo.GetAllAsync(userId);
         var html = $@"
     <html>
     <head>

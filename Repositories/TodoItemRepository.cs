@@ -12,19 +12,19 @@ public class TodoItemRepository
         _factory = factory;
     }
 
-    public async Task<IEnumerable<TodoItem>> GetAllAsync()
+    public async Task<IEnumerable<TodoItem>> GetAllAsync(Guid userId)
     {
         using var conn = _factory.CreateConnection();
         IEnumerable<TodoItem> items = await conn.QueryAsync<TodoItem>(
-    "SELECT * FROM todo_items ORDER BY is_complete ASC, created_at DESC"
-);
+            "SELECT * FROM todo_items WHERE user_id = @User_Id ORDER BY is_complete ASC, created_at DESC",
+            new { User_Id = userId });
         return items;
     }
 
     public async Task AddAsync(TodoItem item)
     {
         using var conn = _factory.CreateConnection();
-        const string sql = "INSERT INTO todo_items (id, title, description, created_at, is_complete) VALUES (@Id, @Title, @Description, @Created_At, @Is_Complete)";
+        const string sql = "INSERT INTO todo_items (id, user_id, title, description, created_at, is_complete) VALUES (@Id, @User_Id, @Title, @Description, @Created_At, @Is_Complete)";
         await conn.ExecuteAsync(sql, item);
     }
 
