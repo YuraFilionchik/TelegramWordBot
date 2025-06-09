@@ -1,3 +1,8 @@
+using System;
+using System.Text;
+using System.Collections.Generic;
+
+namespace TelegramWordBot{
 public class AsciiFrameGenerator
 {
     // Метод для разбиения текста на строки по заданной ширине
@@ -123,3 +128,4 @@ public class AsciiFrameGenerator
 
         return framedTextBuilder.ToString();
     }
+}
