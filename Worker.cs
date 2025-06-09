@@ -1311,7 +1311,7 @@ namespace TelegramWordBot
                     return (true, string.Empty);
 
                 case "👤 профиль":
-                    await KeyboardFactory.ShowProfileMenuAsync(_botClient, chatId, user.Id, _appUrl, ct);
+                    await KeyboardFactory.ShowProfileMenuAsync(_botClient, chatId, user.Id, _appUrl.Replace("http","https"), ct);
                     return (true, string.Empty);
 
                 default:

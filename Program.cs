@@ -63,7 +63,7 @@ string FixUrlAndPort(string? url)
         url = "http://" + url;
     
     var segments = url.Split(':');
-    if (segments.Length == 2) //��� �����, ��������� 2311
+    if (segments.Length == 2) 
     {
         url += ":2311";
     }
