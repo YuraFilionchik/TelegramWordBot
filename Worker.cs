@@ -101,6 +101,414 @@ namespace TelegramWordBot
             await Task.Delay(-1, stoppingToken);
         }
 
+        private async Task<(bool handled, string newState)> HandleKeyboardCommandAsync(User user, string command, long chatId, CancellationToken ct)
+        {
+            switch (command.ToLowerInvariant())
+            {
+                case "📚 мои слова":
+                    await KeyboardFactory.ShowMyWordsMenuAsync(_botClient, chatId, ct);
+                    return (true, string.Empty);
+
+                case "🔍 показать все слова":
+                    await ShowMyWords(chatId, user, ct);
+                    return (true, string.Empty);
+
+                case "📁 словари по темам":
+                    await ShowDictionariesByTopics(chatId, ct);
+                    return (true, string.Empty);
+
+                case "🗑️ удалить словарь":
+                    await ShowDictionariesForAction(chatId, "delete_dict", ct);
+                    return (true, string.Empty);
+
+                case "🗑️ удалить несколько слов":
+                    await ShowDictionariesForAction(chatId, "delete_words", ct);
+                    return (true, string.Empty);
+
+                case "🏧 словари по языкам":
+                    await ShowDictionariesByLanguages(chatId, ct);
+                    return (true, string.Empty);
+
+                case "📝 изменить слово":
+                    await _msg.SendInfoAsync(chatId, "Введите слово или его часть:", ct);
+                    return (true, "awaiting_editsearch");
+
+                case "🗑️ удалить слова":
+                    await ShowMyWordsForEdit(chatId, user, ct);
+                    return (true, "awaiting_listdelete");
+
+                case "♻️ обнулить прогресс слов":
+                    await ResetAllWordProgress(chatId, user, ct);
+                    return (true, string.Empty);
+
+                case "⬅️ назад":
+                    await KeyboardFactory.ShowMainMenuAsync(_botClient, chatId, ct);
+                    return (true, string.Empty);
+
+                case "➕ добавить слово":
+                    //await _botClient.DeleteMessage(chatId,);
+                    await _msg.SendInfoAsync(chatId, "Введите слово для добавления:", ct);
+                    return (true, "awaiting_addword");
+
+                case "📖 учить":
+                    await StartLearningAsync(user, ct);
+                    return (true, string.Empty);
+
+                case "🌐 настройки":
+                    await KeyboardFactory.ShowConfigMenuAsync(_botClient, chatId, ct);
+                    return (true, string.Empty);
+
+                case "📊 статистика":
+                    await KeyboardFactory.ShowStatisticsMenuAsync(_botClient, chatId, ct);
+                    return (true, string.Empty);
+
+                case "👤 профиль":
+                    string url = _appUrl.StartsWith("http") ? _appUrl.Replace("http", "https") : "https://" + _appUrl;
+                    await KeyboardFactory.ShowProfileMenuAsync(_botClient, chatId, user.Id, url, ct);
+                    return (true, string.Empty);
+
+                default:
+                    return (false, string.Empty);
+            }
+        }
+
+        /// <summary>
+        /// Обработчик callback-запросов: выбор переводов/примеров для добавления и редактирования.
+        /// </summary>
+        private async Task HandleCallbackAsync(ITelegramBotClient bot, CallbackQuery callback, CancellationToken ct)
+        {
+            var data = callback.Data;
+            var chatId = callback.Message!.Chat.Id;
+            var userTelegramId = callback.From.Id;
+            var user = await _userRepo.GetByTelegramIdAsync(userTelegramId);
+
+            var parts = data.Split(':');
+            var action = parts[0];
+            switch (action)
+            {
+                case "learn": // learn:rem:wordId or learn:fail:wordId
+                    var success = parts[1] == "rem";
+                    var wordId = Guid.Parse(parts[2]);
+                    await UpdateLearningProgressAsync(user, wordId, success, ct);
+                    await SendNextLearningWordAsync(user, chatId, ct);
+                    break;
+                case "delete":
+                    var wordText = parts[1];
+                    var removed = await _userWordRepo.RemoveUserWordAsync(user.Id, wordText);
+                    if (removed)
+                        await _msg.SendSuccessAsync(chatId, $"Слово '{wordText}' удалено", ct);
+                    else
+                        await _msg.SendErrorAsync(chatId, $"Слово '{wordText}' не найдено", ct);
+                    break;
+                case "repeat":
+                    var repeatText = parts[1];
+                    var w = await _wordRepo.GetByTextAsync(repeatText);
+                    if (w != null)
+                    {
+                        var native = await _languageRepo.GetByNameAsync(user.Native_Language);
+                        var tr = await _translationRepo.GetTranslationAsync(w.Id, native.Id);
+                        var imgPath = await GetImagePathAsync(w);
+                        await _msg.SendWordCardAsync(chatId, w.Base_Text, tr?.Text ?? string.Empty, tr?.Examples, imgPath, ct);
+                    }
+                    break;
+                case "favorite":
+                    var favText = parts[1];
+                    await _msg.SendSuccessAsync(chatId, $"Слово '{favText}' добавлено в избранное", ct);
+                    break;
+                case "edit":
+                    var editId = Guid.Parse(parts[1]);
+                    await ProcessEditWord(user, editId, ct);
+                    break;
+                case "set_native":
+                    _userStates[userTelegramId] = "awaiting_nativelanguage";
+                    await _msg.SendInfoAsync(chatId, "Введите ваш родной язык:", ct);
+                    break;
+                case "switch_language":
+                    await HandleSwitchLanguageCommandAsync(user, chatId, ct);
+                    break;
+                case "add_foreign":
+                    _userStates[userTelegramId] = "awaiting_language";
+                    await _msg.SendInfoAsync(chatId, "Введите название языка для изучения:", ct);
+                    break;
+                case "remove_foreign":
+                    var langs = await _userLangRepository.GetUserLanguagesAsync(user.Id);
+                    if (!langs.Any())
+                        await _msg.SendErrorAsync(chatId, "У вас нет добавленных языков.", ct);
+                    else
+                    {
+                        var list = string.Join("\n", langs.Select(l => $"{l.Code} – {l.Name}"));
+                        _userStates[userTelegramId] = "awaiting_remove_foreign";
+                        await _msg.SendInfoAsync(chatId, $"Ваши языки:\n{list}\nВведите код для удаления:", ct);
+                    }
+                    break;
+                case "switch_lang":
+                    await ProcessSwitchLanguage(callback, chatId, user, parts, ct);
+                    break;
+                case "startedit":
+                    var sid = Guid.Parse(parts[1]);
+                    await ProcessEditWord(user, sid, ct);
+                    break;
+                case "dlistprev":
+                case "dlistnext":
+                    var newPage = int.Parse(parts[1]);
+                    await SendEditListPage(chatId, newPage, ct);
+                    await _botClient.AnswerCallbackQuery(callback.Id, cancellationToken: ct);
+                    break;
+                case "prev":
+                case "next":
+                    await HandleSliderNavigationAsync(callback, user, parts, ct);
+                    break;
+                case "stat_today":
+                    await ShowTodayStatistics(user, chatId, ct);
+                    break;
+                case "stat_total":
+                    await ShowStatisticsAsync(user, chatId, ct);
+                    break;
+                case "stat_languages":
+                    await ShowStatisticsByLanguages(user, chatId, ct);
+                    break;
+                case "profile_info":
+                    await ShowProfileInfo(user, chatId, ct);
+                    break;
+                case "reset_profile_stats":
+                    await ResetProfileStatistics(user, chatId, ct);
+                    break;
+                case "edit_dict":
+                    await EditDictionary(parts[1], chatId, ct);
+                    break;
+                case "create_dict":
+                    await _msg.SendInfoAsync(chatId, "Введите название нового словаря:", ct);
+                    _userStates[userTelegramId] = "awaiting_create_dict_name";
+                    return;
+                case "reset_dict":
+                    await ResetDictionaryProgress(parts[1], chatId, ct);
+                    break;
+                case "delete_dict":
+                    await DeleteDictionary(parts[1], chatId, ct);
+                    break;
+                case "show_dict":
+                    if (Guid.TryParse(parts[1], out var sd))
+                        await ShowDictionary(sd, chatId, ct);
+                    break;
+                case "delete_words":
+                    if (Guid.TryParse(parts[1], out var dw))
+                        await ShowDictionaryWordsForEdit(chatId, dw, user, ct);
+                    break;
+                case "cancel":
+                    await _botClient.AnswerCallbackQuery(callback.Id, cancellationToken: ct);
+                    break;
+                case "fill_dict":
+                    if (parts[1] == "cancel")
+                    {
+                        await _msg.SendInfoAsync(chatId, "Автозаполнение словаря отменено.", ct);
+                        return;
+                    }else if (!string.IsNullOrEmpty(parts[1]))
+                    {
+                        var dictionary = (await _dictionaryRepo.GetByUserAsync(user.Id)).First(x=>x.Name == parts[1]);
+                        var newWords = await _ai.GetWordByTheme(parts[1], 20, user.Native_Language, user.Current_Language);
+                        if (newWords == null || !newWords.Items.Any())
+                        {
+                            await _msg.SendErrorAsync(chatId, "Не удалось получить слова по теме.", ct);
+                            return;
+                        }
+                        if (await SaveNewWords(user, newWords.Items, parts[1], ct))
+                        {
+                            await _msg.SendSuccessAsync(chatId, $"Автозаполнение словаря '{parts[1]}' успешно завершено.", ct);
+                            await ShowDictionary(dictionary.Id, chatId, ct);
+                        }
+                        else
+                        {
+                            await _msg.SendErrorAsync(chatId, "Произошла ошибка при сохранении слов.", ct);
+                        }
+                    }
+                    break;
+                case "help_info":
+                    await ShowHelpInformation(chatId, ct);
+                    break;
+                case "config_learn":
+                    switch (parts[1])
+                    {
+                        case "main":
+                            await KeyboardFactory.ShowLearnConfig(bot, chatId, user, ct);
+                            return;
+                        case "binary":
+                            if (user.Prefer_Multiple_Choice)
+                            {
+                                user.Prefer_Multiple_Choice = false;
+                                await _userRepo.UpdateAsync(user);
+                                await _msg.SendSuccessAsync(chatId, "Режим обучения изменён на бинарный", ct);
+                            }
+                            else
+                            {
+                                await _msg.SendErrorAsync(chatId, "Вы уже используете бинарный режим обучения", ct);
+                            }
+                            return;
+                        case "multiple":
+                            if (!user.Prefer_Multiple_Choice)
+                            {
+                                user.Prefer_Multiple_Choice = true;
+                                await _userRepo.UpdateAsync(user);
+                                await _msg.SendSuccessAsync(chatId, "Режим обучения изменён на множественный выбор", ct);
+                            }
+                            else
+                            {
+                                await _msg.SendErrorAsync(chatId, "Вы уже используете режим множественного выбора", ct);
+                            }
+                            return;
+                    }
+                    break;
+            }
+
+
+
+            // --- Добавление: переводы ---
+            if (data.StartsWith("selectTrans"))
+            {
+                if (data == "selectTransDone")
+                {
+                    await ShowExampleOptions(chatId, _translationCandidates[chatId], ct);
+                }
+                else
+                {
+                    int idx = int.Parse(data.Split(':')[1]);
+                    var sel = _selectedTranslations[chatId];
+                    if (sel.Contains(idx)) sel.Remove(idx); else sel.Add(idx);
+                    await ShowTranslationOptions(chatId, _translationCandidates[chatId], ct);
+                }
+                await bot.AnswerCallbackQuery(callback.Id);
+                return;
+            }
+
+            // --- Добавление: примеры ---
+            if (data.StartsWith("selectEx"))
+            {
+                if (data == "selectExDone")
+                {
+                    if (_isNativeInput[chatId])
+                        await FinalizeAddWord(user!, null, ct);
+                    else
+                        await FinalizeAddWord(user!, _inputLanguage[chatId], ct);
+                }
+                else
+                {
+                    int idx = int.Parse(data.Split(':')[1]);
+                    var sel = _selectedExamples[chatId];
+                    if (sel.Contains(idx)) sel.Remove(idx); else sel.Add(idx);
+                    await _botClient.DeleteMessage(callback.From.Id, callback.Message.Id);
+                    await ShowExampleOptions(chatId, _translationCandidates[chatId], ct);
+                }
+                await bot.AnswerCallbackQuery(callback.Id);
+                return;
+            }
+
+            // --- Редактирование: переводы ---
+            if (data.StartsWith("editSelectTrans"))
+            {
+                if (data == "editSelectTransDone")
+                {
+                    await ShowEditExampleOptions(chatId, _editTranslationCandidates[chatId], ct);
+                }
+                else
+                {
+                    int idx = int.Parse(data.Split(':')[1]);
+                    var sel = _selectedEditTranslations[chatId];
+                    if (sel.Contains(idx)) sel.Remove(idx); else sel.Add(idx);
+                    await ShowEditTranslationOptions(chatId, _editTranslationCandidates[chatId], ct);
+                }
+                await bot.AnswerCallbackQuery(callback.Id);
+                return;
+            }
+
+            // --- Редактирование: примеры ---
+            if (data.StartsWith("editSelectEx"))
+            {
+                if (data == "editSelectExDone")
+                {
+                    await FinalizeEditWord(user!, ct);
+                }
+                else
+                {
+                    int idx = int.Parse(data.Split(':')[1]);
+                    var sel = _selectedEditExamples[chatId];
+                    if (sel.Contains(idx)) sel.Remove(idx); else sel.Add(idx);
+                    await ShowEditExampleOptions(chatId, _editTranslationCandidates[chatId], ct);
+                }
+                await bot.AnswerCallbackQuery(callback.Id);
+                return;
+            }
+
+            // --- Режим обучения: множественный выбор ---
+            if (data.StartsWith("mc:"))
+            {
+                // mc:correct:{wordId} или mc:wrong:{wordId}
+                var success = parts[1] == "correct";
+                var wordId = Guid.Parse(parts[2]);
+                // Обновляем прогресс (SM-2) точно так же, как в бинарном режиме
+                await UpdateLearningProgressAsync(user, wordId, success, ct);
+                await Task.Delay(1000, ct); // Задержка перед отправкой следующего слова    
+                await SendNextLearningWordAsync(user, chatId, ct);
+                return;
+            }
+
+            await bot.AnswerCallbackQuery(callback.Id);
+        }
+
+        //Saves new words to the user's dictionary
+        private async Task<bool> SaveNewWords(User user, List<TranslatedItem> items, string? dictName, CancellationToken ct)
+        {
+            try
+            {
+                foreach (var item in items)
+                {
+                    var sourceLang = await _languageRepo.GetByNameAsync(items.First().OriginalLanguage);
+                    var targetLang = await _languageRepo.GetByNameAsync(items.First().TranslatedLanguage);
+                    Word newword = new Word
+                    {
+                        Id = Guid.NewGuid(),
+                        Base_Text = item.OriginalText,
+                        Language_Id = sourceLang!.Id
+                    };
+
+                    Translation translation = new Translation
+                    {
+                        Id = Guid.NewGuid(),
+                        Word_Id = newword.Id,
+                        Language_Id = targetLang!.Id,
+                        Text = item.TranslatedText,
+                        Examples = item.Example
+                    };
+
+                    await _wordRepo.AddWordAsync(newword);
+                    await _translationRepo.AddTranslationAsync(translation);
+                    await _userWordRepo.AddUserWordAsync(user.Id, newword.Id, translation.Id);
+                    await _dictionaryRepo.AddWordAsync(dictName ?? "default", newword.Id, user.Id);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при сохранении новых слов");
+                return false;
+            }
+        }
+
+        private async Task CreateDictionary(User? user, long chatId, string dictName, CancellationToken ct)
+        {
+            if (string.IsNullOrEmpty(dictName))
+            {
+                await _msg.SendErrorAsync(chatId, "Название словаря не может быть пустым.", ct);
+                return;
+            }
+            await _dictionaryRepo.AddDictionaryAsync(new Dictionary
+            {
+                Id = Guid.NewGuid(),
+                User_Id = user!.Id,
+                Name = dictName
+            });
+            await _msg.SendSuccessAsync(chatId, $"Словарь '{dictName}' успешно создан.", ct);         
+            await _msg.SendConfirmationDialog(chatId, $"Добавить автоматически 20 слов по теме {dictName}?", "fill_dict:" + dictName, "fill_dict:cancel", ct);
+        }
+
         private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken ct)
         {
             if (update.CallbackQuery is { } callback)
@@ -163,6 +571,9 @@ namespace TelegramWordBot
                             break;
                         case "awaiting_listdelete":
                             await ProcessDeleteList(user, text, ct);
+                            break;
+                        case "awaiting_create_dict_name":
+                            await CreateDictionary(user, chatId, text, ct);
                             break;
                     }
                     return;
@@ -548,11 +959,10 @@ namespace TelegramWordBot
 
             if (keyboard != null)
             {
-                await _msg.SendText(new ChatId(chatId), "Список слов:", new ReplyKeyboardRemove(), ct);
                 await _msg.SendText(new ChatId(chatId), sb.ToString(), keyboard, ct);
             }
             else
-                await _msg.SendText(new ChatId(chatId), sb.ToString(), new ReplyKeyboardRemove(), ct);
+                await _msg.SendText(new ChatId(chatId), sb.ToString(), ct);
         }
 
         private async Task ProcessDeleteList(User user, string text, CancellationToken ct)
@@ -620,258 +1030,7 @@ namespace TelegramWordBot
             return Task.CompletedTask;
         }
 
-        /// <summary>
-        /// Обработчик callback-запросов: выбор переводов/примеров для добавления и редактирования.
-        /// </summary>
-        private async Task HandleCallbackAsync(ITelegramBotClient bot, CallbackQuery callback, CancellationToken ct)
-        {
-            var data = callback.Data;
-            var chatId = callback.Message!.Chat.Id;
-            var userTelegramId = callback.From.Id;
-            var user = await _userRepo.GetByTelegramIdAsync(userTelegramId);
-
-            var parts = data.Split(':');
-            var action = parts[0];
-            switch (action)
-            {
-                case "learn": // learn:rem:wordId or learn:fail:wordId
-                    var success = parts[1] == "rem";
-                    var wordId = Guid.Parse(parts[2]);
-                    await UpdateLearningProgressAsync(user, wordId, success, ct);
-                    await SendNextLearningWordAsync(user, chatId, ct);
-                    break;
-                case "delete":
-                    var wordText = parts[1];
-                    var removed = await _userWordRepo.RemoveUserWordAsync(user.Id, wordText);
-                    if (removed)
-                        await _msg.SendSuccessAsync(chatId, $"Слово '{wordText}' удалено", ct);
-                    else
-                        await _msg.SendErrorAsync(chatId, $"Слово '{wordText}' не найдено", ct);
-                    break;
-                case "repeat":
-                    var repeatText = parts[1];
-                    var w = await _wordRepo.GetByTextAsync(repeatText);
-                    if (w != null)
-                    {
-                        var native = await _languageRepo.GetByNameAsync(user.Native_Language);
-                        var tr = await _translationRepo.GetTranslationAsync(w.Id, native.Id);
-                        var imgPath = await GetImagePathAsync(w);
-                        await _msg.SendWordCardAsync(chatId, w.Base_Text, tr?.Text ?? string.Empty, tr?.Examples, imgPath, ct);
-                    }
-                    break;
-                case "favorite":
-                    var favText = parts[1];
-                    await _msg.SendSuccessAsync(chatId, $"Слово '{favText}' добавлено в избранное", ct);
-                    break;
-                case "edit":
-                    var editId = Guid.Parse(parts[1]);
-                    await ProcessEditWord(user, editId, ct);
-                    break;
-                case "set_native":
-                    _userStates[userTelegramId] = "awaiting_nativelanguage";
-                    await _msg.SendInfoAsync(chatId, "Введите ваш родной язык:", ct);
-                    break;
-                case "switch_language":
-                    await HandleSwitchLanguageCommandAsync(user, chatId, ct);
-                    break;
-                case "add_foreign":
-                    _userStates[userTelegramId] = "awaiting_language";
-                    await _msg.SendInfoAsync(chatId, "Введите название языка для изучения:", ct);
-                    break;
-                case "remove_foreign":
-                    var langs = await _userLangRepository.GetUserLanguagesAsync(user.Id);
-                    if (!langs.Any())
-                        await _msg.SendErrorAsync(chatId, "У вас нет добавленных языков.", ct);
-                    else
-                    {
-                        var list = string.Join("\n", langs.Select(l => $"{l.Code} – {l.Name}"));
-                        _userStates[userTelegramId] = "awaiting_remove_foreign";
-                        await _msg.SendInfoAsync(chatId, $"Ваши языки:\n{list}\nВведите код для удаления:", ct);
-                    }
-                    break;
-                case "switch_lang":
-                    await ProcessSwitchLanguage(callback, chatId, user, parts, ct);
-                    break;
-                case "startedit":
-                    var sid = Guid.Parse(parts[1]);
-                    await ProcessEditWord(user, sid, ct);
-                    break;
-                case "dlistprev":
-                case "dlistnext":
-                    var newPage = int.Parse(parts[1]);
-                    await SendEditListPage(chatId, newPage, ct);
-                    await _botClient.AnswerCallbackQuery(callback.Id, cancellationToken: ct);
-                    break;
-                case "prev":
-                case "next":
-                    await HandleSliderNavigationAsync(callback, user, parts, ct);
-                    break;
-                case "stat_today":
-                    await ShowTodayStatistics(user, chatId, ct);
-                    break;
-                case "stat_total":
-                    await ShowStatisticsAsync(user, chatId, ct);
-                    break;
-                case "stat_languages":
-                    await ShowStatisticsByLanguages(user, chatId, ct);
-                    break;
-                case "profile_info":
-                    await ShowProfileInfo(user, chatId, ct);
-                    break;
-                case "reset_profile_stats":
-                    await ResetProfileStatistics(user, chatId, ct);
-                    break;
-                case "edit_dict":
-                    await EditDictionary(parts[1], chatId, ct);
-                    break;
-                case "reset_dict":
-                    await ResetDictionaryProgress(parts[1], chatId, ct);
-                    break;
-                case "delete_dict":
-                    await DeleteDictionary(parts[1], chatId, ct);
-                    break;
-                case "show_dict":
-                    if (Guid.TryParse(parts[1], out var sd))
-                        await ShowDictionary(sd, chatId, ct);
-                    break;
-                case "delete_words":
-                    if (Guid.TryParse(parts[1], out var dw))
-                        await ShowDictionaryWordsForEdit(chatId, dw, user, ct);
-                    break;
-                case "cancel":
-                    await _botClient.AnswerCallbackQuery(callback.Id, cancellationToken: ct);
-                    break;
-                case "help_info":
-                    await ShowHelpInformation(chatId, ct);
-                    break;
-                case "config_learn":
-                    switch (parts[1])
-                    {
-                        case "main":
-                            await KeyboardFactory.ShowLearnConfig(bot, chatId, user, ct);
-                            return;
-                        case "binary":
-                            if (user.Prefer_Multiple_Choice)
-                            {
-                                user.Prefer_Multiple_Choice = false;
-                                await _userRepo.UpdateAsync(user);
-                                await _msg.SendSuccessAsync(chatId, "Режим обучения изменён на бинарный", ct);
-                            }
-                            else
-                            {
-                                await _msg.SendErrorAsync(chatId, "Вы уже используете бинарный режим обучения", ct);
-                            }
-                            return;
-                        case "multiple":
-                            if (!user.Prefer_Multiple_Choice)
-                            {
-                                user.Prefer_Multiple_Choice = true;
-                                await _userRepo.UpdateAsync(user);
-                                await _msg.SendSuccessAsync(chatId, "Режим обучения изменён на множественный выбор", ct);
-                            }
-                            else
-                            {
-                                await _msg.SendErrorAsync(chatId, "Вы уже используете режим множественного выбора", ct);
-                            }
-                            return;
-                    }
-                        break;
-            }
-
-            
-
-            // --- Добавление: переводы ---
-            if (data.StartsWith("selectTrans"))
-            {
-                if (data == "selectTransDone")
-                {
-                    await ShowExampleOptions(chatId, _translationCandidates[chatId], ct);
-                }
-                else
-                {
-                    int idx = int.Parse(data.Split(':')[1]);
-                    var sel = _selectedTranslations[chatId];
-                    if (sel.Contains(idx)) sel.Remove(idx); else sel.Add(idx);
-                    await ShowTranslationOptions(chatId, _translationCandidates[chatId], ct);
-                }
-                await bot.AnswerCallbackQuery(callback.Id);
-                return;
-            }
-
-            // --- Добавление: примеры ---
-            if (data.StartsWith("selectEx"))
-            {
-                if (data == "selectExDone")
-                {
-                    if (_isNativeInput[chatId])
-                        await FinalizeAddWord(user!, null, ct);
-                    else
-                        await FinalizeAddWord(user!, _inputLanguage[chatId], ct);
-                }
-                else
-                {
-                    int idx = int.Parse(data.Split(':')[1]);
-                    var sel = _selectedExamples[chatId];
-                    if (sel.Contains(idx)) sel.Remove(idx); else sel.Add(idx);
-                    await _botClient.DeleteMessage(callback.From.Id, callback.Message.Id);
-                    await ShowExampleOptions(chatId, _translationCandidates[chatId], ct);
-                }
-                await bot.AnswerCallbackQuery(callback.Id);
-                return;
-            }
-
-            // --- Редактирование: переводы ---
-            if (data.StartsWith("editSelectTrans"))
-            {
-                if (data == "editSelectTransDone")
-                {
-                    await ShowEditExampleOptions(chatId, _editTranslationCandidates[chatId], ct);
-                }
-                else
-                {
-                    int idx = int.Parse(data.Split(':')[1]);
-                    var sel = _selectedEditTranslations[chatId];
-                    if (sel.Contains(idx)) sel.Remove(idx); else sel.Add(idx);
-                    await ShowEditTranslationOptions(chatId, _editTranslationCandidates[chatId], ct);
-                }
-                await bot.AnswerCallbackQuery(callback.Id);
-                return;
-            }
-
-            // --- Редактирование: примеры ---
-            if (data.StartsWith("editSelectEx"))
-            {
-                if (data == "editSelectExDone")
-                {
-                    await FinalizeEditWord(user!, ct);
-                }
-                else
-                {
-                    int idx = int.Parse(data.Split(':')[1]);
-                    var sel = _selectedEditExamples[chatId];
-                    if (sel.Contains(idx)) sel.Remove(idx); else sel.Add(idx);
-                    await ShowEditExampleOptions(chatId, _editTranslationCandidates[chatId], ct);
-                }
-                await bot.AnswerCallbackQuery(callback.Id);
-                return;
-            }
-
-            // --- Режим обучения: множественный выбор ---
-            if (data.StartsWith("mc:"))
-            {
-                // mc:correct:{wordId} или mc:wrong:{wordId}
-                var success = parts[1] == "correct";
-                var wordId = Guid.Parse(parts[2]);
-                  // Обновляем прогресс (SM-2) точно так же, как в бинарном режиме
-                await UpdateLearningProgressAsync(user, wordId, success, ct);
-                await Task.Delay(1000, ct); // Задержка перед отправкой следующего слова    
-                await SendNextLearningWordAsync(user, chatId, ct);
-                return;
-            }
-
-            await bot.AnswerCallbackQuery(callback.Id);
-        }
-
+   
         /// <summary>
         /// Сохраняет в БД новый Word + выбранные Translations + Examples.
         /// </summary>
@@ -1342,77 +1501,7 @@ namespace TelegramWordBot
             );
         }
 
-        private async Task<(bool handled, string newState)> HandleKeyboardCommandAsync(User user, string command, long chatId, CancellationToken ct)
-        {
-            switch (command.ToLowerInvariant())
-            {
-                case "📚 мои слова":
-                    await KeyboardFactory.ShowMyWordsMenuAsync(_botClient, chatId, ct);
-                    return (true, string.Empty);
-
-                case "🔍 показать все слова":
-                    await ShowMyWords(chatId, user, ct);
-                    return (true, string.Empty);
-
-                case "📁 словари по темам":
-                    await ShowDictionariesByTopics(chatId, ct);
-                    return (true, string.Empty);
-
-                case "🗑️ удалить словарь":
-                    await ShowDictionariesForAction(chatId, "delete_dict", ct);
-                    return (true, string.Empty);
-
-                case "🗑️ удалить слова":
-                    await ShowDictionariesForAction(chatId, "delete_words", ct);
-                    return (true, string.Empty);
-
-                case "🏧 словари по языкам":
-                    await ShowDictionariesByLanguages(chatId, ct);
-                    return (true, string.Empty);
-
-                case "📝 изменить слово":
-                    await _msg.SendInfoAsync(chatId, "Введите слово или его часть:", ct);
-                    return (true, "awaiting_editsearch");
-
-                case "🗑️ удалить слова":
-                    await ShowMyWordsForEdit(chatId, user, ct);
-                    return (true, "awaiting_listdelete");
-
-                case "♻️ обнулить прогресс слов":
-                    await ResetAllWordProgress(chatId, user, ct);
-                    return (true, string.Empty);
-
-                case "⬅️ назад":
-                    await KeyboardFactory.ShowMainMenuAsync(_botClient, chatId, ct);
-                    return (true, string.Empty);
-
-                case "➕ добавить слово":
-                    //await _botClient.DeleteMessage(chatId,);
-                    await _msg.SendInfoAsync(chatId, "Введите слово для добавления:", ct);
-                    return (true, "awaiting_addword");
-
-                case "📖 учить":
-                    await StartLearningAsync(user, ct);
-                    return (true, string.Empty);
-
-                case "🌐 настройки":
-                    await KeyboardFactory.ShowConfigMenuAsync(_botClient, chatId, ct);
-                    return (true, string.Empty);
-
-                case "📊 статистика":
-                    await KeyboardFactory.ShowStatisticsMenuAsync(_botClient, chatId, ct);
-                    return (true, string.Empty);
-
-                case "👤 профиль":
-                    string url = _appUrl.StartsWith("http") ? _appUrl.Replace("http", "https") : "https://" + _appUrl;
-                    await KeyboardFactory.ShowProfileMenuAsync(_botClient, chatId, user.Id, url, ct);
-                    return (true, string.Empty);
-
-                default:
-                    return (false, string.Empty);
-            }
-        }
-
+        
         private async Task StartLearningAsync(User user, CancellationToken ct)
         {
             await SendNextLearningWordAsync(user, user.Telegram_Id, ct);
@@ -1955,7 +2044,7 @@ namespace TelegramWordBot
 
             var inline = KeyboardFactory.GetDictionaryListInline(dictionaries);
             await _msg.SendText(chatId, "📁 <b>Словари по темам</b>", inline, ct);
-            await KeyboardFactory.ShowTopicDictionaryMenuAsync(_botClient, chatId, ct);
+            
         }
 
         private async Task ShowDictionariesByLanguages(long chatId, CancellationToken ct)
@@ -2133,6 +2222,7 @@ namespace TelegramWordBot
             }
 
             var actions = KeyboardFactory.GetTopicDictionaryActions(dictId);
+            //await KeyboardFactory.ShowTopicDictionaryMenuAsync(_botClient, chatId, ct);
             await _msg.SendText(chatId, sb.ToString(), actions, ct);
         }
 

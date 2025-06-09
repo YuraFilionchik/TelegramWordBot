@@ -1,6 +1,7 @@
-﻿using Telegram.Bot.Types.ReplyMarkups;
-using Telegram.Bot.Types;
+﻿using System.Xml.Linq;
 using Telegram.Bot;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TelegramWordBot.Services;
 
@@ -132,6 +133,7 @@ public static class KeyboardFactory
                 InlineKeyboardButton.WithCallbackData(name, $"show_dict:{d.Id}")
             });
         }
+        rows.Add(new[]{ InlineKeyboardButton.WithCallbackData("Создать новый", $"create_dict:new") });
         return new InlineKeyboardMarkup(rows);
     }
 
@@ -140,7 +142,7 @@ public static class KeyboardFactory
         return new InlineKeyboardMarkup(new[]
         {
             new[] { InlineKeyboardButton.WithCallbackData("🗑️ Удалить словарь", $"delete_dict:{dictId}") },
-            new[] { InlineKeyboardButton.WithCallbackData("🗑️ Удалить слова", $"delete_words:{dictId}") }
+            new[] { InlineKeyboardButton.WithCallbackData("🗑️ Удалить несколько слов", $"delete_words:{dictId}") }
         });
     }
 
@@ -149,7 +151,7 @@ public static class KeyboardFactory
         return new ReplyKeyboardMarkup(new[]
         {
             new[] { new KeyboardButton("🗑️ Удалить словарь") },
-            new[] { new KeyboardButton("🗑️ Удалить слова") },
+            new[] { new KeyboardButton("🗑️ Удалить несколько слов") },
             new[] { new KeyboardButton("⬅️ Назад") }
         })
         {
@@ -159,7 +161,7 @@ public static class KeyboardFactory
 
     public static async Task ShowTopicDictionaryMenuAsync(ITelegramBotClient botClient, ChatId chatId, CancellationToken ct)
     {
-        await botClient.SendMessage(chatId, "Словари по темам:", replyMarkup: GetTopicDictionaryMenu(), cancellationToken: ct);
+        await botClient.SendMessage(chatId, "Словарь:", replyMarkup: GetTopicDictionaryMenu(), cancellationToken: ct);
     }
 
     // Отображение главного меню пользователю

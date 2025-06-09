@@ -13,6 +13,7 @@ namespace TelegramWordBot.Services
         Task<string> GetLangName(string text, IEnumerable<Language> languages);
         Task<List<string>> GetVariants(string originalWord, string translatedWord, string target_lang);
         Task<string> GetSearchStringForPicture(string word);
+        Task<TranslatedTextClass> GetWordByTheme(string theme, int count, string targetLangName, string sourceLangName = "English");
     }
 
     class AIHelper: IAIHelper
@@ -58,6 +59,11 @@ Correct mistakes in {srcText} if it necessary.
 
             var response = await AskWithGeminiAsync(prompt, false);
             TranslatedTextClass returnedTranslate = new TranslatedTextClass(response);
+            returnedTranslate.Items.ForEach(item =>
+            {
+                item.OriginalLanguage = sourceLangName;
+                item.TranslatedLanguage = targetLangName;
+            });
             return returnedTranslate;
         }
 
@@ -118,7 +124,13 @@ Correct mistakes in {srcText} if it necessary.
               ]
             }}";
             var response = await AskWithGeminiAsync(prompt, false);
-            return new TranslatedTextClass(response);
+            var translItems = new TranslatedTextClass(response);
+            translItems.Items.ForEach(item => 
+            {
+                item.OriginalLanguage = sourceLangName;
+                item.TranslatedLanguage = targetLangName;
+            });
+            return translItems;
         }
 
         private async Task<string> TranslateWithOpenAIAsync(string prompt)
