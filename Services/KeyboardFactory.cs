@@ -29,6 +29,7 @@ public static class KeyboardFactory
             new[] { new KeyboardButton("📁 Словари по темам") },
             //new[] { new KeyboardButton("🏧 Словари по языкам") },
             new[] { new KeyboardButton("📝 Изменить слово") },
+            new[] { new KeyboardButton("🗑️ Удалить слова") },
             new[] { new KeyboardButton("♻️ Обнулить прогресс слов") },
             new[] { new KeyboardButton("⬅️ Назад") }
         })
@@ -126,6 +127,11 @@ public static class KeyboardFactory
         await botClient.SendMessage(chatId, "Главное меню:", replyMarkup: GetMainMenu(), cancellationToken: ct);
     }
 
+    public static async Task HideMainMenuAsync(ITelegramBotClient botClient, ChatId chatId, CancellationToken ct)
+    {
+        await botClient.SendMessage(chatId, "Меню скрыто.", replyMarkup: new ReplyKeyboardRemove(), cancellationToken: ct);
+    }
+
     // Отображение меню настроек пользователю
     public static async Task ShowConfigMenuAsync(ITelegramBotClient botClient, ChatId chatId, CancellationToken ct)
     {
@@ -153,39 +159,5 @@ public static class KeyboardFactory
     {
         await botClient.SendMessage(chatId, "Профиль:", replyMarkup: GetProfileInline(userId, appUrl), cancellationToken: ct);
     }
-
-
-    // Обработка команд с кнопок
-    //public static async Task<(bool handled, string? newState)> HandleKeyboardCommandAsync(ITelegramBotClient botClient, ChatId chatId, string command,  CancellationToken ct)
-    //{
-    //    switch (command.ToLowerInvariant())
-    //    {
-    //        case "📚 мои слова":
-    //            //await botClient.SendMessage(chatId, "Здесь будет список твоих слов.", cancellationToken: ct);
-    //            return (true, null);
-
-    //        case "➕ добавить слово":
-    //            await botClient.SendMessage(chatId, "Введите слово для добавления:", cancellationToken: ct);
-    //            return (true, "awaiting_addword");
-
-    //        case "📖 учить":
-    //            await botClient.SendMessage(chatId, "Режим обучения пока в разработке.", cancellationToken: ct);
-    //            return (true, null);
-
-    //        case "⚙️ настройки":
-    //            await ShowConfigMenuAsync(botClient, chatId, ct);
-    //            return (true, null);
-
-    //        case "📊 статистика":
-    //            await ShowStatisticsAsync(botClient, chatId, ct);
-    //            return (true, null);
-
-    //        case "❓ помощь":
-    //            await botClient.SendMessage(chatId, "Я бот для изучения слов. Используй кнопки или команды: /addword, /learn, /config", cancellationToken: ct);
-    //            return (true, null);
-
-    //        default:
-    //            return (false, null);
-    //    }
-    //}
+        
 }

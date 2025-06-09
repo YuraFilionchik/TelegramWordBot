@@ -314,7 +314,7 @@ public class TelegramMessageHelper
     public async Task<Message> SendText(
         ChatId chatId,
         string text,
-        InlineKeyboardMarkup replyMarkup,
+        ReplyMarkup replyMarkup,
         CancellationToken ct = default)
     {
         return await _bot.SendMessage(
