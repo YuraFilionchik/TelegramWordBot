@@ -27,7 +27,7 @@ public static class KeyboardFactory
         {
             new[] { new KeyboardButton("🔍 Показать все слова") },
             new[] { new KeyboardButton("📁 Словари по темам") },
-            new[] { new KeyboardButton("🏧 Словари по языкам") },
+            //new[] { new KeyboardButton("🏧 Словари по языкам") },
             new[] { new KeyboardButton("📝 Изменить слово") },
             new[] { new KeyboardButton("♻️ Обнулить прогресс слов") },
             new[] { new KeyboardButton("⬅️ Назад") }

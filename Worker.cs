@@ -2020,16 +2020,24 @@ namespace TelegramWordBot
                 return;
             }
 
-            var groups = dictionaries.GroupBy(d => d.Name.Contains(':') ? d.Name.Split(':')[0].Trim() : "Без темы");
+            var native = await _languageRepo.GetByNameAsync(user.Native_Language);
             var sb = new StringBuilder();
             sb.AppendLine("📁 <b>Словари по темам</b>");
+            sb.AppendLine("----------------------------");
 
-            foreach (var g in groups)
-            {
-                sb.AppendLine($"\n<b>{TelegramMessageHelper.EscapeHtml(g.Key)}</b>");
-                foreach (var d in g)
-                    sb.AppendLine($"- {TelegramMessageHelper.EscapeHtml(d.Name)} ({d.Id})");
-            }
+            foreach (var d in dictionaries)
+                {
+                    var words = (await _dictionaryRepo.GetWordsAsync(d.Id)).ToList();
+                    var dictName = d.Name == "default" ? "Общий" : d.Name;
+                    sb.AppendLine($"-[ <b>{TelegramMessageHelper.EscapeHtml(dictName)}</b>]-");
+                sb.AppendLine("");
+                foreach (var w in words)
+                    {
+                        var tr = await _translationRepo.GetTranslationAsync(w.Id, native.Id);
+                        var right = tr?.Text ?? "-";
+                        sb.AppendLine($"{TelegramMessageHelper.EscapeHtml(w.Base_Text)} — {TelegramMessageHelper.EscapeHtml(right)}");
+                    }
+                }
 
             await _msg.SendText(chatId, sb.ToString(), ct);
         }
