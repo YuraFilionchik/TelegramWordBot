@@ -117,17 +117,17 @@ namespace TelegramWordBot
                     await ShowDictionariesByTopics(chatId, ct);
                     return (true, string.Empty);
 
-                case "🗑️ удалить словарь":
-                    await ShowDictionariesForAction(chatId, "delete_dict", ct);
-                    return (true, string.Empty);
+                //case "🗑️ удалить словарь":
+                //    await ShowDictionariesForAction(chatId, "delete_dict", ct);
+                //    return (true, string.Empty);
 
-                case "🗑️ удалить несколько слов":
-                    await ShowDictionariesForAction(chatId, "delete_words", ct);
-                    return (true, string.Empty);
+                //case "🗑️ удалить несколько слов":
+                //    await ShowDictionariesForAction(chatId, "delete_words", ct);
+                //    return (true, string.Empty);
 
-                case "🏧 словари по языкам":
-                    await ShowDictionariesByLanguages(chatId, ct);
-                    return (true, string.Empty);
+                //case "🏧 словари по языкам":
+                //    await ShowDictionariesByLanguages(chatId, ct);
+                //    return (true, string.Empty);
 
                 case "📝 изменить слово":
                     await _msg.SendInfoAsync(chatId, "Введите слово или его часть:", ct);
@@ -166,6 +166,9 @@ namespace TelegramWordBot
                     string url = _appUrl.StartsWith("http") ? _appUrl.Replace("http", "https") : "https://" + _appUrl;
                     await KeyboardFactory.ShowProfileMenuAsync(_botClient, chatId, user.Id, url, ct);
                     return (true, string.Empty);
+                case "генерация новых слов":
+                    await _msg.SendInfoAsync(chatId, "На какую тему добавить слова?:", ct);
+                    return (true, "awaiting_generation_theme_input");
 
                 default:
                     return (false, string.Empty);
@@ -303,9 +306,18 @@ namespace TelegramWordBot
                         await _msg.SendInfoAsync(chatId, "Автозаполнение словаря отменено.", ct);
                         return;
                     }else if (!string.IsNullOrEmpty(parts[1]))
-                    {
-                        var dictionary = (await _dictionaryRepo.GetByUserAsync(user.Id)).First(x=>x.Name == parts[1]);
-                        var newWords = await _ai.GetWordByTheme(parts[1], 20, user.Native_Language, user.Current_Language);
+                    { 
+                        var dictionary = (await _dictionaryRepo.GetByUserAsync(user.Id)).First(x => x.Name == parts[1]);
+                        TranslatedTextClass newWords;
+                        if (_translationCandidates.ContainsKey(chatId))
+                        {
+                            newWords = _translationCandidates[chatId];
+                            _translationCandidates.Remove(chatId);
+                        }else
+                        {
+                            newWords = await _ai.GetWordByTheme(parts[1], 20, user.Native_Language, user.Current_Language);
+                        }
+
                         if (newWords == null || !newWords.Items.Any())
                         {
                             await _msg.SendErrorAsync(chatId, "Не удалось получить слова по теме.", ct);
@@ -453,61 +465,6 @@ namespace TelegramWordBot
             await bot.AnswerCallbackQuery(callback.Id);
         }
 
-        //Saves new words to the user's dictionary
-        private async Task<bool> SaveNewWords(User user, List<TranslatedItem> items, string? dictName, CancellationToken ct)
-        {
-            try
-            {
-                foreach (var item in items)
-                {
-                    var sourceLang = await _languageRepo.GetByNameAsync(items.First().OriginalLanguage);
-                    var targetLang = await _languageRepo.GetByNameAsync(items.First().TranslatedLanguage);
-                    Word newword = new Word
-                    {
-                        Id = Guid.NewGuid(),
-                        Base_Text = item.OriginalText,
-                        Language_Id = sourceLang!.Id
-                    };
-
-                    Translation translation = new Translation
-                    {
-                        Id = Guid.NewGuid(),
-                        Word_Id = newword.Id,
-                        Language_Id = targetLang!.Id,
-                        Text = item.TranslatedText,
-                        Examples = item.Example
-                    };
-
-                    await _wordRepo.AddWordAsync(newword);
-                    await _translationRepo.AddTranslationAsync(translation);
-                    await _userWordRepo.AddUserWordAsync(user.Id, newword.Id, translation.Id);
-                    await _dictionaryRepo.AddWordAsync(dictName ?? "default", newword.Id, user.Id);
-                }
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при сохранении новых слов");
-                return false;
-            }
-        }
-
-        private async Task CreateDictionary(User? user, long chatId, string dictName, CancellationToken ct)
-        {
-            if (string.IsNullOrEmpty(dictName))
-            {
-                await _msg.SendErrorAsync(chatId, "Название словаря не может быть пустым.", ct);
-                return;
-            }
-            await _dictionaryRepo.AddDictionaryAsync(new Dictionary
-            {
-                Id = Guid.NewGuid(),
-                User_Id = user!.Id,
-                Name = dictName
-            });
-            await _msg.SendSuccessAsync(chatId, $"Словарь '{dictName}' успешно создан.", ct);         
-            await _msg.SendConfirmationDialog(chatId, $"Добавить автоматически 20 слов по теме {dictName}?", "fill_dict:" + dictName, "fill_dict:cancel", ct);
-        }
 
         private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken ct)
         {
@@ -574,6 +531,9 @@ namespace TelegramWordBot
                             break;
                         case "awaiting_create_dict_name":
                             await CreateDictionary(user, chatId, text, ct);
+                            break;
+                        case "awaiting_generation_theme_input":
+                            await ProcessGenerationThemeInput(user, chatId, text, ct);
                             break;
                     }
                     return;
@@ -757,6 +717,89 @@ namespace TelegramWordBot
                     await _msg.SendErrorAsync(chatId, ex.Message, ct);
                 }
             }
+        }
+
+        private async Task ProcessGenerationThemeInput(User user, long chatId, string text, CancellationToken ct)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                await _msg.SendErrorAsync(chatId, "Тема не может быть пустой.", ct);
+                return;
+            }
+            var newWords = await _ai.GetWordByTheme(text, 20, user.Native_Language, user.Current_Language);
+            if (newWords == null || !newWords.Items.Any())
+            {
+                await _msg.SendErrorAsync(chatId, "Не удалось получить слова по теме.", ct);
+                return;
+            }
+            InlineKeyboardButton[] buttons = new InlineKeyboardButton[] { };
+            var dictionaries = await _dictionaryRepo.GetByUserAsync(user.Id);
+            foreach (var item in dictionaries)
+            {
+                buttons = buttons.Append(InlineKeyboardButton.WithCallbackData(item.Name, $"fill_dict:{text}")).ToArray();
+            }
+            buttons = buttons.Append(InlineKeyboardButton.WithCallbackData("Новый: "+text, $"fill_dict:{text}")).ToArray();
+            var msgString = $"Получено {newWords.Items.Count} слов по теме '{text}'.\n" +
+                            "В какой словарь сохранить?";
+            _translationCandidates[chatId] = newWords;
+            await _msg.SendText(chatId, msgString, buttons, ct);
+
+        }
+
+        //Saves new words to the user's dictionary
+        private async Task<bool> SaveNewWords(User user, List<TranslatedItem> items, string? dictName, CancellationToken ct)
+        {
+            try
+            {
+                foreach (var item in items)
+                {
+                    var sourceLang = await _languageRepo.GetByNameAsync(items.First().OriginalLanguage);
+                    var targetLang = await _languageRepo.GetByNameAsync(items.First().TranslatedLanguage);
+                    Word newword = new Word
+                    {
+                        Id = Guid.NewGuid(),
+                        Base_Text = item.OriginalText,
+                        Language_Id = sourceLang!.Id
+                    };
+
+                    Translation translation = new Translation
+                    {
+                        Id = Guid.NewGuid(),
+                        Word_Id = newword.Id,
+                        Language_Id = targetLang!.Id,
+                        Text = item.TranslatedText,
+                        Examples = item.Example
+                    };
+
+                    await _wordRepo.AddWordAsync(newword);
+                    await _translationRepo.AddTranslationAsync(translation);
+                    await _userWordRepo.AddUserWordAsync(user.Id, newword.Id, translation.Id);
+                    await _dictionaryRepo.AddWordAsync(dictName ?? "default", newword.Id, user.Id);
+                }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при сохранении новых слов");
+                return false;
+            }
+        }
+
+        private async Task CreateDictionary(User? user, long chatId, string dictName, CancellationToken ct)
+        {
+            if (string.IsNullOrEmpty(dictName))
+            {
+                await _msg.SendErrorAsync(chatId, "Название словаря не может быть пустым.", ct);
+                return;
+            }
+            await _dictionaryRepo.AddDictionaryAsync(new Dictionary
+            {
+                Id = Guid.NewGuid(),
+                User_Id = user!.Id,
+                Name = dictName
+            });
+            await _msg.SendSuccessAsync(chatId, $"Словарь '{dictName}' успешно создан.", ct);         
+            await _msg.SendConfirmationDialog(chatId, $"Добавить автоматически 20 слов по теме {dictName}?", "fill_dict:" + dictName, "fill_dict:cancel", ct);
         }
 
         private async Task ProcessChangeCurrentLanguage(User user, string text, CancellationToken ct)

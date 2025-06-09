@@ -117,13 +117,13 @@ Correct mistakes in {srcText} if it necessary.
             string prompt = $"Provide a list of {count} words related to the theme '{theme}' translated from {sourceLangName} to {targetLangName}.";
             prompt += $@"Respond ONLY in JSON format, with no explanations or conversational text. 
             {{
-              ""{TranslatedTextClass.JSONPropertyTranslatedText}"": [
+              ""{TranslatedTextClass.JSONPropertyTranslations}"": [
                 {{ ""{TranslatedTextClass.JSONPropertyOriginalText}"": ""{sourceLangName}_word"", ""{TranslatedTextClass.JSONPropertyTranslatedText}"": ""{targetLangName}_word"", ""{TranslatedTextClass.JSONPropertyExample}"": ""..."", ""{TranslatedTextClass.JSONPropertyError}"": null }},
                 ...
                 {{ ""{TranslatedTextClass.JSONPropertyOriginalText}"": ""{sourceLangName}_word"", ""{TranslatedTextClass.JSONPropertyTranslatedText}"": ""{targetLangName}_word"", ""{TranslatedTextClass.JSONPropertyExample}"": ""..."", ""{TranslatedTextClass.JSONPropertyError}"": null }},
               ]
             }}";
-            var response = await AskWithGeminiAsync(prompt, false);
+            var response = await AskWithGeminiAsync(prompt, false, true);
             var translItems = new TranslatedTextClass(response);
             translItems.Items.ForEach(item => 
             {
@@ -157,7 +157,7 @@ Correct mistakes in {srcText} if it necessary.
             return result?.Trim() ?? "";
         }
 
-        private async Task<string> AskWithGeminiAsync(string prompt, bool lite)
+        private async Task<string> AskWithGeminiAsync(string prompt, bool lite, bool largeOutput=false)
         {
             var requestBody = new GeminiRequest
             {
@@ -171,7 +171,7 @@ Correct mistakes in {srcText} if it necessary.
                 GenerationConfig = new GenerationConfiguration
                 {
                     Temperature = 0.0, // Для точности перевода
-                    MaxOutputTokens = 450 // Ограничение для короткого текста
+                    MaxOutputTokens = largeOutput ? 2000 : 450 // Ограничение для короткого текста
                 },
                 SafetySettings = new List<SafetySetting>
             {
