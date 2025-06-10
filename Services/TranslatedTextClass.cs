@@ -18,6 +18,8 @@ namespace TelegramWordBot.Services
         public string? TranslatedText { get; set; }
         public string? Example { get; set; }
         public string? Error { get; set; }
+        public string? OriginalLanguage { get; set; }
+        public string? TranslatedLanguage { get; set; }
     }
 
 

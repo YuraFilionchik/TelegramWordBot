@@ -13,6 +13,7 @@ namespace TelegramWordBot.Services
         Task<string> GetLangName(string text, IEnumerable<Language> languages);
         Task<List<string>> GetVariants(string originalWord, string translatedWord, string target_lang);
         Task<string> GetSearchStringForPicture(string word);
+        Task<TranslatedTextClass> GetWordByTheme(string theme, int count, string targetLangName, string sourceLangName = "English");
     }
 
     class AIHelper: IAIHelper
@@ -58,6 +59,11 @@ Correct mistakes in {srcText} if it necessary.
 
             var response = await AskWithGeminiAsync(prompt, false);
             TranslatedTextClass returnedTranslate = new TranslatedTextClass(response);
+            returnedTranslate.Items.ForEach(item =>
+            {
+                item.OriginalLanguage = sourceLangName;
+                item.TranslatedLanguage = targetLangName;
+            });
             return returnedTranslate;
         }
 
@@ -111,14 +117,20 @@ Correct mistakes in {srcText} if it necessary.
             string prompt = $"Provide a list of {count} words related to the theme '{theme}' translated from {sourceLangName} to {targetLangName}.";
             prompt += $@"Respond ONLY in JSON format, with no explanations or conversational text. 
             {{
-              ""{TranslatedTextClass.JSONPropertyTranslatedText}"": [
+              ""{TranslatedTextClass.JSONPropertyTranslations}"": [
                 {{ ""{TranslatedTextClass.JSONPropertyOriginalText}"": ""{sourceLangName}_word"", ""{TranslatedTextClass.JSONPropertyTranslatedText}"": ""{targetLangName}_word"", ""{TranslatedTextClass.JSONPropertyExample}"": ""..."", ""{TranslatedTextClass.JSONPropertyError}"": null }},
                 ...
                 {{ ""{TranslatedTextClass.JSONPropertyOriginalText}"": ""{sourceLangName}_word"", ""{TranslatedTextClass.JSONPropertyTranslatedText}"": ""{targetLangName}_word"", ""{TranslatedTextClass.JSONPropertyExample}"": ""..."", ""{TranslatedTextClass.JSONPropertyError}"": null }},
               ]
             }}";
-            var response = await AskWithGeminiAsync(prompt, false);
-            return new TranslatedTextClass(response);
+            var response = await AskWithGeminiAsync(prompt, false, true);
+            var translItems = new TranslatedTextClass(response);
+            translItems.Items.ForEach(item => 
+            {
+                item.OriginalLanguage = sourceLangName;
+                item.TranslatedLanguage = targetLangName;
+            });
+            return translItems;
         }
 
         private async Task<string> TranslateWithOpenAIAsync(string prompt)
@@ -145,7 +157,7 @@ Correct mistakes in {srcText} if it necessary.
             return result?.Trim() ?? "";
         }
 
-        private async Task<string> AskWithGeminiAsync(string prompt, bool lite)
+        private async Task<string> AskWithGeminiAsync(string prompt, bool lite, bool largeOutput=false)
         {
             var requestBody = new GeminiRequest
             {
@@ -159,7 +171,7 @@ Correct mistakes in {srcText} if it necessary.
                 GenerationConfig = new GenerationConfiguration
                 {
                     Temperature = 0.0, // Для точности перевода
-                    MaxOutputTokens = 450 // Ограничение для короткого текста
+                    MaxOutputTokens = largeOutput ? 2000 : 450 // Ограничение для короткого текста
                 },
                 SafetySettings = new List<SafetySetting>
             {

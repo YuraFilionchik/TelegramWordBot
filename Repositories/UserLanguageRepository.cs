@@ -75,4 +75,12 @@ public class UserLanguageRepository
             DELETE FROM user_languages";
         await conn.ExecuteAsync(sql);
     }
+
+    public async Task RemoveAllUserLanguages(User user)
+    {
+        using var conn = _factory.CreateConnection();
+        var sql = @"
+            DELETE FROM user_languages WHERE user_id = @User_Id";
+        await conn.ExecuteAsync(sql, new { User_Id = user.Id });
+    }
 }

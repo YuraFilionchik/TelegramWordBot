@@ -1,6 +1,7 @@
-﻿using Telegram.Bot.Types.ReplyMarkups;
-using Telegram.Bot.Types;
+﻿using System.Xml.Linq;
 using Telegram.Bot;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TelegramWordBot.Services;
 
@@ -12,8 +13,8 @@ public static class KeyboardFactory
         return new ReplyKeyboardMarkup(new[]
         {
             new[] { new KeyboardButton("📚 Мои слова"), new KeyboardButton("➕ Добавить слово") },
-            new[] { new KeyboardButton("📖 Учить"), new KeyboardButton("⚙️ Настройки") },
-            new[] { new KeyboardButton("📊 Статистика"), new KeyboardButton("❓ Помощь") }
+            new[] { new KeyboardButton("📊 Статистика"), new KeyboardButton("📖 Учить") },
+            new[] { new KeyboardButton("🌐 Настройки"), new KeyboardButton("👤 Профиль") }
         })
         {
             ResizeKeyboard = true
@@ -25,9 +26,12 @@ public static class KeyboardFactory
     {
         return new ReplyKeyboardMarkup(new[]
         {
-            new[] { new KeyboardButton("Показать мои слова") },
-            new[] { new KeyboardButton("Редактировать список") },
-            new[] { new KeyboardButton("Изменить слово") },
+            new[] { new KeyboardButton("🔍 Показать все слова") },
+            new[] { new KeyboardButton("📁 Словари по темам") },
+            new[] { new KeyboardButton("Генерация новых слов") },
+            new[] { new KeyboardButton("📝 Изменить слово") },
+            new[] { new KeyboardButton("🗑️ Удалить слова") },
+            new[] { new KeyboardButton("♻️ Обнулить прогресс слов") },
             new[] { new KeyboardButton("⬅️ Назад") }
         })
         {
@@ -54,11 +58,12 @@ public static class KeyboardFactory
     {
         return new InlineKeyboardMarkup(new[]
         {
-            new[] { InlineKeyboardButton.WithCallbackData("🌐 Выбрать другой язык", "switch_language") },
-            new[] { InlineKeyboardButton.WithCallbackData("➕ Добавить новый язык", "add_foreign") },
-            new[] { InlineKeyboardButton.WithCallbackData("➖ Удалить текущий язык", "remove_foreign") },
-            new[] { InlineKeyboardButton.WithCallbackData("🌐 Изменить родной язык", "set_native") },
-            new[] { InlineKeyboardButton.WithCallbackData("Режим обучения", "config_learn:main") }
+            new[] { InlineKeyboardButton.WithCallbackData("🌐 Выбрать язык изучения", "switch_language") },
+            new[] { InlineKeyboardButton.WithCallbackData("➕ Добавить язык", "add_foreign") },
+            new[] { InlineKeyboardButton.WithCallbackData("🔿️ Удалить язык", "remove_foreign") },
+            new[] { InlineKeyboardButton.WithCallbackData("🌐 Родной язык", "set_native") },
+            new[] { InlineKeyboardButton.WithCallbackData("🎓 Режим обучения", "config_learn:main") },
+            new[] { InlineKeyboardButton.WithCallbackData("❓ Помощь", "help_info") }
         });
     }
 
@@ -78,10 +83,97 @@ public static class KeyboardFactory
         });
     }
 
+    // Инлайн-клавиатура для меню статистики
+    public static InlineKeyboardMarkup GetStatisticsInline()
+    {
+        return new InlineKeyboardMarkup(new[]
+        {
+            new[] { InlineKeyboardButton.WithCallbackData("📅 За сегодня", "stat_today") },
+            new[] { InlineKeyboardButton.WithCallbackData("📈 Общий прогресс", "stat_total") },
+            new[] { InlineKeyboardButton.WithCallbackData("🔍 По языкам", "stat_languages") }
+        });
+    }
+
+    // Инлайн-клавиатура для профиля
+    public static InlineKeyboardMarkup GetProfileInline(Guid userId, string appUrl)
+    {
+        var baseUrl = string.IsNullOrEmpty(appUrl) ? string.Empty : appUrl.TrimEnd('/');
+        var todoUrl = $"{baseUrl}/todoitems/pretty?userId={userId}";
+
+        return new InlineKeyboardMarkup(new[]
+        {
+            new[] { InlineKeyboardButton.WithCallbackData("👤 Инфо о пользователе", "profile_info") },
+            new[] { InlineKeyboardButton.WithWebApp("📝 Todo App", new WebAppInfo(todoUrl)) },
+            new[] { InlineKeyboardButton.WithCallbackData("🔄 Сбросить статистику", "reset_profile_stats") }
+        });
+    }
+
+    // Инлайн-кнопки для управления словарями
+    public static InlineKeyboardMarkup GetDictionaryManageInline(int id)
+    {
+        return new InlineKeyboardMarkup(new[]
+        {
+            new[]
+            {
+                InlineKeyboardButton.WithCallbackData("✏️ Редактировать", $"edit_dict:{id}"),
+                InlineKeyboardButton.WithCallbackData("🔄 Обнулить прогресс", $"reset_dict:{id}"),
+                InlineKeyboardButton.WithCallbackData("🗑️ Удалить словарь", $"delete_dict:{id}")
+            }
+        });
+    }
+
+    public static InlineKeyboardMarkup GetDictionaryListInline(IEnumerable<Models.Dictionary> dictionaries)
+    {
+        var rows = new List<InlineKeyboardButton[]>();
+        foreach (var d in dictionaries)
+        {
+            var name = d.Name == "default" ? "Общий" : d.Name;
+            rows.Add(new[]
+            {
+                InlineKeyboardButton.WithCallbackData(name, $"show_dict:{d.Id}")
+            });
+        }
+        rows.Add(new[]{ InlineKeyboardButton.WithCallbackData("Создать новый", $"create_dict:new") });
+        return new InlineKeyboardMarkup(rows);
+    }
+
+    public static InlineKeyboardMarkup GetTopicDictionaryActions(Guid dictId)
+    {
+        return new InlineKeyboardMarkup(new[]
+        {
+            new[] { InlineKeyboardButton.WithCallbackData("🗑️ Удалить словарь (без слов)", $"delete_dict:{dictId}") },
+            new[] { InlineKeyboardButton.WithCallbackData("🗑️ Удалить словарь и слова", $"delete_dict_full:{dictId}") },
+            new[] { InlineKeyboardButton.WithCallbackData("🗑️ Удалить несколько слов", $"delete_words:{dictId}") }
+        });
+    }
+
+    public static ReplyKeyboardMarkup GetTopicDictionaryMenu()
+    {
+        return new ReplyKeyboardMarkup(new[]
+        {
+            new[] { new KeyboardButton("🗑️ Удалить словарь") },
+            new[] { new KeyboardButton("🗑️ Удалить несколько слов") },
+            new[] { new KeyboardButton("⬅️ Назад") }
+        })
+        {
+            ResizeKeyboard = true
+        };
+    }
+
+    public static async Task ShowTopicDictionaryMenuAsync(ITelegramBotClient botClient, ChatId chatId, CancellationToken ct)
+    {
+        await botClient.SendMessage(chatId, "Словарь:", replyMarkup: GetTopicDictionaryMenu(), cancellationToken: ct);
+    }
+
     // Отображение главного меню пользователю
     public static async Task ShowMainMenuAsync(ITelegramBotClient botClient, ChatId chatId, CancellationToken ct)
     {
         await botClient.SendMessage(chatId, "Главное меню:", replyMarkup: GetMainMenu(), cancellationToken: ct);
+    }
+
+    public static async Task HideMainMenuAsync(ITelegramBotClient botClient, ChatId chatId, CancellationToken ct)
+    {
+        await botClient.SendMessage(chatId, "Меню скрыто.", replyMarkup: new ReplyKeyboardRemove(), cancellationToken: ct);
     }
 
     // Отображение меню настроек пользователю
@@ -100,38 +192,16 @@ public static class KeyboardFactory
         await botClient.SendMessage(chatId, "Режим показа слов при обучении", replyMarkup: GetConfigLearnInline(user), cancellationToken: ct);
     }
 
+    // Отображение меню статистики
+    public static async Task ShowStatisticsMenuAsync(ITelegramBotClient botClient, ChatId chatId, CancellationToken ct)
+    {
+        await botClient.SendMessage(chatId, "Статистика:", replyMarkup: GetStatisticsInline(), cancellationToken: ct);
+    }
 
-    // Обработка команд с кнопок
-    //public static async Task<(bool handled, string? newState)> HandleKeyboardCommandAsync(ITelegramBotClient botClient, ChatId chatId, string command,  CancellationToken ct)
-    //{
-    //    switch (command.ToLowerInvariant())
-    //    {
-    //        case "📚 мои слова":
-    //            //await botClient.SendMessage(chatId, "Здесь будет список твоих слов.", cancellationToken: ct);
-    //            return (true, null);
-
-    //        case "➕ добавить слово":
-    //            await botClient.SendMessage(chatId, "Введите слово для добавления:", cancellationToken: ct);
-    //            return (true, "awaiting_addword");
-
-    //        case "📖 учить":
-    //            await botClient.SendMessage(chatId, "Режим обучения пока в разработке.", cancellationToken: ct);
-    //            return (true, null);
-
-    //        case "⚙️ настройки":
-    //            await ShowConfigMenuAsync(botClient, chatId, ct);
-    //            return (true, null);
-
-    //        case "📊 статистика":
-    //            await ShowStatisticsAsync(botClient, chatId, ct);
-    //            return (true, null);
-
-    //        case "❓ помощь":
-    //            await botClient.SendMessage(chatId, "Я бот для изучения слов. Используй кнопки или команды: /addword, /learn, /config", cancellationToken: ct);
-    //            return (true, null);
-
-    //        default:
-    //            return (false, null);
-    //    }
-    //}
+    // Отображение меню профиля
+    public static async Task ShowProfileMenuAsync(ITelegramBotClient botClient, ChatId chatId, Guid userId, string appUrl, CancellationToken ct)
+    {
+        await botClient.SendMessage(chatId, "Профиль:", replyMarkup: GetProfileInline(userId, appUrl), cancellationToken: ct);
+    }
+        
 }

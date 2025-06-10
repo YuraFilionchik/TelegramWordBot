@@ -134,4 +134,13 @@ public class UserWordRepository
             DELETE FROM user_words";
         await conn.ExecuteAsync(sql);
     }
+
+    public async Task RemoveAllUserWords(User user)
+    {
+        using var conn = _factory.CreateConnection();
+        var sql = @"
+            DELETE FROM user_words WHERE user_id = @User_Id";
+        await conn.ExecuteAsync(sql, new { User_Id = user.Id });
+    }
+
 }

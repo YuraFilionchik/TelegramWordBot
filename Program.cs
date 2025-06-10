@@ -36,6 +36,7 @@ builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<UserWordProgressRepository>();
 builder.Services.AddSingleton<LanguageRepository>();
 builder.Services.AddSingleton<UserWordRepository>();
+builder.Services.AddSingleton<DictionaryRepository>();
 builder.Services.AddHttpClient<IAIHelper, AIHelper>();
 builder.Services.AddSingleton<TranslationRepository>();
 builder.Services.AddSingleton<UserLanguageRepository>();
@@ -62,7 +63,7 @@ string FixUrlAndPort(string? url)
         url = "http://" + url;
     
     var segments = url.Split(':');
-    if (segments.Length == 2) //��� �����, ��������� 2311
+    if (segments.Length == 2) 
     {
         url += ":2311";
     }

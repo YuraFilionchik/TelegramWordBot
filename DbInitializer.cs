@@ -63,8 +63,20 @@ public static class DatabaseInitializer
                 word_id UUID REFERENCES words(id) ON DELETE CASCADE,
                 file_path TEXT NOT NULL
             );",
+            @"CREATE TABLE IF NOT EXISTS dictionaries (
+                id UUID PRIMARY KEY,
+                user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+                name TEXT NOT NULL,
+                UNIQUE(user_id, name)
+            );",
+            @"CREATE TABLE IF NOT EXISTS dictionary_words (
+                dictionary_id UUID REFERENCES dictionaries(id) ON DELETE CASCADE,
+                word_id UUID REFERENCES words(id) ON DELETE CASCADE,
+                PRIMARY KEY(dictionary_id, word_id)
+            );",
             @"CREATE TABLE IF NOT EXISTS todo_items (
                 id UUID PRIMARY KEY,
+                user_id UUID REFERENCES users(id) ON DELETE CASCADE,
                 title TEXT NOT NULL,
                 description TEXT NOT NULL,
                 created_at TIMESTAMPTZ NOT NULL,
@@ -114,6 +126,7 @@ public static class DatabaseInitializer
             ("th", "Thai"),
             ("fil", "Filipino"),
             ("my", "Burmese"),
+            ("eo", "Esperanto"),
         };
 
         foreach (var lang in languages)
