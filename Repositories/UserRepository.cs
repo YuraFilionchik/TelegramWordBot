@@ -33,4 +33,10 @@ public class UserRepository
         await conn.ExecuteAsync(
             "UPDATE users SET telegram_id = @Telegram_Id, native_language = @Native_Language, current_language = @Current_Language, prefer_multiple_choice = @Prefer_Multiple_Choice WHERE id = @Id", user);
     }
+
+    public async Task<IEnumerable<User>> GetAllAsync()
+    {
+        using var conn = _factory.CreateConnection();
+        return await conn.QueryAsync<User>("SELECT * FROM users");
+    }
 }

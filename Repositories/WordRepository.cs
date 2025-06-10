@@ -70,6 +70,25 @@ namespace TelegramWordBot.Repositories
            return await conn.QueryFirstOrDefaultAsync<Word>(sql, new {Word_Id = wordId} );
         }
 
+        public async Task<int> GetTotalCountAsync()
+        {
+            using var conn = _factory.CreateConnection();
+            const string sql = "SELECT COUNT(*) FROM words";
+            return await conn.ExecuteScalarAsync<int>(sql);
+        }
+
+        public async Task<IDictionary<string, int>> GetCountByLanguageAsync()
+        {
+            using var conn = _factory.CreateConnection();
+            var sql = @"SELECT l.name AS Name, COUNT(*) AS Count
+                         FROM words w
+                         JOIN languages l ON w.language_id = l.id
+                         GROUP BY l.name
+                         ORDER BY l.name";
+            var rows = await conn.QueryAsync<(string Name, int Count)>(sql);
+            return rows.ToDictionary(r => r.Name, r => r.Count);
+        }
+
 
         public async Task RemoveAllWords()
         {
