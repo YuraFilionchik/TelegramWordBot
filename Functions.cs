@@ -197,7 +197,12 @@ namespace TelegramWordBot
             int usedFontSize = fontSize;
 
             // Подготовка шрифта
-            FontFamily family = SystemFonts.Families.First(f => f.Name == fontFamily);                                
+            FontFamily family;
+            if (!SystemFonts.TryGet(fontFamily, out family))
+            {
+                family = SystemFonts.Collection.Families.First();
+                Console.WriteLine($"Warning: Font '{fontFamily}' not found. Using '{family.Name}' instead.");
+            }
 
             // Попытка одной строки
             for (int size = fontSize; size >= 12; size--)
