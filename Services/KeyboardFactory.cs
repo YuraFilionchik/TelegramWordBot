@@ -95,17 +95,24 @@ public static class KeyboardFactory
     }
 
     // Инлайн-клавиатура для профиля
-    public static InlineKeyboardMarkup GetProfileInline(Guid userId, string appUrl)
+    public static InlineKeyboardMarkup GetProfileInline(Guid userId, long telegramId, string appUrl)
     {
         var baseUrl = string.IsNullOrEmpty(appUrl) ? string.Empty : appUrl.TrimEnd('/');
         var todoUrl = $"{baseUrl}/todoitems/pretty?userId={userId}";
-
-        return new InlineKeyboardMarkup(new[]
+        var rows = new List<InlineKeyboardButton[]>
         {
-            new[] { InlineKeyboardButton.WithCallbackData("👤 Инфо о пользователе", "profile_info") },
-            new[] { InlineKeyboardButton.WithWebApp("📝 Todo App", new WebAppInfo(todoUrl)) },
-            new[] { InlineKeyboardButton.WithCallbackData("🔄 Сбросить статистику", "reset_profile_stats") }
-        });
+            new[] { InlineKeyboardButton.WithCallbackData("👤 Инфо о пользователе", "profile_info") }
+        };
+
+        var adminId = Environment.GetEnvironmentVariable("ADMIN_ID");
+        if (!string.IsNullOrEmpty(adminId) && adminId == telegramId.ToString())
+        {
+            rows.Add(new[] { InlineKeyboardButton.WithWebApp("📝 Todo App", new WebAppInfo(todoUrl)) });
+        }
+
+        rows.Add(new[] { InlineKeyboardButton.WithCallbackData("🔄 Сбросить статистику", "reset_profile_stats") });
+
+        return new InlineKeyboardMarkup(rows);
     }
 
     // Инлайн-кнопки для управления словарями
@@ -199,9 +206,9 @@ public static class KeyboardFactory
     }
 
     // Отображение меню профиля
-    public static async Task ShowProfileMenuAsync(ITelegramBotClient botClient, ChatId chatId, Guid userId, string appUrl, CancellationToken ct)
+    public static async Task ShowProfileMenuAsync(ITelegramBotClient botClient, ChatId chatId, Guid userId, long telegramId, string appUrl, CancellationToken ct)
     {
-        await botClient.SendMessage(chatId, "Профиль:", replyMarkup: GetProfileInline(userId, appUrl), cancellationToken: ct);
+        await botClient.SendMessage(chatId, "Профиль:", replyMarkup: GetProfileInline(userId, telegramId, appUrl), cancellationToken: ct);
     }
         
 }
