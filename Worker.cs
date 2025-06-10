@@ -1942,6 +1942,11 @@ namespace TelegramWordBot
                 return;
             }
             var lang = await _languageRepo.GetByNameAsync(name);
+            if (lang == null)
+            {
+                await _msg.SendErrorAsync(chatId, $"Язык {name} не найден в базе", ct);
+                return;
+            }
             await _userLangRepository.AddUserLanguageAsync(user.Id, lang!.Id);
             user.Current_Language = lang.Name;
             await _userRepo.UpdateAsync(user);

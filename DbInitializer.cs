@@ -126,6 +126,7 @@ public static class DatabaseInitializer
             ("th", "Thai"),
             ("fil", "Filipino"),
             ("my", "Burmese"),
+            ("eo", "Esperanto"),
         };
 
         foreach (var lang in languages)
