@@ -1951,7 +1951,7 @@ namespace TelegramWordBot
             user.Current_Language = lang.Name;
             await _userRepo.UpdateAsync(user);
             await _botClient.SendMessage(chatId,
-                $"Язык {lang.Name} добавлен. Выберите слова через /addword или меню", cancellationToken: ct);
+                $"Язык {lang.Name} добавлен. Выберите слова через /addword или меню", replyMarkup: KeyboardFactory.GetMainMenu(), cancellationToken: ct);
         }
 
         private async Task ProcessStartCommand(User user, Message message, CancellationToken ct)
