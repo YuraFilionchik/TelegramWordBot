@@ -34,7 +34,7 @@ public class TranslationRepository
     {
         using var conn = _factory.CreateConnection();
         var sql = @"
-            DELETE FROM translations WHERE user_id = @User_Id";
+            DELETE FROM translations WHERE ";
         await conn.ExecuteAsync(sql, new { User_Id = user.Id });
     }
 
