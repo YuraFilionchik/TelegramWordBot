@@ -141,7 +141,8 @@ public static class KeyboardFactory
     {
         return new InlineKeyboardMarkup(new[]
         {
-            new[] { InlineKeyboardButton.WithCallbackData("🗑️ Удалить словарь", $"delete_dict:{dictId}") },
+            new[] { InlineKeyboardButton.WithCallbackData("🗑️ Удалить словарь (без слов)", $"delete_dict:{dictId}") },
+            new[] { InlineKeyboardButton.WithCallbackData("🗑️ Удалить словарь и слова", $"delete_dict_full:{dictId}") },
             new[] { InlineKeyboardButton.WithCallbackData("🗑️ Удалить несколько слов", $"delete_words:{dictId}") }
         });
     }

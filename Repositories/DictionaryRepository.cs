@@ -47,6 +47,9 @@ public class DictionaryRepository
 
     public async Task AddWordAsync(Guid dictionaryId, Guid wordId)
     {
+        if (await WordExistsAsync(wordId, dictionaryId))
+            return; // Word already exists in the dictionary
+
         using var conn = _factory.CreateConnection();
         const string sql = @"INSERT INTO dictionary_words (dictionary_id, word_id) VALUES (@Dictionary_Id, @Word_Id) ON CONFLICT DO NOTHING";
         await conn.ExecuteAsync(sql, new { Dictionary_Id = dictionaryId, Word_Id = wordId });
@@ -59,6 +62,12 @@ public class DictionaryRepository
         return await conn.ExecuteScalarAsync<bool>(sql, new { Dictionary_Name = dictionaryName, User_Id = userId });
     }
 
+    private async Task<bool> WordExistsAsync(Guid wordId, Guid dictionaryId)
+    {
+        using var conn = _factory.CreateConnection();
+        const string sql = @"SELECT EXISTS (SELECT 1 FROM dictionary_words WHERE word_id = @Word_Id AND dictionary_id = @Dictionary_Id)";
+        return await conn.ExecuteScalarAsync<bool>(sql, new { Word_Id = wordId, Dictionary_Id = dictionaryId });
+    }
     public async Task AddWordAsync(string dictionaryName, Guid wordId, Guid userId)
     {
         if (dictionaryName == "default")

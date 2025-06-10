@@ -289,6 +289,9 @@ namespace TelegramWordBot
                 case "delete_dict":
                     await DeleteDictionary(parts[1], chatId, ct);
                     break;
+                case "delete_dict_full":                    
+                    await DeleteDictionaryFull(parts[1], chatId, ct);
+                    break;
                 case "show_dict":
                     if (Guid.TryParse(parts[1], out var sd))
                         await ShowDictionary(sd, chatId, ct);
@@ -306,15 +309,24 @@ namespace TelegramWordBot
                         await _msg.SendInfoAsync(chatId, "Автозаполнение словаря отменено.", ct);
                         return;
                     }else if (!string.IsNullOrEmpty(parts[1]))
-                    { 
-                        var dictionary = (await _dictionaryRepo.GetByUserAsync(user.Id)).First(x => x.Name == parts[1]);
+                    {
+                        Dictionary dictionary;
                         TranslatedTextClass newWords;
                         if (_translationCandidates.ContainsKey(chatId))
                         {
                             newWords = _translationCandidates[chatId];
                             _translationCandidates.Remove(chatId);
-                        }else
+                            dictionary = new Dictionary
+                            {
+                                Id = Guid.NewGuid(),
+                                User_Id = user.Id,
+                                Name = parts[1]
+                            };
+                            _dictionaryRepo.AddDictionaryAsync(dictionary);
+                        }
+                        else
                         {
+                            dictionary = (await _dictionaryRepo.GetByUserAsync(user.Id)).First(x => x.Name == parts[1]);
                             newWords = await _ai.GetWordByTheme(parts[1], 20, user.Native_Language, user.Current_Language);
                         }
 
@@ -465,6 +477,52 @@ namespace TelegramWordBot
             await bot.AnswerCallbackQuery(callback.Id);
         }
 
+        private async Task DeleteDictionaryFull(string id, long chatId, CancellationToken ct)
+        {
+            if (id.StartsWith("confirm_"))
+            {
+                var strId = id.Substring("confirm_".Length);
+                if (!Guid.TryParse(strId, out var dId)) return;
+                await PerformDictionaryDeletion(dId, chatId, true, ct);
+                return;
+            }
+
+            if (!Guid.TryParse(id, out var dictId))
+            {
+                await _msg.SendErrorAsync(chatId, "Некорректный идентификатор", ct);
+                return;
+            }
+
+            var user = await _userRepo.GetByTelegramIdAsync(chatId);
+            if (user == null)
+            {
+                await _msg.SendErrorAsync(chatId, "Пользователь не найден", ct);
+                return;
+            }
+
+            var dictionaries = await _dictionaryRepo.GetByUserAsync(user.Id);
+            var dictionary = dictionaries.FirstOrDefault(d => d.Id == dictId);
+            if (dictionary == null)
+            {
+                await _msg.SendErrorAsync(chatId, "Словарь не найден", ct);
+                return;
+            }
+
+            if (dictionary.Name == "default")
+            {
+                await _msg.SendErrorAsync(chatId, "Нельзя удалить общий словарь", ct);
+                return;
+            }
+
+            _pendingDeleteDict[chatId] = dictId;
+
+            var kb = new InlineKeyboardMarkup(new[]
+            {
+                new[]{ InlineKeyboardButton.WithCallbackData("Да", $"delete_dict_full:confirm_{dictId}") },
+                new[]{ InlineKeyboardButton.WithCallbackData("Нет", "cancel") }
+            });
+            await _msg.SendText(chatId, "Удалить словарь? Слова будут удалены полностью.", kb, ct);
+        }
 
         private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken ct)
         {
@@ -798,7 +856,8 @@ namespace TelegramWordBot
                 User_Id = user!.Id,
                 Name = dictName
             });
-            await _msg.SendSuccessAsync(chatId, $"Словарь '{dictName}' успешно создан.", ct);         
+            await _msg.SendSuccessAsync(chatId, $"Словарь '{dictName}' успешно создан.", ct);
+            _translationCandidates.Remove(chatId);
             await _msg.SendConfirmationDialog(chatId, $"Добавить автоматически 20 слов по теме {dictName}?", "fill_dict:" + dictName, "fill_dict:cancel", ct);
         }
 
@@ -1567,7 +1626,7 @@ namespace TelegramWordBot
             else
             {
                 await _msg.SendErrorAsync(user.Telegram_Id, $"Неправильно! {word.Base_Text} = {translation.Text}", ct);
-                await Task.Delay(1000);
+                //await Task.Delay(1000);
                 await _msg.SendWordCardAsync(user.Telegram_Id, word.Base_Text, translation.Text, translation.Examples, imgPath, ct);
                 
             }
@@ -1629,16 +1688,9 @@ namespace TelegramWordBot
                 .ToArray();
             // Разбиваем на 2 колонки
             var keyboard = new InlineKeyboardMarkup(buttons.Chunk(2));
-            var filePath = Path.Combine(AppContext.BaseDirectory, "Resources", "question_s.png");
+            var filePath = FrameGenerator.GeneratePngFramedText(word.Base_Text, 200, 100, 16);
             string msg_text = $"Выберите правильный перевод для слова: {Environment.NewLine}";
-            await _msg.SendText(user.Telegram_Id, msg_text, keyboard, ct);
-            msg_text = AsciiFrameGenerator.GenerateFramedText(word.Base_Text, 22, "html", true);
-            //if (File.Exists(filePath))
-            //    await _msg.SendPhotoWithCaptionAsync(user.Telegram_Id, filePath,
-            //            msg_text, keyboard, ct);
-            //else 
-                await _msg.SendText(user.Telegram_Id, msg_text, 
-                keyboard, ct);
+            await _msg.SendPhotoWithCaptionAsync(user.Telegram_Id, filePath, msg_text, keyboard, ct);
         }
 
         private async Task ShowBinaryChoiceAsync(long chatId, Word word, CancellationToken ct)
@@ -1649,22 +1701,10 @@ namespace TelegramWordBot
                 new[] { InlineKeyboardButton.WithCallbackData("❌ Не вспомнил", $"learn:fail:{word.Id}") }
             });
 
-            // Ensure word.Base_Text is escaped before including in HTML
             string escapedWordBaseText = TelegramMessageHelper.EscapeHtml(word.Base_Text ?? string.Empty);
-            string msg_text = $"Переведите слово {Environment.NewLine}{Environment.NewLine}			[		<b>{escapedWordBaseText}</b>		]{Environment.NewLine}";
-
-            var filePath = Path.Combine(AppContext.BaseDirectory, "Resources", "question_s.png");
-
-            if (File.Exists(filePath))
-            {
-                await _msg.SendPhotoWithCaptionAsync(chatId, filePath, msg_text, inline, ct);
-            }
-            else
-            {
-                //Use _botClient.SendMessage for consistency with previous version, or _msg.SendText if that's preferred.
-                //The original instruction implies using _msg.SendText, so we'll use that.
-                await _msg.SendText(chatId, msg_text, inline, ct);
-            }
+            string msg_text = $"Переведите слово {Environment.NewLine}";
+            var filePath = FrameGenerator.GeneratePngFramedText(escapedWordBaseText, 200, 100, 16);
+            await _msg.SendPhotoWithCaptionAsync(chatId, filePath, msg_text, inline, ct);
         }
 
 
@@ -2313,7 +2353,7 @@ namespace TelegramWordBot
             {
                 var strId = id.Substring("confirm_".Length);
                 if (!Guid.TryParse(strId, out var dId)) return;
-                await PerformDictionaryDeletion(dId, chatId, ct);
+                await PerformDictionaryDeletion(dId, chatId, false, ct);
                 return;
             }
 
@@ -2354,7 +2394,7 @@ namespace TelegramWordBot
             await _msg.SendText(chatId, "Удалить словарь? Слова будут перенесены в общий.", kb, ct);
         }
 
-        private async Task PerformDictionaryDeletion(Guid dictId, long chatId, CancellationToken ct)
+        private async Task PerformDictionaryDeletion(Guid dictId, long chatId, bool deleteWords, CancellationToken ct)
         {
             var user = await _userRepo.GetByTelegramIdAsync(chatId);
             if (user == null) return;
@@ -2364,11 +2404,21 @@ namespace TelegramWordBot
             if (dictionary == null) return;
 
             var words = (await _dictionaryRepo.GetWordsAsync(dictId)).ToList();
-            var defaultDict = await _dictionaryRepo.GetDefaultDictionary(user.Id);
-            foreach (var w in words)
+            if (deleteWords)
             {
-                await _dictionaryRepo.AddWordAsync(defaultDict.Id, w.Id);
+                foreach (var w in words)
+                {
+                    await _userWordRepo.RemoveUserWordAsync(user.Id, w.Id); //TODO make mass removal method in UserWordRepository
+                }
+            }else
+            {
+                var defaultDict = await _dictionaryRepo.GetDefaultDictionary(user.Id);
+                    foreach (var w in words)
+                    {
+                        await _dictionaryRepo.AddWordAsync(defaultDict.Id, w.Id);
+                    }
             }
+            
 
             await _dictionaryRepo.DeleteAsync(dictId);
             _pendingDeleteDict.Remove(chatId);
