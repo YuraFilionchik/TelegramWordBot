@@ -198,10 +198,14 @@ namespace TelegramWordBot
 
             // Подготовка шрифта
             FontFamily family;
-            if (!SystemFonts.TryGet(fontFamily, out family))
+            if (!SystemFonts.TryGet(fontFamily, out family) || !SystemFonts.Collection.Families.Any())
             {
-                family = SystemFonts.Collection.Families.First();
-                Console.WriteLine($"Warning: Font '{fontFamily}' not found. Using '{family.Name}' instead.");
+                var fontFile = Path.Combine(resourcesDir, $"{fontFamily}.ttf"); 
+                if (!File.Exists(fontFile))
+                    throw new FileNotFoundException($"Font file not found: {fontFile}");
+                var fc = new FontCollection();
+                family = fc.Add(fontFile);
+
             }
 
             // Попытка одной строки

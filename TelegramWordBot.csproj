@@ -33,6 +33,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Resources\consolas.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Include="Resources\consolas.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
