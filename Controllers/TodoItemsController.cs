@@ -32,14 +32,14 @@ public class TodoItemsController : ControllerBase
     }
 
     [HttpPost("add")]
-    public async Task<IActionResult> Add([FromQuery] Guid userId, [FromForm] string title, [FromForm] string description)
+    public async Task<IActionResult> Add([FromQuery] Guid userId, [FromForm] string title, [FromForm] string? description)
     {
         var item = new TodoItem
         {
             Id = Guid.NewGuid(),
             User_Id = userId,
             Title = title,
-            Description = description,
+            Description = description ?? string.Empty,
             Created_At = DateTime.UtcNow
         };
         await _repo.AddAsync(item);
