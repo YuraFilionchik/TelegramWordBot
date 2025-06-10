@@ -37,7 +37,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Include="Resources\consolas.ttf" />
+    <Resource Include="Resources\consolas.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>

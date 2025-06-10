@@ -200,7 +200,7 @@ namespace TelegramWordBot
             FontFamily family;
             if (!SystemFonts.TryGet(fontFamily, out family) || !SystemFonts.Collection.Families.Any())
             {
-                var fontFile = Path.Combine(resourcesDir, $"{fontFamily}.ttf"); 
+                var fontFile = Path.Combine(resourcesDir, $"{fontFamily.ToLowerInvariant()}.ttf"); 
                 if (!File.Exists(fontFile))
                     throw new FileNotFoundException($"Font file not found: {fontFile}");
                 var fc = new FontCollection();
