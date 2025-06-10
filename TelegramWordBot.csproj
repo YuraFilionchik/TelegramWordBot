@@ -33,16 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Resources\consolas.ttf" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Resources\consolas.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-
-  <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -50,6 +40,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Resources\consolas.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\question.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
