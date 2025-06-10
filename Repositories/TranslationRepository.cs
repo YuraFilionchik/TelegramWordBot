@@ -30,6 +30,14 @@ public class TranslationRepository
         await conn.ExecuteAsync(sql);
     }
 
+    public async Task RemoveAllTranslations(User user)
+    {
+        using var conn = _factory.CreateConnection();
+        var sql = @"
+            DELETE FROM translations WHERE user_id = @User_Id";
+        await conn.ExecuteAsync(sql, new { User_Id = user.Id });
+    }
+
     public async Task<IEnumerable<Translation>> GetTranslationsForWordAsync(Guid wordId)
     {
         using var conn = _factory.CreateConnection();
