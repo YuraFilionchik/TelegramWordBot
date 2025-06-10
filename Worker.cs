@@ -1630,12 +1630,14 @@ namespace TelegramWordBot
             // Разбиваем на 2 колонки
             var keyboard = new InlineKeyboardMarkup(buttons.Chunk(2));
             var filePath = Path.Combine(AppContext.BaseDirectory, "Resources", "question_s.png");
-            string msg_text = $"Выберите правильный перевод для слова {Environment.NewLine}{Environment.NewLine}\t\t\t[\t\t" +
-                   word.Base_Text +"\t\t]" +Environment.NewLine;
-            if (File.Exists(filePath))
-                await _msg.SendPhotoWithCaptionAsync(user.Telegram_Id, filePath,
-                        msg_text, keyboard, ct);
-            else await _msg.SendText(user.Telegram_Id, msg_text, 
+            string msg_text = $"Выберите правильный перевод для слова: {Environment.NewLine}";
+            await _msg.SendText(user.Telegram_Id, msg_text, keyboard, ct);
+            msg_text = AsciiFrameGenerator.GenerateFramedText(word.Base_Text, 22, "html", true);
+            //if (File.Exists(filePath))
+            //    await _msg.SendPhotoWithCaptionAsync(user.Telegram_Id, filePath,
+            //            msg_text, keyboard, ct);
+            //else 
+                await _msg.SendText(user.Telegram_Id, msg_text, 
                 keyboard, ct);
         }
 

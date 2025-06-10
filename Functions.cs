@@ -75,60 +75,71 @@ namespace TelegramWordBot
             return lines;
         }
 
-        public static string GenerateFramedText(string text, int maxWidth = 35)
+        /// <summary>
+        /// none", html, markdownv2
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="maxWidth"></param>
+        /// <param name="format">"none", "html", "markdownv2"</param>
+        /// <returns></returns>
+        public static string GenerateFramedText(
+    string text,
+    int maxWidth = 25,
+    string format = "none",        // "none", "html", "markdownv2"
+    bool useAscii = true           // true = +---+ |, false = ╔═══╗ ║
+)
         {
-            // Минимальная ширина для рамки (минимум 1 символ текста + 2 пробела + 2 рамки = 5)
-            // То есть innerContentWidth должно быть хотя бы 1, а frameWidth хотя бы 5
-            if (maxWidth < 5)
+            int padding = 1;
+            int innerContentWidth = maxWidth - 2 - 2 * padding;
+            if (innerContentWidth < 1)
             {
-                maxWidth = 5; // Устанавливаем минимальную ширину рамки
+                innerContentWidth = 1;
+                maxWidth = innerContentWidth + 2 + 2 * padding;
             }
 
-            // Ширина внутреннего содержимого (без пробелов и символов рамки)
-            // 2 пробела по бокам + 2 вертикальные линии рамки
-            int innerContentWidth = maxWidth - 4; // text.Length + 2 spaces = maxWidth - 2 frame chars
-
-            // Если innerContentWidth становится <= 0, это значит, что maxWidth слишком мал для текста с отступами и рамкой.
-            // В этом случае, делаем innerContentWidth минимальным для корректной работы.
-            if (innerContentWidth <= 0)
-            {
-                innerContentWidth = 1; // Минимальная внутренняя ширина для текста
-                maxWidth = innerContentWidth + 4; // Обновляем maxWidth
-            }
-
-
-            // Разбиваем текст на строки, учитывая innerContentWidth
             List<string> wrappedLines = WrapText(text, innerContentWidth);
 
-            // Общая ширина рамки, включая углы
-            int frameTotalWidth = maxWidth;
+            // Рамочные символы
+            string h = useAscii ? "-" : "═";
+            string v = useAscii ? "|" : "║";
+            string tl = useAscii ? "+" : "╔";
+            string tr = useAscii ? "+" : "╗";
+            string bl = useAscii ? "+" : "╚";
+            string br = useAscii ? "+" : "╝";
 
-            // Создаем верхнюю и нижнюю границы рамки
-            string horizontalLine = new string('═', frameTotalWidth - 2); // '═' без углов
-            string topLine = "╔" + horizontalLine + "╗";
-            string bottomLine = "╚" + horizontalLine + "╝";
+            string horizontalLine = new string(h[0], maxWidth - 2);
+            string topLine = tl + horizontalLine + tr;
+            string bottomLine = bl + horizontalLine + br;
+            string emptyLine = v + new string(' ', maxWidth - 2) + v;
 
-            // Создаем строку с пустыми пробелами для отступа
-            string emptyLineContent = new string(' ', frameTotalWidth - 2);
-            string emptyLine = "║" + emptyLineContent + "║";
-
-            // Объединяем все части в одну строку с переносами строк
-            StringBuilder framedTextBuilder = new StringBuilder();
-            framedTextBuilder.AppendLine(topLine);
-            framedTextBuilder.AppendLine(emptyLine); // Пустая строка для отступа
-
-            foreach (string line in wrappedLines)
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine(topLine);
+            sb.AppendLine(emptyLine);
+            foreach (var line in wrappedLines)
             {
-                // Отцентрировать текст или выровнять по левому краю с пробелами
-                // Для простоты, пока выравниваем по левому краю с 2 пробелами
-                string paddedLine = line.PadRight(innerContentWidth); // Добавляем пробелы до innerContentWidth
-                framedTextBuilder.AppendLine("║  " + paddedLine + "  ║");
+                // Центрируем!
+                int spaces = innerContentWidth - line.Length;
+                int leftPad = spaces / 2;
+                int rightPad = spaces - leftPad;
+                string centered = new string(' ', leftPad) + line + new string(' ', rightPad);
+                sb.AppendLine(v + new string(' ', padding) + centered + new string(' ', padding) + v);
             }
+            sb.AppendLine(emptyLine);
+            sb.AppendLine(bottomLine);
 
-            framedTextBuilder.AppendLine(emptyLine); // Пустая строка для отступа
-            framedTextBuilder.AppendLine(bottomLine);
+            string result = sb.ToString();
 
-            return framedTextBuilder.ToString();
+            switch (format.ToLower())
+            {
+                case "html":
+                    return $"<pre>{result}</pre>";
+                case "markdownv2":
+                    return $"```\n{result}\n```";
+                default:
+                    return result;
+            }
         }
+
+
     }
 }
