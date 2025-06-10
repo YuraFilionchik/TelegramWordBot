@@ -78,6 +78,13 @@ public class UserWordRepository
         return await conn.QueryAsync<Word>(sql, new { User_Id = userId });
     }
 
+    public async Task<int> GetWordCountByUserId(Guid userId)
+    {
+        using var conn = _factory.CreateConnection();
+        const string sql = "SELECT COUNT(*) FROM user_words WHERE user_id = @User_Id";
+        return await conn.ExecuteScalarAsync<int>(sql, new { User_Id = userId });
+    }
+
     public async Task<IEnumerable<Word>> GetWordsByUserId(Guid? userId, int? LangId)
     {
         if (userId == null || LangId == null) return new List<Word>();

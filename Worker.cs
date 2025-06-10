@@ -762,6 +762,19 @@ namespace TelegramWordBot
                         await ShowMyWords(chatId, user, ct);
                         break;
 
+                    case "/adminstat":
+                        var pwd = text.Split(' ', 2).Skip(1).FirstOrDefault();
+                        var env = Environment.GetEnvironmentVariable("PASSWORD");
+                        if (!string.IsNullOrEmpty(env) && pwd == env)
+                        {
+                            await ShowAdminStatistics(chatId, ct);
+                        }
+                        else
+                        {
+                            await _msg.SendErrorAsync(chatId, "Access denied", ct);
+                        }
+                        break;
+
                     default:
                         await _msg.SendErrorAsync(chatId, "Неизвестная команда. Используйте меню или /start.", ct);
                         break;
@@ -2239,6 +2252,33 @@ namespace TelegramWordBot
             }
 
             await _msg.SendSuccessAsync(chatId, "Вся статистика сброшена", ct);
+        }
+
+        private async Task ShowAdminStatistics(ChatId chatId, CancellationToken ct)
+        {
+            var users = (await _userRepo.GetAllAsync()).ToList();
+            var sb = new StringBuilder();
+            sb.AppendLine("<b>Users:</b>");
+
+            foreach (var u in users)
+            {
+                var count = await _userWordRepo.GetWordCountByUserId(u.Id);
+                var dicts = await _dictionaryRepo.GetByUserAsync(u.Id);
+                var dictNames = string.Join(", ", dicts.Select(d => d.Name));
+                sb.AppendLine($"ID: <code>{u.Telegram_Id}</code> | Native: {TelegramMessageHelper.EscapeHtml(u.Native_Language)} | Current: {TelegramMessageHelper.EscapeHtml(u.Current_Language ?? string.Empty)} | MC: {u.Prefer_Multiple_Choice}");
+                sb.AppendLine($"Words: {count}");
+                sb.AppendLine($"Dictionaries: {dictNames}");
+                sb.AppendLine();
+            }
+
+            var total = await _wordRepo.GetTotalCountAsync();
+            var byLang = await _wordRepo.GetCountByLanguageAsync();
+
+            sb.AppendLine($"Total words: {total}");
+            foreach (var kvp in byLang)
+                sb.AppendLine($"{TelegramMessageHelper.EscapeHtml(kvp.Key)}: {kvp.Value}");
+
+            await _msg.SendText(chatId, sb.ToString(), ct);
         }
 
         private async Task EditDictionary(string id, long chatId, CancellationToken ct)
