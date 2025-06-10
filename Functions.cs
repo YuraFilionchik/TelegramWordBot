@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Text;
 using TelegramWordBot.Models;
 using static System.Net.Mime.MediaTypeNames;
-using Font = System.Drawing.Font;
+using SixLabors.Fonts;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Drawing.Processing;
+using Font = SixLabors.Fonts.Font;
 
 namespace TelegramWordBot
 {
@@ -178,111 +181,141 @@ namespace TelegramWordBot
 
         public static string GeneratePngFramedText(string text, int width = 100, int height = 50, int fontSize = 16, string fontFamily = "Consolas")
         {
-            var fileName = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(text))
-                           .Replace("=", "").Replace("/", "_").Replace("+", "-") + ".png";
-            var filePath = Path.Combine(AppContext.BaseDirectory, "Resources", fileName);
+            // Генерация имени файла
+            var fileName = Convert.ToBase64String(Encoding.UTF8.GetBytes(text))
+                               .Replace("=", "")
+                               .Replace("/", "_")
+                               .Replace("+", "-") + ".png";
+            var resourcesDir = Path.Combine(AppContext.BaseDirectory, "Resources");
+            Directory.CreateDirectory(resourcesDir);
+            var filePath = Path.Combine(resourcesDir, fileName);
             if (File.Exists(filePath))
                 return filePath;
 
-            // Подбор размера шрифта для одной строки
+            const int margin = 3;
             string[] lines = null;
             int usedFontSize = fontSize;
-            int margin = 3;
 
-            using var bmpTemp = new Bitmap(width, height);
-            using var gTemp = Graphics.FromImage(bmpTemp);
+            // Подготовка шрифта
+            FontFamily family = SystemFonts.Families.First(f => f.Name == fontFamily);                                
 
+            // Попытка одной строки
             for (int size = fontSize; size >= 12; size--)
             {
-                using var fontTest = new Font(fontFamily, size, FontStyle.Regular, GraphicsUnit.Pixel);
-                SizeF textSize = gTemp.MeasureString(text, fontTest);
-
-                if (textSize.Width <= width - 2 * margin && textSize.Height <= height - 2 * margin)
+                var fontTest = new Font(family, size);
+                var rect = TextMeasurer.MeasureSize(text, new TextOptions(fontTest));
+                if (rect.Width <= width - 2 * margin &&
+                    rect.Height <= height - 2 * margin)
                 {
-                    // Влезает одной строкой
                     usedFontSize = size;
                     lines = new[] { text };
                     break;
                 }
             }
 
-            // Если не влезает — word wrap + минимальный размер шрифта
+            // Если не влезло — word-wrap при 12px
             if (lines == null)
             {
                 usedFontSize = 12;
-                using var fontTest = new Font(fontFamily, usedFontSize, FontStyle.Regular, GraphicsUnit.Pixel);
+                var wrapFont = new Font(family, usedFontSize);
+                lines = WordWrap(text, wrapFont, width - 2 * margin);
 
-                lines = WordWrap(gTemp, text, fontTest, width - 2 * margin);
-                // Если по вертикали не помещается — обрезаем строки (или увеличиваем высоту)
-                int lineHeight = (int)(fontTest.GetHeight(gTemp) + 4);
-                int maxLines = (height - 2 * margin) / lineHeight;
+                // Обрезаем по вертикали, добавляя "..." на последней строке
+                float lineH = TextMeasurer.MeasureSize("A", new TextOptions(wrapFont)).Height + 4;
+                int maxLines = (int)((height - 2 * margin) / lineH);
                 if (lines.Length > maxLines)
                 {
-                    var cutLines = new List<string>(lines).GetRange(0, maxLines);
-                    // Добавить многоточие на последней строке если текст обрезан
-                    cutLines[maxLines - 1] += "...";
-                    lines = cutLines.ToArray();
+                    var cut = new List<string>(lines).GetRange(0, maxLines);
+                    cut[maxLines - 1] += "...";
+                    lines = cut.ToArray();
                 }
             }
 
-            // создаём основную картинку
-            using var bmp = new Bitmap(width, height);
-            using var g = Graphics.FromImage(bmp);
-            using var font = new Font(fontFamily, usedFontSize, FontStyle.Regular, GraphicsUnit.Pixel);
-            using var pen = new Pen(Color.Black, 2);
+            // Рисуем изображение
+            using var image = new Image<Rgba32>(width, height);
+            var drawFont = new Font(family, usedFontSize);
+            float lineHeight = TextMeasurer.MeasureSize("A", new TextOptions(drawFont)).Height + 4;
+            float totalH = lines.Length * lineHeight;
+            float startY = margin + (height - 2 * margin - totalH) / 2;
 
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
-            g.Clear(Color.White);
-
-            // Рисуем рамку
-            g.DrawRectangle(pen, margin, margin, width - 2 * margin, height - 2 * margin);
-
-            // Рисуем текст — центрируем вертикально и горизонтально
-            int lineHeightDraw = (int)(font.GetHeight(g) + 4);
-            int totalTextHeight = lines.Length * lineHeightDraw;
-            int startY = margin + (height - 2 * margin - totalTextHeight) / 2;
-
-            for (int i = 0; i < lines.Length; i++)
+            image.Mutate(ctx =>
             {
-                var line = lines[i];
-                SizeF size = g.MeasureString(line, font);
-                float x = (width - size.Width) / 2;
-                float y = startY + i * lineHeightDraw;
-                g.DrawString(line, font, Brushes.Black, x, y);
-            }
+                ctx.Fill(Color.White);
+                ctx.Draw(Color.Black, 2, new RectangleF(margin, margin, width - 2 * margin, height - 2 * margin));
 
-            bmp.Save(filePath, ImageFormat.Png);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    var line = lines[i];
+                    var rect = TextMeasurer.MeasureSize(line, new TextOptions(drawFont));
+                    float x = (width - rect.Width) / 2;
+                    float y = startY + i * lineHeight;
+                    ctx.DrawText(line, drawFont, Color.Black, new PointF(x, y));
+                }
+            });
+
+            image.SaveAsPng(filePath);
             return filePath;
         }
 
-        /// <summary>
-        /// Делит строку на строки так, чтобы каждая влезла по ширине
-        /// </summary>
-        static string[] WordWrap(Graphics g, string text, Font font, int maxWidth)
+        private static string[] WordWrap(string text, Font font, float maxWidth)
         {
             var words = text.Split(' ');
             var lines = new List<string>();
-            var currentLine = "";
+            var current = new StringBuilder();
 
-            foreach (var word in words)
+            foreach (var w in words)
             {
-                var testLine = string.IsNullOrEmpty(currentLine) ? word : currentLine + " " + word;
-                if (g.MeasureString(testLine, font).Width > maxWidth)
+                var attempt = current.Length == 0 ? w : current + " " + w;
+                var rect = TextMeasurer.MeasureSize(attempt, new TextOptions(font));
+                if (rect.Width <= maxWidth)
                 {
-                    if (!string.IsNullOrEmpty(currentLine))
-                        lines.Add(currentLine);
-                    currentLine = word;
+                    if (current.Length > 0) current.Append(' ');
+                    current.Append(w);
                 }
                 else
                 {
-                    currentLine = testLine;
+                    if (current.Length > 0)
+                    {
+                        lines.Add(current.ToString());
+                        current.Clear();
+                    }
+                    current.Append(w);
                 }
             }
-            if (!string.IsNullOrEmpty(currentLine))
-                lines.Add(currentLine);
+
+            if (current.Length > 0)
+                lines.Add(current.ToString());
 
             return lines.ToArray();
         }
+        /// <summary>
+        /// Делит строку на строки так, чтобы каждая влезла по ширине
+        /// </summary>
+        //static string[] WordWrap(Graphics g, string text, Font font, int maxWidth)
+        //{
+        //    var words = text.Split(' ');
+        //    var lines = new List<string>();
+        //    var currentLine = "";
+
+        //    foreach (var word in words)
+        //    {
+        //        var testLine = string.IsNullOrEmpty(currentLine) ? word : currentLine + " " + word;
+        //        if (g.MeasureString(testLine, font).Width > maxWidth)
+        //        {
+        //            if (!string.IsNullOrEmpty(currentLine))
+        //                lines.Add(currentLine);
+        //            currentLine = word;
+        //        }
+        //        else
+        //        {
+        //            currentLine = testLine;
+        //        }
+        //    }
+        //    if (!string.IsNullOrEmpty(currentLine))
+        //        lines.Add(currentLine);
+
+        //    return lines.ToArray();
+        //}
 
 
     }
