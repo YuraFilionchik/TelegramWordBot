@@ -99,6 +99,7 @@ public static class KeyboardFactory
     {
         var baseUrl = string.IsNullOrEmpty(appUrl) ? string.Empty : appUrl.TrimEnd('/');
         var todoUrl = $"{baseUrl}/todoitems/pretty?userId={userId}";
+
         var rows = new List<InlineKeyboardButton[]>
         {
             new[] { InlineKeyboardButton.WithCallbackData("👤 Инфо о пользователе", "profile_info") }
