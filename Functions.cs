@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-sing System.Text;
+using System.Text;
 using TelegramWordBot.Models;
 using static System.Net.Mime.MediaTypeNames;
 using SixLabors.Fonts;
@@ -9,7 +9,6 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Drawing.Processing;
 using Font = SixLabors.Fonts.Font;
-
 
 namespace TelegramWordBot
 {
@@ -182,7 +181,7 @@ namespace TelegramWordBot
 
         public static string GeneratePngFramedText(string text, int width = 100, int height = 50, int fontSize = 16, string fontFamily = "Consolas")
         {
-           // Генерация имени файла
+            // Генерация имени файла
             var fileName = Convert.ToBase64String(Encoding.UTF8.GetBytes(text))
                                .Replace("=", "")
                                .Replace("/", "_")
@@ -223,7 +222,7 @@ namespace TelegramWordBot
                 }
             }
 
-           // Если не влезло — word-wrap при 12px
+            // Если не влезло — word-wrap при 12px
             if (lines == null)
             {
                 usedFontSize = 12;
@@ -298,6 +297,36 @@ namespace TelegramWordBot
 
             return lines.ToArray();
         }
-           }
+        /// <summary>
+        /// Делит строку на строки так, чтобы каждая влезла по ширине
+        /// </summary>
+        //static string[] WordWrap(Graphics g, string text, Font font, int maxWidth)
+        //{
+        //    var words = text.Split(' ');
+        //    var lines = new List<string>();
+        //    var currentLine = "";
+
+        //    foreach (var word in words)
+        //    {
+        //        var testLine = string.IsNullOrEmpty(currentLine) ? word : currentLine + " " + word;
+        //        if (g.MeasureString(testLine, font).Width > maxWidth)
+        //        {
+        //            if (!string.IsNullOrEmpty(currentLine))
+        //                lines.Add(currentLine);
+        //            currentLine = word;
+        //        }
+        //        else
+        //        {
+        //            currentLine = testLine;
+        //        }
+        //    }
+        //    if (!string.IsNullOrEmpty(currentLine))
+        //        lines.Add(currentLine);
+
+        //    return lines.ToArray();
+        //}
+
+
+    }
 
 }
