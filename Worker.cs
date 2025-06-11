@@ -2256,7 +2256,7 @@ namespace TelegramWordBot
 
         private async Task ShowAdminStatistics(ChatId chatId, CancellationToken ct)
         {
-            var users = (await _userRepo.GetAllAsync()).ToList();
+            var users = (await _userRepo.GetAllUsersAsync()).ToList();
             var sb = new StringBuilder();
             sb.AppendLine("<b>Users:</b>");
 
