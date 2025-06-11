@@ -164,7 +164,8 @@ namespace TelegramWordBot
 
                 case "👤 профиль":
                     string url = _appUrl.StartsWith("http") ? _appUrl.Replace("http", "https") : "https://" + _appUrl;
-                    await KeyboardFactory.ShowProfileMenuAsync(_botClient, chatId, user.Id, user.Telegram_Id, url, ct);
+                   await KeyboardFactory.ShowProfileMenuAsync(_botClient, chatId, user.Id, user.Telegram_Id, url, ct);
+
                     return (true, string.Empty);
                 case "генерация новых слов":
                     await _msg.SendInfoAsync(chatId, "На какую тему добавить слова?:", ct);
@@ -741,7 +742,41 @@ namespace TelegramWordBot
                         var items = (await _todoRepo.GetAllAsync(user.Id)).ToList();
                         if (!items.Any())
                         {
-                            await _msg.SendInfoAsync(chatId, "Список пуст", ct);
+                           var ok = await _userWordRepo.RemoveUserWordAsync(user.Id, sw[1].Trim());
+                            if (ok)
+                                await _msg.SendInfoAsync(chatId, $"Слово '{sw[1]}' удалено", ct);
+                            else
+                                await _msg.SendInfoAsync(chatId, $"Слово '{sw[1]}' не найдено", ct);
+                        }
+                        break;
+                                                
+                    case "/todo":
+                        var todoContent = text.Substring(5).Trim();
+                        if (string.IsNullOrWhiteSpace(todoContent))
+                        {
+                            await _msg.SendErrorAsync(chatId, "Используйте /todo Текст : Описание", ct);
+                            break;
+                        }
+                        var split = todoContent.Split(':', 2);
+                        var title = split[0].Trim();
+                        var desc = split.Length > 1 ? split[1].Trim() : string.Empty;
+                        var todo = new TodoItem
+                        {
+                            Id = Guid.NewGuid(),
+                            User_Id = user.Id,
+                            Title = title,
+                            Description = desc,
+                            Created_At = DateTime.UtcNow
+                        };
+                        await _todoRepo.AddAsync(todo);
+                        await _msg.SendSuccessAsync(chatId, "Задача добавлена", ct);
+                        break;
+
+                    case "/todos":
+                        var items = (await _todoRepo.GetAllAsync(user.Id)).ToList();
+                        if (!items.Any())
+                        {
+                           await _msg.SendInfoAsync(chatId, "Список пуст", ct);
                             break;
                         }
                         var sbList = new StringBuilder();
@@ -1126,7 +1161,7 @@ namespace TelegramWordBot
             if (_pendingDeleteWordsDict.TryGetValue(chatId, out var dictId))
             {
                 await ShowDictionaryWordsForEdit(chatId, dictId, user, ct);
-            }
+           }
             else
             {
                 await ShowMyWordsForEdit(chatId, user, ct);
@@ -2254,7 +2289,7 @@ namespace TelegramWordBot
             await _msg.SendSuccessAsync(chatId, "Вся статистика сброшена", ct);
         }
 
-        private async Task ShowAdminStatistics(ChatId chatId, CancellationToken ct)
+       private async Task ShowAdminStatistics(ChatId chatId, CancellationToken ct)
         {
             var users = (await _userRepo.GetAllAsync()).ToList();
             var sb = new StringBuilder();

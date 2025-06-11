@@ -29,7 +29,7 @@ public class TodoItemsController : ControllerBase
         item.Created_At = DateTime.UtcNow;
         await _repo.AddAsync(item);
         return CreatedAtAction(nameof(Get), new { id = item.Id, userId = userId }, item);
-    }
+   }
 
     [HttpPost("add")]
     public async Task<IActionResult> Add([FromQuery] Guid userId, [FromForm] string title, [FromForm] string? description)
@@ -44,6 +44,7 @@ public class TodoItemsController : ControllerBase
         };
         await _repo.AddAsync(item);
         return RedirectToAction(nameof(GetPretty), new { userId });
+
     }
 
     [HttpPost("{id}/complete")]

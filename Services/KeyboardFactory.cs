@@ -95,12 +95,13 @@ public static class KeyboardFactory
     }
 
     // Инлайн-клавиатура для профиля
-    public static InlineKeyboardMarkup GetProfileInline(Guid userId, long telegramId, string appUrl)
+   public static InlineKeyboardMarkup GetProfileInline(Guid userId, long telegramId, string appUrl)
+
     {
         var baseUrl = string.IsNullOrEmpty(appUrl) ? string.Empty : appUrl.TrimEnd('/');
         var todoUrl = $"{baseUrl}/todoitems/pretty?userId={userId}";
 
-        var rows = new List<InlineKeyboardButton[]>
+       var rows = new List<InlineKeyboardButton[]>
         {
             new[] { InlineKeyboardButton.WithCallbackData("👤 Инфо о пользователе", "profile_info") }
         };
@@ -114,7 +115,7 @@ public static class KeyboardFactory
         rows.Add(new[] { InlineKeyboardButton.WithCallbackData("🔄 Сбросить статистику", "reset_profile_stats") });
 
         return new InlineKeyboardMarkup(rows);
-    }
+   }
 
     // Инлайн-кнопки для управления словарями
     public static InlineKeyboardMarkup GetDictionaryManageInline(int id)
@@ -207,9 +208,10 @@ public static class KeyboardFactory
     }
 
     // Отображение меню профиля
-    public static async Task ShowProfileMenuAsync(ITelegramBotClient botClient, ChatId chatId, Guid userId, long telegramId, string appUrl, CancellationToken ct)
+   public static async Task ShowProfileMenuAsync(ITelegramBotClient botClient, ChatId chatId, Guid userId, long telegramId, string appUrl, CancellationToken ct)
     {
         await botClient.SendMessage(chatId, "Профиль:", replyMarkup: GetProfileInline(userId, telegramId, appUrl), cancellationToken: ct);
+
     }
         
 }
