@@ -164,7 +164,7 @@ namespace TelegramWordBot
 
                 case "👤 профиль":
                     string url = _appUrl.StartsWith("http") ? _appUrl.Replace("http", "https") : "https://" + _appUrl;
-                    await KeyboardFactory.ShowProfileMenuAsync(_botClient, chatId, user.Id, url, ct);
+                    await KeyboardFactory.ShowProfileMenuAsync(_botClient, chatId, user.Id, user.Telegram_Id, url, ct);
                     return (true, string.Empty);
                 case "генерация новых слов":
                     await _msg.SendInfoAsync(chatId, "На какую тему добавить слова?:", ct);
