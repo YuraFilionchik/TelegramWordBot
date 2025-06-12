@@ -1988,7 +1988,7 @@ namespace TelegramWordBot
                     First_Name = message.From.FirstName,
                     Last_Name = message.From.LastName,
                     User_Name = message.From.Username,
-                    Is_Premium = message.From.IsPremium ?? false,
+                    Is_Premium = message.From.IsPremium,
                     Last_Seen = DateTime.UtcNow
                 };
                 await _userRepo.AddAsync(user);
@@ -1998,7 +1998,7 @@ namespace TelegramWordBot
                 user.First_Name = message.From.FirstName;
                 user.Last_Name = message.From.LastName;
                 user.User_Name = message.From.Username;
-                user.Is_Premium = message.From.IsPremium ?? false;
+                user.Is_Premium = message.From.IsPremium;
                 user.Last_Seen = DateTime.UtcNow;
                 await _userRepo.UpdateAsync(user);
             }
