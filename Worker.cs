@@ -540,10 +540,9 @@ namespace TelegramWordBot
             var messageId = message.Id;
             try
             {
-                Models.User? user = await _userRepo.GetByTelegramIdAsync(userTelegramId);
-                var isNewUser = await IsNewUser(user, message);
+                var (user, isNewUser) = await EnsureUserAsync(message);
                 if (isNewUser)
-                    user = await _userRepo.GetByTelegramIdAsync(userTelegramId);
+                    await _msg.SendInfoAsync(chatId, "Привет! Я бот для изучения слов.", ct);
 
                 await filterMessages(message);
                 // Handle keyboard buttons first
@@ -1969,25 +1968,42 @@ namespace TelegramWordBot
 
         private async Task ProcessStartCommand(User user, Message message, CancellationToken ct)
         {
-            var isNew = await IsNewUser(user, message);
             var chatId = message.Chat.Id;
-            if (isNew)
-            {
-                if (isNew) await _msg.SendInfoAsync(chatId, "Привет! Я бот для изучения слов.", ct);
-            }
+            await _msg.SendInfoAsync(chatId, "Привет! Я бот для изучения слов.", ct);
             await KeyboardFactory.ShowMainMenuAsync(_botClient, chatId, ct);
         }
 
-        private async Task<bool> IsNewUser(Models.User? user, Message message)
+        private async Task<(User user, bool isNew)> EnsureUserAsync(Message message)
         {
+            var user = await _userRepo.GetByTelegramIdAsync(message.From!.Id);
+            var isNew = user == null;
             if (user == null)
             {
-                var lang = await _languageRepo.GetByCodeAsync(message.From!.LanguageCode);
-                user = new User { Id = Guid.NewGuid(), Telegram_Id = message.From.Id, Native_Language = lang?.Name ?? string.Empty };
+                var lang = await _languageRepo.GetByCodeAsync(message.From.LanguageCode);
+                user = new User
+                {
+                    Id = Guid.NewGuid(),
+                    Telegram_Id = message.From.Id,
+                    Native_Language = lang?.Name ?? string.Empty,
+                    First_Name = message.From.FirstName,
+                    Last_Name = message.From.LastName,
+                    User_Name = message.From.Username,
+                    Is_Premium = message.From.IsPremium ?? false,
+                    Last_Seen = DateTime.UtcNow
+                };
                 await _userRepo.AddAsync(user);
-                return true;
             }
-            return false;
+            else
+            {
+                user.First_Name = message.From.FirstName;
+                user.Last_Name = message.From.LastName;
+                user.User_Name = message.From.Username;
+                user.Is_Premium = message.From.IsPremium ?? false;
+                user.Last_Seen = DateTime.UtcNow;
+                await _userRepo.UpdateAsync(user);
+            }
+
+            return (user, isNew);
         }
 
 
@@ -2265,7 +2281,8 @@ namespace TelegramWordBot
                 var count = await _userWordRepo.GetWordCountByUserId(u.Id);
                 var dicts = await _dictionaryRepo.GetByUserAsync(u.Id);
                 var dictNames = string.Join(", ", dicts.Select(d => d.Name));
-                sb.AppendLine($"ID: <code>{u.Telegram_Id}</code> | Native: {TelegramMessageHelper.EscapeHtml(u.Native_Language)} | Current: {TelegramMessageHelper.EscapeHtml(u.Current_Language ?? string.Empty)} | MC: {u.Prefer_Multiple_Choice}");
+                sb.AppendLine($"ID: <code>{u.Telegram_Id}</code> | Username: {TelegramMessageHelper.EscapeHtml(u.User_Name ?? string.Empty)} | First: {TelegramMessageHelper.EscapeHtml(u.First_Name ?? string.Empty)} | Last: {TelegramMessageHelper.EscapeHtml(u.Last_Name ?? string.Empty)} | Last Seen: {u.Last_Seen:g} | Premium: {u.Is_Premium}");
+                sb.AppendLine($"Native: {TelegramMessageHelper.EscapeHtml(u.Native_Language)} | Current: {TelegramMessageHelper.EscapeHtml(u.Current_Language ?? string.Empty)} | MC: {u.Prefer_Multiple_Choice}");
                 sb.AppendLine($"Words: {count}");
                 sb.AppendLine($"Dictionaries: {dictNames}");
                 sb.AppendLine();
