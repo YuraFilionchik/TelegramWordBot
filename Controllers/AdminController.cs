@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TelegramWordBot.Repositories;
 using TelegramWordBot.Services;
+using TelegramWordBot.Models;
 
 namespace TelegramWordBot.Controllers;
 
@@ -10,11 +11,22 @@ public class AdminController : ControllerBase
 {
     private readonly WordImageRepository _imageRepo;
     private readonly IImageService _imageService;
+    private readonly WordRepository _wordRepo;
+    private readonly TranslationRepository _translationRepo;
+    private readonly LanguageRepository _languageRepo;
 
-    public AdminController(WordImageRepository imageRepo, IImageService imageService)
+    public AdminController(
+        WordImageRepository imageRepo,
+        IImageService imageService,
+        WordRepository wordRepo,
+        TranslationRepository translationRepo,
+        LanguageRepository languageRepo)
     {
         _imageRepo = imageRepo;
         _imageService = imageService;
+        _wordRepo = wordRepo;
+        _translationRepo = translationRepo;
+        _languageRepo = languageRepo;
     }
 
     [HttpPost("images/download")]
@@ -33,5 +45,43 @@ public class AdminController : ControllerBase
         }
 
         return Ok(new { Total = words.Count(), Success = success, Failed = failed });
+    }
+
+    private async Task SaveGeneratedWordsAsync(IEnumerable<TranslatedItem> items)
+    {
+        if (items == null || !items.Any())
+            return;
+
+        var first = items.First();
+        var sourceLang = await _languageRepo.GetByNameAsync(first.OriginalLanguage);
+        var targetLang = await _languageRepo.GetByNameAsync(first.TranslatedLanguage);
+
+        if (sourceLang == null || targetLang == null)
+            return;
+
+        foreach (var item in items)
+        {
+            if (string.IsNullOrWhiteSpace(item.OriginalText) || string.IsNullOrWhiteSpace(item.TranslatedText))
+                continue;
+
+            var word = new Word
+            {
+                Id = Guid.NewGuid(),
+                Base_Text = item.OriginalText!,
+                Language_Id = sourceLang.Id
+            };
+
+            var translation = new Translation
+            {
+                Id = Guid.NewGuid(),
+                Word_Id = word.Id,
+                Language_Id = targetLang.Id,
+                Text = item.TranslatedText!,
+                Examples = item.Example
+            };
+
+            await _wordRepo.AddWordAsync(word);
+            await _translationRepo.AddTranslationAsync(translation);
+        }
     }
 }
