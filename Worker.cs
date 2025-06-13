@@ -683,12 +683,10 @@ namespace TelegramWordBot
 
                     case "/clearuserdata":
                         await _msg.SendSuccessAsync(chatId, "Сброс данных...", ct);
-                        user.Current_Language = null;
-                        await _userRepo.UpdateAsync(user);
-                       // await _translationRepo.RemoveAllTranslations(user);
                         await _userLangRepository.RemoveAllUserLanguages(user);
                         await _userWordRepo.RemoveAllUserWords(user);
-                        await _dictionaryRepo.DeleteAsync(user.Id);
+                        await _dictionaryRepo.DeleteByUserAsync(user.Id);
+                        await _userRepo.DeleteAsync(user.Id);
                         await _msg.SendSuccessAsync(chatId, "Готово", ct);
                         break;
 

@@ -117,4 +117,11 @@ public class DictionaryRepository
         const string sql = "DELETE FROM dictionaries WHERE id = @Id";
         await conn.ExecuteAsync(sql, new { Id = dictionaryId });
     }
+
+    public async Task DeleteByUserAsync(Guid userId)
+    {
+        using var conn = _factory.CreateConnection();
+        const string sql = "DELETE FROM dictionaries WHERE user_id = @User_Id";
+        await conn.ExecuteAsync(sql, new { User_Id = userId });
+    }
 }
