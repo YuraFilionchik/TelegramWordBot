@@ -542,7 +542,10 @@ namespace TelegramWordBot
             {
                 var (user, isNewUser) = await EnsureUserAsync(message);
                 if (isNewUser)
+                {
                     await SendWelcomeAsync(user, chatId, ct);
+                    return;
+                }
 
                 await filterMessages(message);
                 // Handle keyboard buttons first
