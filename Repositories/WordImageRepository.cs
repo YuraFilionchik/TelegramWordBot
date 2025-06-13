@@ -42,5 +42,34 @@ namespace TelegramWordBot.Repositories
             await conn.ExecuteAsync(@"
             UPDATE word_images SET file_path = @FilePath WHERE id = @Id", img);
         }
+
+        public async Task<int> CountWithImageAsync()
+        {
+            using var conn = _factory.CreateConnection();
+            const string sql = @"SELECT COUNT(*) FROM words w
+                                    JOIN word_images i ON w.id = i.word_id";
+            return await conn.ExecuteScalarAsync<int>(sql);
+        }
+
+        public async Task<int> CountWithoutImageAsync()
+        {
+            using var conn = _factory.CreateConnection();
+            const string sql = @"SELECT COUNT(*) FROM words w
+                                    LEFT JOIN word_images i ON w.id = i.word_id
+                                    WHERE i.word_id IS NULL";
+            return await conn.ExecuteScalarAsync<int>(sql);
+        }
+
+        public async Task<IEnumerable<Word>> GetWordsWithoutImagesAsync()
+        {
+            using var conn = _factory.CreateConnection();
+            const string sql = @"SELECT w.id AS Id,
+                                       w.base_text AS Base_Text,
+                                       w.language_id AS Language_Id
+                                FROM words w
+                                LEFT JOIN word_images i ON w.id = i.word_id
+                                WHERE i.word_id IS NULL";
+            return await conn.QueryAsync<Word>(sql);
+        }
     }
 }
