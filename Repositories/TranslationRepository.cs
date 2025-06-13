@@ -79,7 +79,7 @@ public class TranslationRepository
         return await conn.QueryAsync<Translation>(sql, new { Text = text });
     }
 
-    internal async Task RemoveByWordIdAsync(Guid? wordId)
+    public async Task RemoveByWordIdAsync(Guid? wordId)
     {
         if (wordId == null) return;
         using var conn = _factory.CreateConnection();

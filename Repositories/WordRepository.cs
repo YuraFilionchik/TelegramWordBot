@@ -53,6 +53,13 @@ namespace TelegramWordBot.Repositories
             return await conn.QueryAsync<Word>("SELECT * FROM words");
         }
 
+        public async Task RemoveAsync(Guid wordId)
+        {
+            using var conn = _factory.CreateConnection();
+            const string sql = "DELETE FROM words WHERE id = @Id";
+            await conn.ExecuteAsync(sql, new { Id = wordId });
+        }
+
         public async Task AddWordAsync(Word word)
         {
             //if (await WordExistsAsync(word.Base_Text, word.Language_Id)) return;
