@@ -1,3 +1,4 @@
+using TelegramWordBot;
 using Dapper;
 using TelegramWordBot.Models;
 
@@ -5,9 +6,9 @@ namespace TelegramWordBot.Repositories;
 
 public class DictionaryRepository
 {
-    private readonly DbConnectionFactory _factory;
+    private readonly IConnectionFactory _factory;
 
-    public DictionaryRepository(DbConnectionFactory factory)
+    public DictionaryRepository(IConnectionFactory factory)
     {
         _factory = factory;
     }

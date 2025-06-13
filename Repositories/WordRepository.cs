@@ -1,3 +1,4 @@
+using TelegramWordBot;
 ﻿using Dapper;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.Extensions.Logging.Abstractions;

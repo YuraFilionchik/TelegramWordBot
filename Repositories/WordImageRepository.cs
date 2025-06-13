@@ -1,3 +1,4 @@
+using TelegramWordBot;
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +12,8 @@ namespace TelegramWordBot.Repositories
 
     public class WordImageRepository
     {
-        private readonly DbConnectionFactory _factory;
-        public WordImageRepository(DbConnectionFactory factory) => _factory = factory;
+        private readonly IConnectionFactory _factory;
+        public WordImageRepository(IConnectionFactory factory) => _factory = factory;
 
         public async Task AddAsync(WordImage img)
         {
