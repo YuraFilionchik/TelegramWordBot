@@ -16,6 +16,11 @@ public class AdminController : ControllerBase
     private readonly TranslationRepository _translationRepo;
     private readonly LanguageRepository _languageRepo;
     private readonly IAIHelper _ai;
+    private static bool IsAdmin(long telegramId)
+    {
+        var adminId = Environment.GetEnvironmentVariable("ADMIN_ID");
+        return !string.IsNullOrEmpty(adminId) && adminId == telegramId.ToString();
+    }
 
     public AdminController(
         WordImageRepository imageRepo,
@@ -34,8 +39,11 @@ public class AdminController : ControllerBase
     }
 
     [HttpGet("")]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index([FromQuery] long telegramId)
     {
+        if (!IsAdmin(telegramId))
+            return Unauthorized();
+
         var total = await _wordRepo.GetTotalCountAsync();
         var byLang = await _wordRepo.GetCountByLanguageAsync();
         var withImg = await _imageRepo.CountWithImageAsync();
@@ -61,7 +69,7 @@ public class AdminController : ControllerBase
         {string.Join("", byLang.Select(l => $"<li>{System.Net.WebUtility.HtmlEncode(l.Key)}: {l.Value}</li>"))}
     </ul>
 
-    <form method='post' action='/admin/generate'>
+    <form method='post' action='/admin/generate?telegramId={telegramId}'>
         <input type='text' name='theme' placeholder='Theme' required> 
         <input type='number' name='count' value='20' style='width:60px;'> 
         <input type='text' name='sourceLang' placeholder='Source lang' value='English'> 
@@ -69,15 +77,15 @@ public class AdminController : ControllerBase
         <button class='link-btn' type='submit'>Generate</button>
     </form>
 
-    <form method='post' action='/admin/images/download'>
+    <form method='post' action='/admin/images/download?telegramId={telegramId}'>
         <button class='link-btn' type='submit'>Download Images</button>
     </form>
 
-    <form method='post' action='/admin/images/clear'>
+    <form method='post' action='/admin/images/clear?telegramId={telegramId}'>
         <button class='link-btn' type='submit'>Clear Local Images</button>
     </form>
 
-    <form method='post' action='/admin/delete'>
+    <form method='post' action='/admin/delete?telegramId={telegramId}'>
         <button class='link-btn' style='background:#c00;' type='submit'>Delete All Words</button>
     </form>
 </body>
@@ -87,38 +95,50 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost("images/download")]
-    public async Task<IActionResult> DownloadImages()
+    public async Task<IActionResult> DownloadImages([FromQuery] long telegramId)
     {
+        if (!IsAdmin(telegramId))
+            return Unauthorized();
+
         var words = (await _imageRepo.GetWordsWithoutImagesAsync()).ToList();
         foreach (var w in words)
         {
             await _imageService.GetImagePathAsync(w);
         }
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Index), new { telegramId });
     }
 
     [HttpPost("images/clear")]
-    public async Task<IActionResult> ClearImages()
+    public async Task<IActionResult> ClearImages([FromQuery] long telegramId)
     {
+        if (!IsAdmin(telegramId))
+            return Unauthorized();
+
         await _imageService.DeleteAllLocalImages();
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Index), new { telegramId });
     }
 
     [HttpPost("generate")]
-    public async Task<IActionResult> Generate([FromForm] string theme, [FromForm] int count, [FromForm] string sourceLang, [FromForm] string targetLang)
+    public async Task<IActionResult> Generate([FromQuery] long telegramId, [FromForm] string theme, [FromForm] int count, [FromForm] string sourceLang, [FromForm] string targetLang)
     {
+        if (!IsAdmin(telegramId))
+            return Unauthorized();
+
         var result = await _ai.GetWordByTheme(theme, count, targetLang, sourceLang);
         await SaveGeneratedWordsAsync(result.Items);
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Index), new { telegramId });
     }
 
     [HttpPost("delete")]
-    public async Task<IActionResult> DeleteAll()
+    public async Task<IActionResult> DeleteAll([FromQuery] long telegramId)
     {
+        if (!IsAdmin(telegramId))
+            return Unauthorized();
+
         await _imageService.DeleteAllLocalImages();
         await _translationRepo.RemoveAllTranslations();
         await _wordRepo.RemoveAllWords();
-        return RedirectToAction(nameof(Index));
+        return RedirectToAction(nameof(Index), new { telegramId });
     }
 
     private async Task SaveGeneratedWordsAsync(IEnumerable<TranslatedItem> items)
