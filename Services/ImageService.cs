@@ -21,6 +21,7 @@ namespace TelegramWordBot.Services
         Task<string?> FetchImageFromInternetAsync(Guid wordId, string query, string service);
         Task<string> SaveUploadedAsync(Guid wordId, Stream fileStream, string fileName);
         Task DeleteAsync(Guid wordId);
+        Task DeleteAllLocalImages();
     }
 
     public class ImageService : IImageService
