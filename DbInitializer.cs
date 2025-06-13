@@ -21,7 +21,12 @@ public static class DatabaseInitializer
                 telegram_id BIGINT NOT NULL UNIQUE,
                 native_language TEXT,
                 current_language TEXT,
-                prefer_multiple_choice BOOLEAN NOT NULL DEFAULT FALSE
+                prefer_multiple_choice BOOLEAN NOT NULL DEFAULT FALSE,
+                first_name TEXT,
+                last_name TEXT,
+                is_premium BOOLEAN NOT NULL DEFAULT FALSE,
+                user_name TEXT,
+                last_seen TIMESTAMPTZ NOT NULL DEFAULT NOW()
             );",
             @"CREATE TABLE IF NOT EXISTS words (
                 id UUID PRIMARY KEY,

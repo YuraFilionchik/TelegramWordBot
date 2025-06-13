@@ -14,7 +14,9 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.2" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="Npgsql" Version="9.0.3" />
-    <PackageReference Include="System.Drawing.Common" Version="9.0.5" />
+	<PackageReference Include="SixLabors.ImageSharp" Version="3.1.9" />
+	<PackageReference Include="SixLabors.Fonts" Version="2.*" />
+	<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.6" />
     <PackageReference Include="Telegram.Bot" Version="22.4.4" />
   </ItemGroup>
 
@@ -38,6 +40,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Resources\consolas.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Resources\question.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

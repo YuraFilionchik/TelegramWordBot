@@ -164,7 +164,7 @@ namespace TelegramWordBot
 
                 case "👤 профиль":
                     string url = _appUrl.StartsWith("http") ? _appUrl.Replace("http", "https") : "https://" + _appUrl;
-                    await KeyboardFactory.ShowProfileMenuAsync(_botClient, chatId, user.Id, url, ct);
+                    await KeyboardFactory.ShowProfileMenuAsync(_botClient, chatId, user.Id, user.Telegram_Id, url, ct);
                     return (true, string.Empty);
                 case "генерация новых слов":
                     await _msg.SendInfoAsync(chatId, "На какую тему добавить слова?:", ct);
@@ -540,10 +540,9 @@ namespace TelegramWordBot
             var messageId = message.Id;
             try
             {
-                Models.User? user = await _userRepo.GetByTelegramIdAsync(userTelegramId);
-                var isNewUser = await IsNewUser(user, message);
+                var (user, isNewUser) = await EnsureUserAsync(message);
                 if (isNewUser)
-                    user = await _userRepo.GetByTelegramIdAsync(userTelegramId);
+                    await SendWelcomeAsync(user, chatId, ct);
 
                 await filterMessages(message);
                 // Handle keyboard buttons first
@@ -760,6 +759,19 @@ namespace TelegramWordBot
 
                     case "/mywords":
                         await ShowMyWords(chatId, user, ct);
+                        break;
+
+                    case "/adminstat":
+                        var pwd = text.Split(' ', 2).Skip(1).FirstOrDefault();
+                        var env = Environment.GetEnvironmentVariable("PASSWORD");
+                        if (!string.IsNullOrEmpty(env) && pwd == env)
+                        {
+                            await ShowAdminStatistics(chatId, ct);
+                        }
+                        else
+                        {
+                            await _msg.SendErrorAsync(chatId, "Access denied", ct);
+                        }
                         break;
 
                     default:
@@ -1956,25 +1968,69 @@ namespace TelegramWordBot
 
         private async Task ProcessStartCommand(User user, Message message, CancellationToken ct)
         {
-            var isNew = await IsNewUser(user, message);
             var chatId = message.Chat.Id;
-            if (isNew)
-            {
-                if (isNew) await _msg.SendInfoAsync(chatId, "Привет! Я бот для изучения слов.", ct);
-            }
-            await KeyboardFactory.ShowMainMenuAsync(_botClient, chatId, ct);
+            await SendWelcomeAsync(user, chatId, ct);
         }
 
-        private async Task<bool> IsNewUser(Models.User? user, Message message)
+        private async Task SendWelcomeAsync(User user, long chatId, CancellationToken ct)
         {
+            var intro = new StringBuilder();
+            intro.AppendLine("Привет, я <b>WordBot</b> – твой помощник в изучении иностранных слов!");
+            intro.AppendLine("Добавляй собственные словари, тренируйся с карточками и следи за прогрессом.");
+            intro.AppendLine("Готов начать?");
+
+            await _msg.SendText(chatId, intro.ToString(), ct);
+            await KeyboardFactory.ShowMainMenuAsync(_botClient, chatId, ct);
+
+            if (string.IsNullOrWhiteSpace(user.Native_Language))
+            {
+                _userStates[user.Telegram_Id] = "awaiting_nativelanguage";
+                await _msg.SendInfoAsync(chatId, "Введите ваш родной язык:", ct);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(user.Current_Language))
+            {
+                _userStates[user.Telegram_Id] = "awaiting_language";
+                await _msg.SendInfoAsync(chatId, "Какой язык хотите изучать?", ct);
+                return;
+            }
+
+            _userStates[user.Telegram_Id] = "awaiting_generation_theme_input";
+            await _msg.SendInfoAsync(chatId, "Введите тему, чтобы я создал словарь с новыми словами:", ct);
+        }
+
+        private async Task<(User user, bool isNew)> EnsureUserAsync(Message message)
+        {
+            var user = await _userRepo.GetByTelegramIdAsync(message.From!.Id);
+            var isNew = user == null;
             if (user == null)
             {
-                var lang = await _languageRepo.GetByCodeAsync(message.From!.LanguageCode);
-                user = new User { Id = Guid.NewGuid(), Telegram_Id = message.From.Id, Native_Language = lang?.Name ?? string.Empty };
+                var lang = await _languageRepo.GetByCodeAsync(message.From.LanguageCode);
+                user = new User
+                {
+                    Id = Guid.NewGuid(),
+                    Telegram_Id = message.From.Id,
+                    Native_Language = lang?.Name ?? string.Empty,
+                    First_Name = message.From.FirstName,
+                    Last_Name = message.From.LastName,
+                    User_Name = message.From.Username,
+                    Is_Premium = message.From.IsPremium,
+                    Last_Seen = DateTime.UtcNow
+                };
                 await _userRepo.AddAsync(user);
-                return true;
             }
-            return false;
+            else
+            {
+                user.First_Name = message.From.FirstName;
+                user.Last_Name = message.From.LastName;
+                user.User_Name = message.From.Username;
+                user.Is_Premium = message.From.IsPremium;
+                user.Last_Seen = DateTime.UtcNow;
+                await _userRepo.UpdateAsync(user);
+            }
+
+            return (user, isNew);
         }
 
 
@@ -2239,6 +2295,34 @@ namespace TelegramWordBot
             }
 
             await _msg.SendSuccessAsync(chatId, "Вся статистика сброшена", ct);
+        }
+
+        private async Task ShowAdminStatistics(ChatId chatId, CancellationToken ct)
+        {
+            var users = (await _userRepo.GetAllUsersAsync()).ToList();
+            var sb = new StringBuilder();
+            sb.AppendLine("<b>Users:</b>");
+
+            foreach (var u in users)
+            {
+                var count = await _userWordRepo.GetWordCountByUserId(u.Id);
+                var dicts = await _dictionaryRepo.GetByUserAsync(u.Id);
+                var dictNames = string.Join(", ", dicts.Select(d => d.Name));
+                sb.AppendLine($"ID: <code>{u.Telegram_Id}</code> | Username: {TelegramMessageHelper.EscapeHtml(u.User_Name ?? string.Empty)} | First: {TelegramMessageHelper.EscapeHtml(u.First_Name ?? string.Empty)} | Last: {TelegramMessageHelper.EscapeHtml(u.Last_Name ?? string.Empty)} | Last Seen: {u.Last_Seen:g} | Premium: {u.Is_Premium}");
+                sb.AppendLine($"Native: {TelegramMessageHelper.EscapeHtml(u.Native_Language)} | Current: {TelegramMessageHelper.EscapeHtml(u.Current_Language ?? string.Empty)} | MC: {u.Prefer_Multiple_Choice}");
+                sb.AppendLine($"Words: {count}");
+                sb.AppendLine($"Dictionaries: {dictNames}");
+                sb.AppendLine();
+            }
+
+            var total = await _wordRepo.GetTotalCountAsync();
+            var byLang = await _wordRepo.GetCountByLanguageAsync();
+
+            sb.AppendLine($"Total words: {total}");
+            foreach (var kvp in byLang)
+                sb.AppendLine($"{TelegramMessageHelper.EscapeHtml(kvp.Key)}: {kvp.Value}");
+
+            await _msg.SendText(chatId, sb.ToString(), ct);
         }
 
         private async Task EditDictionary(string id, long chatId, CancellationToken ct)
