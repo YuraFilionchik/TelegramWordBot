@@ -1,3 +1,4 @@
+using TelegramWordBot;
 ﻿using System.Transactions;
 using Dapper;
 using TelegramWordBot.Models;
@@ -6,9 +7,9 @@ namespace TelegramWordBot.Repositories;
 
 public class TranslationRepository
 {
-    private readonly DbConnectionFactory _factory;
+    private readonly IConnectionFactory _factory;
 
-    public TranslationRepository(DbConnectionFactory factory)
+    public TranslationRepository(IConnectionFactory factory)
     {
         _factory = factory;
     }

@@ -1,11 +1,12 @@
+using TelegramWordBot;
 using Dapper; 
 using TelegramWordBot.Models;
 
 namespace TelegramWordBot.Repositories { 
     public class LanguageRepository { 
-        private readonly DbConnectionFactory _factory;
+        private readonly IConnectionFactory _factory;
 
-    public LanguageRepository(DbConnectionFactory factory)
+    public LanguageRepository(IConnectionFactory factory)
     {
         _factory = factory;
     }
@@ -35,7 +36,7 @@ namespace TelegramWordBot.Repositories {
     {
             if (string.IsNullOrEmpty(name)) return null;
 
-            // Íîðìàëèçàöèÿ ðåãèñòðà: ïåðâàÿ áóêâà — çàãëàâíàÿ, îñòàëüíûå — ñòðî÷íûå
+            // ÃÃ®Ã°Ã¬Ã Ã«Ã¨Ã§Ã Ã¶Ã¨Ã¿ Ã°Ã¥Ã£Ã¨Ã±Ã²Ã°Ã : Ã¯Ã¥Ã°Ã¢Ã Ã¿ Ã¡Ã³ÃªÃ¢Ã  â€” Ã§Ã Ã£Ã«Ã Ã¢Ã­Ã Ã¿, Ã®Ã±Ã²Ã Ã«Ã¼Ã­Ã»Ã¥ â€” Ã±Ã²Ã°Ã®Ã·Ã­Ã»Ã¥
             string normalizedName = string.Create(name.Length, name, (chars, input) =>
             {
                 for (int i = 0; i < chars.Length; i++)
