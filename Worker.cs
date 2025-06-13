@@ -542,7 +542,7 @@ namespace TelegramWordBot
             {
                 var (user, isNewUser) = await EnsureUserAsync(message);
                 if (isNewUser)
-                    await _msg.SendInfoAsync(chatId, "Привет! Я бот для изучения слов.", ct);
+                    await SendWelcomeAsync(user, chatId, ct);
 
                 await filterMessages(message);
                 // Handle keyboard buttons first
@@ -1969,8 +1969,35 @@ namespace TelegramWordBot
         private async Task ProcessStartCommand(User user, Message message, CancellationToken ct)
         {
             var chatId = message.Chat.Id;
-            await _msg.SendInfoAsync(chatId, "Привет! Я бот для изучения слов.", ct);
+            await SendWelcomeAsync(user, chatId, ct);
+        }
+
+        private async Task SendWelcomeAsync(User user, long chatId, CancellationToken ct)
+        {
+            var intro = new StringBuilder();
+            intro.AppendLine("Привет, я <b>WordBot</b> – твой помощник в изучении иностранных слов!");
+            intro.AppendLine("Добавляй собственные словари, тренируйся с карточками и следи за прогрессом.");
+            intro.AppendLine("Готов начать?");
+
+            await _msg.SendText(chatId, intro.ToString(), ct);
             await KeyboardFactory.ShowMainMenuAsync(_botClient, chatId, ct);
+
+            if (string.IsNullOrWhiteSpace(user.Native_Language))
+            {
+                _userStates[user.Telegram_Id] = "awaiting_nativelanguage";
+                await _msg.SendInfoAsync(chatId, "Введите ваш родной язык:", ct);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(user.Current_Language))
+            {
+                _userStates[user.Telegram_Id] = "awaiting_language";
+                await _msg.SendInfoAsync(chatId, "Какой язык хотите изучать?", ct);
+                return;
+            }
+
+            _userStates[user.Telegram_Id] = "awaiting_generation_theme_input";
+            await _msg.SendInfoAsync(chatId, "Введите тему, чтобы я создал словарь с новыми словами:", ct);
         }
 
         private async Task<(User user, bool isNew)> EnsureUserAsync(Message message)
