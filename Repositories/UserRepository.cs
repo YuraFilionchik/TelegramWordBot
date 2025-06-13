@@ -42,4 +42,10 @@ public class UserRepository
         using var conn = _factory.CreateConnection();
         return await conn.QueryAsync<User>("SELECT * FROM users");
     }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        using var conn = _factory.CreateConnection();
+        await conn.ExecuteAsync("DELETE FROM users WHERE id = @Id", new { Id = id });
+    }
 }
