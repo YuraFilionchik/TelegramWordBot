@@ -210,7 +210,7 @@ namespace TelegramWordBot
                     {
                         var native = await _languageRepo.GetByNameAsync(user.Native_Language);
                         var tr = await _translationRepo.GetTranslationAsync(w.Id, native.Id);
-                        var imgPath = await GetImagePathAsync(w);
+                        var imgPath = await _imageService.GetImagePathAsync(w);
                         await _msg.SendWordCardAsync(chatId, w.Base_Text, tr?.Text ?? string.Empty, tr?.Examples, imgPath, ct);
                     }
                     break;
@@ -941,7 +941,7 @@ namespace TelegramWordBot
                     // Первая карточка в слайдере
                     var first = words[0];
                     var firstTr = await _translationRepo.GetTranslationAsync(first.Id, native.Id);
-                    var imgPath = await GetImagePathAsync(first);
+                    var imgPath = await _imageService.GetImagePathAsync(first);
                     await _msg.ShowWordSlider(
                         new ChatId(chatId),
                         langId: lang.Id,
@@ -1201,7 +1201,7 @@ namespace TelegramWordBot
 
                     await AddWordToUserDictionary(user, "default", tr, word);
 
-                    var imgPath = await GetImagePathAsync(word);
+                    var imgPath = await _imageService.GetImagePathAsync(word);
                     await _msg.SendSuccessAsync(chatId, $"Добавлено «{word.Base_Text}»", ct);
                     await _msg.SendWordCardWithEdit(
                         chatId: new ChatId(chatId),
@@ -1226,7 +1226,7 @@ namespace TelegramWordBot
                 await _wordRepo.AddWordAsync(word);
                 Translation tr = await SaveTranslations(aiResult, translationIndices, examplesIndices, native, word);
 
-                var imgPath = await GetImagePathAsync(word);
+                var imgPath = await _imageService.GetImagePathAsync(word);
                 await AddWordToUserDictionary(user, "default", tr, word);
                 await _msg.SendSuccessAsync(chatId, $"Добавлено «{word.Base_Text}»", ct);
                 await _msg.SendWordCardWithEdit(
@@ -1297,31 +1297,7 @@ namespace TelegramWordBot
             return result;
         }
 
-        /// <summary>
-        /// Fetches the image path for the specified word, Saves file and adds to DB link.
-        /// </summary>
-        /// <param name="word">The word for which the image path is to be fetched.</param>
-        /// <returns>The path of the image if found; otherwise, null.</returns>
-        private async Task<string?> GetImagePathAsync(Word word)
-        {
-            var existing = await _imageRepo.GetByWordAsync(word.Id);
-            if (existing != null && File.Exists(existing.FilePath))
-                return existing.FilePath;
 
-            try
-            {
-                string searchQuery = await _ai.GetSearchStringForPicture(word.Base_Text);
-                _logger.LogInformation("Fetching image for word {WordId} with query '{SearchQuery}'", word.Base_Text, searchQuery);
-                return await _imageService.FetchImageFromInternetAsync(word.Id, searchQuery, "unsplash") ??
-                       await _imageService.FetchImageFromInternetAsync(word.Id, searchQuery, "pixabay");
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError(ex, "Ошибка при получении изображения для слова {WordId}", word.Id);
-                
-                return null;
-            }
-        }
 
         /// <summary>
         /// Запуск редактирования существующего слова: берём Word.Id, запускаем AI для baseText→native,
@@ -1446,7 +1422,7 @@ namespace TelegramWordBot
             var tr = await SaveTranslations(aiResult, translationIndices, examplesIndices, native, word);
 
             await _msg.SendSuccessAsync(chatId, $"Обновлено «{word!.Base_Text}»", ct);
-            var imgPath = await GetImagePathAsync(word);
+            var imgPath = await _imageService.GetImagePathAsync(word);
             await _msg.SendWordCardWithEdit(
                 chatId: new ChatId(chatId),
                 word: word.Base_Text,
@@ -1515,7 +1491,7 @@ namespace TelegramWordBot
                        .FirstOrDefault(l => l.Id == langId);
             var category = lang?.Name ?? string.Empty;
 
-            var imgPath = await GetImagePathAsync(word);
+            var imgPath = await _imageService.GetImagePathAsync(word);
             await _msg.ShowWordSlider(
                 new ChatId(chatId),
                 langId: langId,
@@ -1628,7 +1604,7 @@ namespace TelegramWordBot
             await _progressRepo.InsertOrUpdateAsync(prog);
             var word = await _wordRepo.GetWordById(wordId);
             var translation = await _translationRepo.GetTranslationAsync(wordId, user.Native_Language!);
-            var imgPath = await GetImagePathAsync(word);
+            var imgPath = await _imageService.GetImagePathAsync(word);
             if (success)
             {
                 await _msg.SendSuccessAsync(user.Telegram_Id, $"Верно!  {word.Base_Text} = {translation.Text}", ct);
@@ -1802,7 +1778,7 @@ namespace TelegramWordBot
                             if (wordImage == null || !File.Exists(wordImage.FilePath))
                             {
                                 // Если нет изображения, пытаемся получить его из интернета
-                                var imgPath = await GetImagePathAsync(foreignWord);
+                                var imgPath = await _imageService.GetImagePathAsync(foreignWord);
                                 if (imgPath != null)
                                 {
                                     await _msg.SendWordCardWithEdit(

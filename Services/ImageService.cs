@@ -10,6 +10,7 @@ using TelegramWordBot.Models;
 using TelegramWordBot.Repositories;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace TelegramWordBot.Services
 {
@@ -21,6 +22,7 @@ namespace TelegramWordBot.Services
         Task<string?> FetchImageFromInternetAsync(Guid wordId, string query, string service);
         Task<string> SaveUploadedAsync(Guid wordId, Stream fileStream, string fileName);
         Task DeleteAsync(Guid wordId);
+        Task<string?> GetImagePathAsync(Word word);
     }
 
     public class ImageService : IImageService
@@ -30,12 +32,16 @@ namespace TelegramWordBot.Services
         private readonly HttpClient _http;
         private readonly string? _pixabayKey;
         private readonly string? _unsplashKey;
+        private readonly IAIHelper _ai;
+        private readonly ILogger<ImageService> _logger;
 
-        public ImageService(HttpClient http, IHostEnvironment env, WordImageRepository repo)
+        public ImageService(HttpClient http, IHostEnvironment env, WordImageRepository repo, IAIHelper ai, ILogger<ImageService> logger)
         {
             _http = http;
             _env = env;
             _repo = repo;
+            _ai = ai;
+            _logger = logger;
             _pixabayKey = Environment.GetEnvironmentVariable("PIXABAY_API_KEY");
             _unsplashKey = Environment.GetEnvironmentVariable("UNSPLASH_ACCESS_KEY");
         }
@@ -105,6 +111,26 @@ namespace TelegramWordBot.Services
                     return FetchFromUnsplashAsync(wordId, query);
                 default:
                     throw new ArgumentException($"Unsupported image service: {service}");
+            }
+        }
+
+        public async Task<string?> GetImagePathAsync(Word word)
+        {
+            var existing = await _repo.GetByWordAsync(word.Id);
+            if (existing != null && File.Exists(existing.FilePath))
+                return existing.FilePath;
+
+            try
+            {
+                string searchQuery = await _ai.GetSearchStringForPicture(word.Base_Text);
+                _logger.LogInformation("Fetching image for word {Word} with query '{Query}'", word.Base_Text, searchQuery);
+                return await FetchImageFromInternetAsync(word.Id, searchQuery, "unsplash") ??
+                       await FetchImageFromInternetAsync(word.Id, searchQuery, "pixabay");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка при получении изображения для слова {WordId}", word.Id);
+                return null;
             }
         }
 
