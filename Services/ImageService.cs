@@ -23,6 +23,7 @@ namespace TelegramWordBot.Services
         Task<string> SaveUploadedAsync(Guid wordId, Stream fileStream, string fileName);
         Task DeleteAsync(Guid wordId);
         Task<string?> GetImagePathAsync(Word word);
+        Task DeleteAllLocalImages();
     }
 
     public class ImageService : IImageService
