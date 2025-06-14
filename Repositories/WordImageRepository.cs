@@ -1,3 +1,4 @@
+using TelegramWordBot;
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +12,8 @@ namespace TelegramWordBot.Repositories
 
     public class WordImageRepository
     {
-        private readonly DbConnectionFactory _factory;
-        public WordImageRepository(DbConnectionFactory factory) => _factory = factory;
+        private readonly IConnectionFactory _factory;
+        public WordImageRepository(IConnectionFactory factory) => _factory = factory;
 
         public async Task AddAsync(WordImage img)
         {
@@ -41,6 +42,35 @@ namespace TelegramWordBot.Repositories
             using var conn = _factory.CreateConnection();
             await conn.ExecuteAsync(@"
             UPDATE word_images SET file_path = @FilePath WHERE id = @Id", img);
+        }
+
+        public async Task<int> CountWithImageAsync()
+        {
+            using var conn = _factory.CreateConnection();
+            const string sql = @"SELECT COUNT(*) FROM words w
+                                    JOIN word_images i ON w.id = i.word_id";
+            return await conn.ExecuteScalarAsync<int>(sql);
+        }
+
+        public async Task<int> CountWithoutImageAsync()
+        {
+            using var conn = _factory.CreateConnection();
+            const string sql = @"SELECT COUNT(*) FROM words w
+                                    LEFT JOIN word_images i ON w.id = i.word_id
+                                    WHERE i.word_id IS NULL";
+            return await conn.ExecuteScalarAsync<int>(sql);
+        }
+
+        public async Task<IEnumerable<Word>> GetWordsWithoutImagesAsync()
+        {
+            using var conn = _factory.CreateConnection();
+            const string sql = @"SELECT w.id AS Id,
+                                       w.base_text AS Base_Text,
+                                       w.language_id AS Language_Id
+                                FROM words w
+                                LEFT JOIN word_images i ON w.id = i.word_id
+                                WHERE i.word_id IS NULL";
+            return await conn.QueryAsync<Word>(sql);
         }
     }
 }

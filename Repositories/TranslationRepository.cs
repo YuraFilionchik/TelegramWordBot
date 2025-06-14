@@ -1,3 +1,4 @@
+using TelegramWordBot;
 ﻿using System.Transactions;
 using Dapper;
 using TelegramWordBot.Models;
@@ -6,9 +7,9 @@ namespace TelegramWordBot.Repositories;
 
 public class TranslationRepository
 {
-    private readonly DbConnectionFactory _factory;
+    private readonly IConnectionFactory _factory;
 
-    public TranslationRepository(DbConnectionFactory factory)
+    public TranslationRepository(IConnectionFactory factory)
     {
         _factory = factory;
     }
@@ -79,7 +80,7 @@ public class TranslationRepository
         return await conn.QueryAsync<Translation>(sql, new { Text = text });
     }
 
-    internal async Task RemoveByWordIdAsync(Guid? wordId)
+    public async Task RemoveByWordIdAsync(Guid? wordId)
     {
         if (wordId == null) return;
         using var conn = _factory.CreateConnection();

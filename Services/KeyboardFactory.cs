@@ -99,6 +99,7 @@ public static class KeyboardFactory
     {
         var baseUrl = string.IsNullOrEmpty(appUrl) ? string.Empty : appUrl.TrimEnd('/');
         var todoUrl = $"{baseUrl}/todoitems/pretty?userId={userId}";
+        var adminUrl = $"{baseUrl}/admin?telegramId={telegramId}";
 
         var rows = new List<InlineKeyboardButton[]>
         {
@@ -109,6 +110,7 @@ public static class KeyboardFactory
         if (!string.IsNullOrEmpty(adminId) && adminId == telegramId.ToString())
         {
             rows.Add(new[] { InlineKeyboardButton.WithWebApp("📝 Todo App", new WebAppInfo(todoUrl)) });
+            rows.Add(new[] { InlineKeyboardButton.WithWebApp("🛠 Admin Dashboard", new WebAppInfo(adminUrl)) });
         }
 
         rows.Add(new[] { InlineKeyboardButton.WithCallbackData("🔄 Сбросить статистику", "reset_profile_stats") });

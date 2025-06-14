@@ -1,3 +1,4 @@
+using TelegramWordBot;
 ﻿using Dapper;
 using TelegramWordBot.Models;
 
@@ -5,9 +6,9 @@ namespace TelegramWordBot.Repositories;
 
 public class UserRepository
 {
-    private readonly DbConnectionFactory _factory;
+    private readonly IConnectionFactory _factory;
 
-    public UserRepository(DbConnectionFactory factory)
+    public UserRepository(IConnectionFactory factory)
     {
         _factory = factory;
     }
@@ -41,5 +42,12 @@ public class UserRepository
     {
         using var conn = _factory.CreateConnection();
         return await conn.QueryAsync<User>("SELECT * FROM users");
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        using var conn = _factory.CreateConnection();
+        await conn.ExecuteAsync("DELETE FROM users WHERE id = @Id", new { Id = id });
+
     }
 }

@@ -1,3 +1,4 @@
+using TelegramWordBot;
 ﻿using Dapper;
 using System;
 using System.Collections.Generic;
@@ -8,9 +9,9 @@ namespace TelegramWordBot.Repositories
 {
     public class UserWordProgressRepository
     {
-        private readonly DbConnectionFactory _factory;
+        private readonly IConnectionFactory _factory;
 
-        public UserWordProgressRepository(DbConnectionFactory factory)
+        public UserWordProgressRepository(IConnectionFactory factory)
         {
             _factory = factory;
         }

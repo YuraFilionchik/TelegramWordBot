@@ -1,3 +1,4 @@
+using TelegramWordBot;
 ﻿using Dapper;
 using Microsoft.AspNetCore.Connections;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -51,6 +52,13 @@ namespace TelegramWordBot.Repositories
         {
             using var conn = _factory.CreateConnection();
             return await conn.QueryAsync<Word>("SELECT * FROM words");
+        }
+
+        public async Task RemoveAsync(Guid wordId)
+        {
+            using var conn = _factory.CreateConnection();
+            const string sql = "DELETE FROM words WHERE id = @Id";
+            await conn.ExecuteAsync(sql, new { Id = wordId });
         }
 
         public async Task AddWordAsync(Word word)

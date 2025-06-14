@@ -1,3 +1,4 @@
+using TelegramWordBot;
 using Dapper;
 using TelegramWordBot.Models;
 
@@ -5,9 +6,9 @@ namespace TelegramWordBot.Repositories;
 
 public class DictionaryRepository
 {
-    private readonly DbConnectionFactory _factory;
+    private readonly IConnectionFactory _factory;
 
-    public DictionaryRepository(DbConnectionFactory factory)
+    public DictionaryRepository(IConnectionFactory factory)
     {
         _factory = factory;
     }
@@ -116,5 +117,12 @@ public class DictionaryRepository
         using var conn = _factory.CreateConnection();
         const string sql = "DELETE FROM dictionaries WHERE id = @Id";
         await conn.ExecuteAsync(sql, new { Id = dictionaryId });
+    }
+
+    public async Task DeleteByUserAsync(Guid userId)
+    {
+        using var conn = _factory.CreateConnection();
+        const string sql = "DELETE FROM dictionaries WHERE user_id = @User_Id";
+        await conn.ExecuteAsync(sql, new { User_Id = userId });
     }
 }
