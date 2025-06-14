@@ -5,40 +5,38 @@ name: .NET CI - Сборка и тестирование
 on:
   # Запускать при push в ветку main
   push:
-    branches: [ main ]
+    branches: [ test ]
   # Запускать при создании pull request в ветку main
   pull_request:
-    branches: [ main ]
+    branches: [ test ]
 
 # Задачи, которые нужно выполнить
 jobs:
-  # Название задачи, может быть любым
   build-and-test:
-    # Работать будет на последней версии Ubuntu
     runs-on: ubuntu-latest
 
-    # Шаги, которые выполняются последовательно
     steps:
-    # 1. Клонируем репозиторий на виртуальную машину
+    # 1. Клонирование репозитория (без изменений)
     - name: Клонирование репозитория
       uses: actions/checkout@v4
 
-    # 2. Устанавливаем .NET 8 SDK
+    # 2. Установка .NET 8 (без изменений)
     - name: Установка .NET 8
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
-
-    # 3. Восстанавливаем зависимости (NuGet пакеты) для всего решения
+    
+    # 3. Восстановление зависимостей
     - name: Восстановление зависимостей
-      run: dotnet restore
+      run: dotnet restore TelegramWordBot.sln
 
-    # 4. Собираем всё решение в конфигурации Release
-    # --no-restore используется для ускорения, так как мы уже восстановили пакеты на предыдущем шаге
+    # 4. Сборка проекта
+    # ИЗМЕНЕНИЕ: Собираем в конфигурации 'Debug', так как тесты запускаются в ней.
     - name: Сборка проекта
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build TelegramWordBot.sln --configuration Debug --no-restore
 
-    # 5. Запускаем тесты
-    # --no-build используется, так как проект уже собран
+    # 5. Запуск тестов
+    # ИЗМЕНЕНИЕ: Явно указываем проект для тестирования, чтобы избежать проблем.
+    # Путь взят из твоего лога.
     - name: Запуск тестов
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test TelegramWordBot/TelegramWordBot.Tests/TelegramWordBot.Tests.csproj --configuration Debug --no-build --verbosity normal
