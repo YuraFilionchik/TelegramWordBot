@@ -5,10 +5,10 @@ name: .NET CI - Сборка и тестирование
 on:
   # Запускать при push в ветку main
   push:
-    branches: [ main ]
+    branches: [ test ]
   # Запускать при создании pull request в ветку main
   pull_request:
-    branches: [ main ]
+    branches: [ test ]
 
 # Задачи, которые нужно выполнить
 jobs:
