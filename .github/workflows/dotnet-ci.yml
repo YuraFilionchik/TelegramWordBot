@@ -27,14 +27,13 @@ jobs:
         dotnet-version: '8.0.x'
     
     # 3. Восстановление зависимостей
-    # Судя по логам, твой .sln файл лежит в подпапке, указываем путь к нему.
     - name: Восстановление зависимостей
-      run: dotnet restore TelegramWordBot/TelegramWordBot.sln
+      run: dotnet restore TelegramWordBot.sln
 
     # 4. Сборка проекта
     # ИЗМЕНЕНИЕ: Собираем в конфигурации 'Debug', так как тесты запускаются в ней.
     - name: Сборка проекта
-      run: dotnet build TelegramWordBot/TelegramWordBot.sln --configuration Debug --no-restore
+      run: dotnet build TelegramWordBot.sln --configuration Debug --no-restore
 
     # 5. Запуск тестов
     # ИЗМЕНЕНИЕ: Явно указываем проект для тестирования, чтобы избежать проблем.
