@@ -48,5 +48,6 @@ public class UserRepository
     {
         using var conn = _factory.CreateConnection();
         await conn.ExecuteAsync("DELETE FROM users WHERE id = @Id", new { Id = id });
+
     }
 }

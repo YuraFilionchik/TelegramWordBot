@@ -1,0 +1,44 @@
+# Имя твоего workflow. Будет отображаться на вкладке Actions в GitHub
+name: .NET CI - Сборка и тестирование
+
+# Условие запуска workflow
+on:
+  # Запускать при push в ветку main
+  push:
+    branches: [ main ]
+  # Запускать при создании pull request в ветку main
+  pull_request:
+    branches: [ main ]
+
+# Задачи, которые нужно выполнить
+jobs:
+  # Название задачи, может быть любым
+  build-and-test:
+    # Работать будет на последней версии Ubuntu
+    runs-on: ubuntu-latest
+
+    # Шаги, которые выполняются последовательно
+    steps:
+    # 1. Клонируем репозиторий на виртуальную машину
+    - name: Клонирование репозитория
+      uses: actions/checkout@v4
+
+    # 2. Устанавливаем .NET 8 SDK
+    - name: Установка .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    # 3. Восстанавливаем зависимости (NuGet пакеты) для всего решения
+    - name: Восстановление зависимостей
+      run: dotnet restore
+
+    # 4. Собираем всё решение в конфигурации Release
+    # --no-restore используется для ускорения, так как мы уже восстановили пакеты на предыдущем шаге
+    - name: Сборка проекта
+      run: dotnet build --configuration Release --no-restore
+
+    # 5. Запускаем тесты
+    # --no-build используется, так как проект уже собран
+    - name: Запуск тестов
+      run: dotnet test --no-build --verbosity normal
