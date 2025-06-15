@@ -31,7 +31,6 @@ public static class KeyboardFactory
             new[] { new KeyboardButton("Генерация новых слов") },
             new[] { new KeyboardButton("📝 Изменить слово") },
             new[] { new KeyboardButton("🗑️ Удалить слова") },
-            new[] { new KeyboardButton("♻️ Обнулить прогресс слов") },
             new[] { new KeyboardButton("⬅️ Назад") }
         })
         {
