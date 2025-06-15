@@ -137,10 +137,6 @@ namespace TelegramWordBot
                     await ShowMyWordsForEdit(chatId, user, ct);
                     return (true, "awaiting_listdelete");
 
-                case "♻️ обнулить прогресс слов":
-                    await ResetAllWordProgress(chatId, user, ct);
-                    return (true, string.Empty);
-
                 case "⬅️ назад":
                     await KeyboardFactory.ShowMainMenuAsync(_botClient, chatId, ct);
                     return (true, string.Empty);
@@ -274,7 +270,18 @@ namespace TelegramWordBot
                     await ShowProfileInfo(user, chatId, ct);
                     break;
                 case "reset_profile_stats":
-                    await ResetProfileStatistics(user, chatId, ct);
+                    if (parts.Length > 1 && parts[1] == "confirm")
+                    {
+                        await ResetProfileStatistics(user, chatId, ct);
+                    }
+                    else
+                    {
+                        await _msg.SendConfirmationDialog(chatId,
+                            "Сбросить статистику?",
+                            "reset_profile_stats:confirm",
+                            "cancel",
+                            ct);
+                    }
                     break;
                 case "edit_dict":
                     await EditDictionary(parts[1], chatId, ct);
