@@ -39,4 +39,4 @@ jobs:
     # ИЗМЕНЕНИЕ: Явно указываем проект для тестирования, чтобы избежать проблем.
     # Путь взят из твоего лога.
     - name: Запуск тестов
-      run: dotnet test TelegramWordBot/TelegramWordBot.Tests/TelegramWordBot.Tests.csproj --configuration Debug --no-build --verbosity normal
+      run: dotnet test TelegramWordBot.Tests/TelegramWordBot.Tests.csproj --configuration Debug --no-build --verbosity normal

@@ -40,15 +40,16 @@ namespace TelegramWordBot.Repositories
 
             const string sql = @"
                 INSERT INTO user_word_progress
-                    (id, user_id, word_id, repetition, interval_hours, ease_factor, next_review)
+                    (id, user_id, word_id, repetition, interval_hours, ease_factor, next_review, last_review)
                 VALUES
-                    (@Id, @User_Id, @Word_Id, @Repetition, @Interval_Hours, @Ease_Factor, @Next_Review)
+                    (@Id, @User_Id, @Word_Id, @Repetition, @Interval_Hours, @Ease_Factor, @Next_Review, @Last_Review)
                 ON CONFLICT (user_id, word_id) DO UPDATE
                 SET
                     repetition      = EXCLUDED.repetition,
                     interval_hours  = EXCLUDED.interval_hours,
                     ease_factor     = EXCLUDED.ease_factor,
-                    next_review     = EXCLUDED.next_review";
+                    next_review     = EXCLUDED.next_review,
+                    last_review     = EXCLUDED.last_review";
 
             await conn.ExecuteAsync(sql, new
             {
@@ -58,7 +59,8 @@ namespace TelegramWordBot.Repositories
                 progress.Repetition,
                 progress.Interval_Hours,
                 progress.Ease_Factor,
-                progress.Next_Review
+                progress.Next_Review,
+                progress.Last_Review
             });
         }
 
