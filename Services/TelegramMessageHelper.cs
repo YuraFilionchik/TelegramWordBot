@@ -36,7 +36,7 @@ public class TelegramMessageHelper
         return text;
     }
     
-    public async Task<Message> SendWordCardWithActions(ChatId chatId, string word, string translation, int wordId, string? example = null, string? category = null, string? imageUrl = null, CancellationToken ct = default)
+    public async Task<Message> SendWordCardWithActions(ChatId chatId, string word, string translation, int wordId, string? example = null, string? category = null, string? imageUrl = null, string? voiceLanguage = null, CancellationToken ct = default)
     {
         var keyboard = new InlineKeyboardMarkup(new[]
         {
@@ -100,11 +100,11 @@ public class TelegramMessageHelper
         }
 
         var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
-        await SendVoiceAsync(chatId, audioText, ct);
+        await SendVoiceAsync(chatId, audioText, voiceLanguage, ct);
         return msg;
     }
 
-    public async Task<Message> SendWordCardWithEdit(ChatId chatId, string word, string translation, Guid wordId, string? example = null, string? category = null, string? imageUrl = null, CancellationToken ct = default)
+    public async Task<Message> SendWordCardWithEdit(ChatId chatId, string word, string translation, Guid wordId, string? example = null, string? category = null, string? imageUrl = null, string? voiceLanguage = null, CancellationToken ct = default)
     {
         var keyboard = new InlineKeyboardMarkup(
             InlineKeyboardButton.WithCallbackData("✏️ Изменить", $"edit:{wordId}"));
@@ -157,7 +157,7 @@ public class TelegramMessageHelper
         }
 
         var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
-        await SendVoiceAsync(chatId, audioText, ct);
+        await SendVoiceAsync(chatId, audioText, voiceLanguage, ct);
         return msg;
     }
 
@@ -208,9 +208,9 @@ public class TelegramMessageHelper
             cancellationToken: ct);
     }
 
-    public async Task<Message> ShowWordSlider(ChatId chatId, int langId, 
-        int currentIndex, int totalWords, string word, string translation, 
-        string? example = null, string? category = null, string? imageUrl = null, CancellationToken ct = default)
+    public async Task<Message> ShowWordSlider(ChatId chatId, int langId,
+        int currentIndex, int totalWords, string word, string translation,
+        string? example = null, string? category = null, string? imageUrl = null, string? voiceLanguage = null, CancellationToken ct = default)
     {
         var buttons = new List<InlineKeyboardButton>();
 
@@ -282,7 +282,7 @@ public class TelegramMessageHelper
         }
 
         var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
-        await SendVoiceAsync(chatId, audioText, ct);
+        await SendVoiceAsync(chatId, audioText, voiceLanguage, ct);
         return msg;
     }
 
@@ -316,7 +316,7 @@ public class TelegramMessageHelper
             cancellationToken: ct);
     }
 
-    public async Task<Message> SendWordCardAsync(ChatId chatId, string word, string translation, string? examples, string? imageUrl, CancellationToken ct)
+    public async Task<Message> SendWordCardAsync(ChatId chatId, string word, string translation, string? examples, string? imageUrl, string? voiceLanguage, CancellationToken ct)
     {
         var text = GenerateWordCardText(word, translation, examples, null);
         Message msg;
@@ -362,7 +362,7 @@ public class TelegramMessageHelper
         }
 
         var audioText = string.IsNullOrWhiteSpace(examples) ? word : $"{word}. {examples}";
-        await SendVoiceAsync(chatId, audioText, ct);
+        await SendVoiceAsync(chatId, audioText, voiceLanguage, ct);
         return msg;
     }
 
@@ -395,11 +395,27 @@ public class TelegramMessageHelper
             cancellationToken: ct);
     }
 
-    public async Task<Message> SendVoiceAsync(ChatId chatId, string text, CancellationToken ct = default)
+    public async Task<Message> SendVoiceAsync(ChatId chatId, string text, string? voiceLanguage = null, CancellationToken ct = default)
     {
-        using var stream = await _tts.SynthesizeSpeechAsync(text, _ttsOptions.LanguageCode, _ttsOptions.VoiceName, _ttsOptions.Speed);
-        stream.Position = 0;
-        var input = InputFile.FromStream(stream, "speech.ogg");
+        var lang = voiceLanguage ?? _ttsOptions.LanguageCode;
+
+        var dir = Path.Combine(AppContext.BaseDirectory, "speech");
+        Directory.CreateDirectory(dir);
+
+        var hash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(lang + "|" + text)))
+            .ToLowerInvariant();
+        var filePath = Path.Combine(dir, $"{hash}.ogg");
+
+        if (!File.Exists(filePath))
+        {
+            await using var synth = await _tts.SynthesizeSpeechAsync(text, lang, _ttsOptions.Speed);
+            synth.Position = 0;
+            await using var fs = File.Create(filePath);
+            await synth.CopyToAsync(fs, ct);
+        }
+
+        await using var voiceStream = File.OpenRead(filePath);
+        var input = InputFile.FromStream(voiceStream, Path.GetFileName(filePath));
         return await _bot.SendVoice(chatId: chatId, voice: input, cancellationToken: ct);
     }
     public async Task<Message> SendText(

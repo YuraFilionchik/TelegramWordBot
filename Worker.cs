@@ -219,7 +219,8 @@ namespace TelegramWordBot
                         var native = await _languageRepo.GetByNameAsync(user.Native_Language);
                         var tr = await _translationRepo.GetTranslationAsync(w.Id, native.Id);
                         var imgPath = await _imageService.GetImagePathAsync(w);
-                        await _msg.SendWordCardAsync(chatId, w.Base_Text, tr?.Text ?? string.Empty, tr?.Examples, imgPath, ct);
+                        var lang = await _languageRepo.GetByIdAsync(w.Language_Id);
+                        await _msg.SendWordCardAsync(chatId, w.Base_Text, tr?.Text ?? string.Empty, tr?.Examples, imgPath, lang?.Name, ct);
                     }
                     break;
                 case "favorite":
@@ -974,6 +975,7 @@ namespace TelegramWordBot
                         example: firstTr?.Examples ?? null,
                         category: lang.Name,
                         imageUrl: imgPath,
+                        voiceLanguage: lang.Name,
                         ct: ct
                     );
                 }
@@ -1233,6 +1235,7 @@ namespace TelegramWordBot
                         example: examplesStr,
                         category: current.Name,
                         imageUrl: imgPath,
+                        voiceLanguage: current.Name,
                         ct: ct);
                 }
             }
@@ -1259,6 +1262,7 @@ namespace TelegramWordBot
                     example: tr.Examples,
                     category: current.Name,
                     imageUrl: imgPath,
+                    voiceLanguage: current.Name,
                     ct: ct);
             }
         }
@@ -1453,6 +1457,7 @@ namespace TelegramWordBot
                 example: tr.Examples,
                 category: current!.Name,
                 imageUrl: imgPath,
+                voiceLanguage: current!.Name,
                 ct: ct);
         }
 
@@ -1524,6 +1529,7 @@ namespace TelegramWordBot
                 example: tr?.Examples,
                 category: category,
                 imageUrl: imgPath,
+                voiceLanguage: lang?.Name,
                 ct: ct
             );
         }
@@ -1634,8 +1640,8 @@ namespace TelegramWordBot
             else
             {
                 await _msg.SendErrorAsync(user.Telegram_Id, $"Неправильно! {word.Base_Text} = {translation.Text}", ct);
-                //await Task.Delay(1000);
-                await _msg.SendWordCardAsync(user.Telegram_Id, word.Base_Text, translation.Text, translation.Examples, imgPath, ct);
+                var lang = await _languageRepo.GetByIdAsync(word.Language_Id);
+                await _msg.SendWordCardAsync(user.Telegram_Id, word.Base_Text, translation.Text, translation.Examples, imgPath, lang?.Name, ct);
                 
             }
             //отправка карточки и переход к next
@@ -1810,6 +1816,7 @@ namespace TelegramWordBot
                                         category: current.Name,
                                         translation: text,
                                         imageUrl: imgPath,
+                                        voiceLanguage: current.Name,
                                         ct: ct);
                                 }
                             }

@@ -8,16 +8,29 @@ public class GeminiSpeechService : ITextToSpeechService
 {
     private readonly HttpClient _http;
     private readonly string _apiKey;
+    private readonly Dictionary<string, (string Code, string Voice)> _languageMap;
+    private readonly string _defaultCode = "en-US";
+    private readonly string _defaultVoice = "en-US-Standard-B";
 
     public GeminiSpeechService(HttpClient http)
     {
         _http = http;
         _apiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY")
             ?? throw new InvalidOperationException("GEMINI_API_KEY is not set.");
+        _languageMap = new Dictionary<string, (string Code, string Voice)>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["English"] = ("en-US", "en-US-Standard-B"),
+            ["Russian"] = ("ru-RU", "ru-RU-Standard-B")
+        };
     }
 
-    public async Task<Stream> SynthesizeSpeechAsync(string text, string languageCode, string voiceName, double speed)
+    public async Task<Stream> SynthesizeSpeechAsync(string text, string language, double speed)
     {
+        if (!_languageMap.TryGetValue(language, out var cfg))
+        {
+            cfg = (_defaultCode, _defaultVoice);
+        }
+
         const string modelId = "gemini-2.5-pro-preview-tts";
         var request = new
         {
@@ -37,9 +50,9 @@ public class GeminiSpeechService : ITextToSpeechService
                 {
                     voiceConfig = new
                     {
-                        prebuiltVoiceConfig = new { voiceName }
+                        prebuiltVoiceConfig = new { voiceName = cfg.Voice }
                     },
-                    languageCode = languageCode
+                    languageCode = cfg.Code
                 }
             }
         };
