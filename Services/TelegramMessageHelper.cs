@@ -361,8 +361,8 @@ public class TelegramMessageHelper
                 cancellationToken: ct);
         }
 
-        var audioText = string.IsNullOrWhiteSpace(examples) ? word : $"{word}. {examples}";
-        await SendVoiceAsync(chatId, audioText, voiceLanguage, ct);
+        //var audioText = string.IsNullOrWhiteSpace(examples) ? word : $"{word}. {examples}";
+        await SendVoiceAsync(chatId, word, voiceLanguage, ct);
         return msg;
     }
 
