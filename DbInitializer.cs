@@ -164,7 +164,8 @@ public static class DatabaseInitializer
                           INSERT INTO languages (code, name)
                           VALUES (@Code, @Name)
                           ON CONFLICT (code) DO NOTHING
-                        ", lang);
+                        ",
+                new { Code = lang.Code, Name = lang.Name });
         }
     }
 }
