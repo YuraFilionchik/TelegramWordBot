@@ -27,7 +27,7 @@ builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(tokenTG)
 
 var ttsOptions = Worker.GetDefaultTtsOptions();
 builder.Services.AddSingleton(ttsOptions);
-builder.Services.AddHttpClient<ITextToSpeechService, GoogleTextToSpeechService>();
+builder.Services.AddHttpClient<ITextToSpeechService, GeminiSpeechService>();
 
 connectionString = DbConnectionFactory.ConvertDatabaseUrl(connectionString);
 var dbFactory = new DbConnectionFactory(connectionString);
