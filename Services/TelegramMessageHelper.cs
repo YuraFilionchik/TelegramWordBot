@@ -4,15 +4,22 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using System;
 using System.IO;
+using TelegramWordBot.Services.TTS;
+using TelegramWordBot.Models;
 
 namespace TelegramWordBot.Services;
 
 public class TelegramMessageHelper
 {
     private readonly ITelegramBotClient _bot;
-    public TelegramMessageHelper(ITelegramBotClient botClient)
+    private readonly ITextToSpeechService _tts;
+    private readonly TtsOptions _ttsOptions;
+
+    public TelegramMessageHelper(ITelegramBotClient botClient, ITextToSpeechService tts, TtsOptions options)
     {
         _bot = botClient;
+        _tts = tts;
+        _ttsOptions = options;
     }
 
     // === Вспомогательный метод для генерации текста карточки слова ===
@@ -47,11 +54,12 @@ public class TelegramMessageHelper
 
         var text = GenerateWordCardText(word, translation, example, category);
 
+        Message msg;
         if (!string.IsNullOrWhiteSpace(imageUrl))
         {
             if (IsHttpUrl(imageUrl))
             {
-                return await _bot.SendPhoto(
+                msg = await _bot.SendPhoto(
                     chatId: chatId,
                     photo: new InputFileUrl(imageUrl),
                     caption: text,
@@ -63,7 +71,7 @@ public class TelegramMessageHelper
             {
                 await using var stream = File.OpenRead(imageUrl);
                 var file = InputFile.FromStream(stream, Path.GetFileName(imageUrl));
-                return await _bot.SendPhoto(
+                msg = await _bot.SendPhoto(
                     chatId: chatId,
                     photo: file,
                     caption: text,
@@ -71,14 +79,29 @@ public class TelegramMessageHelper
                     replyMarkup: keyboard,
                     cancellationToken: ct);
             }
+            else
+            {
+                msg = await _bot.SendMessage(
+                    chatId: chatId,
+                    text: text,
+                    parseMode: ParseMode.Html,
+                    replyMarkup: keyboard,
+                    cancellationToken: ct);
+            }
+        }
+        else
+        {
+            msg = await _bot.SendMessage(
+                chatId: chatId,
+                text: text,
+                parseMode: ParseMode.Html,
+                replyMarkup: keyboard,
+                cancellationToken: ct);
         }
 
-        return await _bot.SendMessage(
-            chatId: chatId,
-            text: text,
-            parseMode: ParseMode.Html,
-            replyMarkup: keyboard,
-            cancellationToken: ct);
+        var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
+        await SendVoiceAsync(chatId, audioText, ct);
+        return msg;
     }
 
     public async Task<Message> SendWordCardWithEdit(ChatId chatId, string word, string translation, Guid wordId, string? example = null, string? category = null, string? imageUrl = null, CancellationToken ct = default)
@@ -88,11 +111,12 @@ public class TelegramMessageHelper
 
         var text = GenerateWordCardText(word, translation, example, category);
 
+        Message msg;
         if (!string.IsNullOrWhiteSpace(imageUrl))
         {
             if (IsHttpUrl(imageUrl))
             {
-                return await _bot.SendPhoto(
+                msg = await _bot.SendPhoto(
                     chatId: chatId,
                     photo: new InputFileUrl(imageUrl),
                     caption: text,
@@ -104,7 +128,7 @@ public class TelegramMessageHelper
             {
                 await using var stream = File.OpenRead(imageUrl);
                 var file = InputFile.FromStream(stream, Path.GetFileName(imageUrl));
-                return await _bot.SendPhoto(
+                msg = await _bot.SendPhoto(
                     chatId: chatId,
                     photo: file,
                     caption: text,
@@ -112,14 +136,29 @@ public class TelegramMessageHelper
                     replyMarkup: keyboard,
                     cancellationToken: ct);
             }
+            else
+            {
+                msg = await _bot.SendMessage(
+                    chatId: chatId,
+                    text: text,
+                    parseMode: ParseMode.Html,
+                    replyMarkup: keyboard,
+                    cancellationToken: ct);
+            }
+        }
+        else
+        {
+            msg = await _bot.SendMessage(
+                chatId: chatId,
+                text: text,
+                parseMode: ParseMode.Html,
+                replyMarkup: keyboard,
+                cancellationToken: ct);
         }
 
-        return await _bot.SendMessage(
-            chatId: chatId,
-            text: text,
-            parseMode: ParseMode.Html,
-            replyMarkup: keyboard,
-            cancellationToken: ct);
+        var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
+        await SendVoiceAsync(chatId, audioText, ct);
+        return msg;
     }
 
     public async Task<Message> EditWordCard(ChatId chatId, int messageId, string word, string translation, string? example = null, string? category = null, string? imageUrl = null, CancellationToken ct = default)
@@ -197,11 +236,12 @@ public class TelegramMessageHelper
         var text = GenerateWordCardText(word, translation, example, category)
                  + $"\n\n📄 {currentIndex + 1}/{totalWords}";
 
+        Message msg;
         if (!string.IsNullOrWhiteSpace(imageUrl))
         {
             if (IsHttpUrl(imageUrl))
             {
-                return await _bot.SendPhoto(
+                msg = await _bot.SendPhoto(
                     chatId: chatId,
                     photo: new InputFileUrl(imageUrl),
                     caption: text,
@@ -213,7 +253,7 @@ public class TelegramMessageHelper
             {
                 await using var stream = File.OpenRead(imageUrl);
                 var file = InputFile.FromStream(stream, Path.GetFileName(imageUrl));
-                return await _bot.SendPhoto(
+                msg = await _bot.SendPhoto(
                     chatId: chatId,
                     photo: file,
                     caption: text,
@@ -221,14 +261,29 @@ public class TelegramMessageHelper
                     replyMarkup: keyboard,
                     cancellationToken: ct);
             }
+            else
+            {
+                msg = await _bot.SendMessage(
+                    chatId: chatId,
+                    text: text,
+                    parseMode: ParseMode.Html,
+                    replyMarkup: keyboard,
+                    cancellationToken: ct);
+            }
+        }
+        else
+        {
+            msg = await _bot.SendMessage(
+                chatId: chatId,
+                text: text,
+                parseMode: ParseMode.Html,
+                replyMarkup: keyboard,
+                cancellationToken: ct);
         }
 
-        return await _bot.SendMessage(
-            chatId: chatId,
-            text: text,
-            parseMode: ParseMode.Html,
-            replyMarkup: keyboard,
-            cancellationToken: ct);
+        var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
+        await SendVoiceAsync(chatId, audioText, ct);
+        return msg;
     }
 
     public async Task<Message> SendConfirmationDialog(ChatId chatId, string question, string confirmCallback, string cancelCallback, CancellationToken ct = default)
@@ -264,12 +319,13 @@ public class TelegramMessageHelper
     public async Task<Message> SendWordCardAsync(ChatId chatId, string word, string translation, string? examples, string? imageUrl, CancellationToken ct)
     {
         var text = GenerateWordCardText(word, translation, examples, null);
+        Message msg;
 
         if (!string.IsNullOrWhiteSpace(imageUrl))
         {
             if (IsHttpUrl(imageUrl))
             {
-                return await _bot.SendPhoto(
+                msg = await _bot.SendPhoto(
                     chatId: chatId,
                     photo: new InputFileUrl(imageUrl),
                     caption: text,
@@ -280,20 +336,34 @@ public class TelegramMessageHelper
             {
                 await using var stream = File.OpenRead(imageUrl);
                 var file = InputFile.FromStream(stream, Path.GetFileName(imageUrl));
-                return await _bot.SendPhoto(
+                msg = await _bot.SendPhoto(
                     chatId: chatId,
                     photo: file,
                     caption: text,
                     parseMode: ParseMode.Html,
                     cancellationToken: ct);
             }
+            else
+            {
+                msg = await _bot.SendMessage(
+                    chatId: chatId,
+                    text: text,
+                    parseMode: ParseMode.Html,
+                    cancellationToken: ct);
+            }
+        }
+        else
+        {
+            msg = await _bot.SendMessage(
+                chatId: chatId,
+                text: text,
+                parseMode: ParseMode.Html,
+                cancellationToken: ct);
         }
 
-        return await _bot.SendMessage(
-            chatId: chatId,
-            text: text,
-            parseMode: ParseMode.Html,
-            cancellationToken: ct);
+        var audioText = string.IsNullOrWhiteSpace(examples) ? word : $"{word}. {examples}";
+        await SendVoiceAsync(chatId, audioText, ct);
+        return msg;
     }
 
     /// <summary>
@@ -323,6 +393,14 @@ public class TelegramMessageHelper
             parseMode: ParseMode.Html,
             replyMarkup: replyMarkup,
             cancellationToken: ct);
+    }
+
+    public async Task<Message> SendVoiceAsync(ChatId chatId, string text, CancellationToken ct = default)
+    {
+        using var stream = await _tts.SynthesizeSpeechAsync(text, _ttsOptions.LanguageCode, _ttsOptions.VoiceName, _ttsOptions.Speed);
+        stream.Position = 0;
+        var input = InputFile.FromStream(stream, "speech.ogg");
+        return await _bot.SendVoice(chatId: chatId, voice: input, cancellationToken: ct);
     }
     public async Task<Message> SendText(
     ChatId chatId,

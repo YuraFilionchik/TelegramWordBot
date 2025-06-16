@@ -51,6 +51,18 @@ namespace TelegramWordBot
         private readonly Dictionary<long, Guid> _pendingDeleteWordsDict = new();
         private readonly Dictionary<long, Guid> _pendingDeleteDict = new();
 
+        // TTS configuration stored here temporarily
+        public static string TtsLanguage = "en-US";
+        public static string TtsVoice = "en-US-Standard-B";
+        public static double TtsSpeed = 1.0;
+
+        public static TtsOptions GetDefaultTtsOptions() => new()
+        {
+            LanguageCode = TtsLanguage,
+            VoiceName = TtsVoice,
+            Speed = TtsSpeed
+        };
+
         public Worker(
             ILogger<Worker> logger,
             WordRepository wordRepo,
