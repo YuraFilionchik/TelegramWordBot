@@ -3,6 +3,7 @@ using TelegramWordBot;
 using TelegramWordBot.Repositories;
 using TelegramWordBot.Services;
 using TelegramWordBot.Models;
+using TelegramWordBot.Services.TTS;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -23,6 +24,10 @@ var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING")
 var tokenTG = Environment.GetEnvironmentVariable("TELEGRAM_TOKEN")
                 ?? throw new Exception("TELEGRAM_TOKEN is null");
 builder.Services.AddSingleton<ITelegramBotClient>(new TelegramBotClient(tokenTG));
+
+var ttsOptions = Worker.GetDefaultTtsOptions();
+builder.Services.AddSingleton(ttsOptions);
+builder.Services.AddHttpClient<ITextToSpeechService, GoogleTextToSpeechService>();
 
 connectionString = DbConnectionFactory.ConvertDatabaseUrl(connectionString);
 var dbFactory = new DbConnectionFactory(connectionString);

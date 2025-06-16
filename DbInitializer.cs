@@ -15,6 +15,7 @@ public static class DatabaseInitializer
                 id SERIAL PRIMARY KEY,
                 code TEXT NOT NULL UNIQUE,
                 name TEXT NOT NULL UNIQUE
+
             );",
             @"CREATE TABLE IF NOT EXISTS users (
                 id UUID PRIMARY KEY,
@@ -159,8 +160,11 @@ public static class DatabaseInitializer
 
         foreach (var lang in languages)
         {
-            await connection.ExecuteAsync(
-                "INSERT INTO languages (code, name) VALUES (@Code, @Name) ON CONFLICT DO NOTHING",
+            await connection.ExecuteAsync(@"
+                          INSERT INTO languages (code, name)
+                          VALUES (@Code, @Name)
+                          ON CONFLICT (code) DO NOTHING
+                        ",
                 new { Code = lang.Code, Name = lang.Name });
         }
     }
