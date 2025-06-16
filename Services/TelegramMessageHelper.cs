@@ -283,6 +283,7 @@ public class TelegramMessageHelper
 
         //var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
         await SendVoiceAsync(chatId, word, voiceLanguage, ct);
+
         return msg;
     }
 
