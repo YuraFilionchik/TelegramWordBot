@@ -21,23 +21,25 @@ public class GeminiSpeechService : ITextToSpeechService
         const string modelId = "gemini-2.5-pro-preview-tts";
         var request = new
         {
-            contents = new []
+            contents = new[]
             {
-                new {
+                new
+                {
                     role = "user",
-                    parts = new [] { new { text } }
+                    parts = new[] { new { text } }
                 }
             },
             generationConfig = new
             {
-                responseModalities = new [] { "audio" },
+                responseModalities = new[] { "audio" },
                 temperature = 1,
-                speech_config = new
+                speechConfig = new
                 {
-                    voice = new
+                    voiceConfig = new
                     {
-                        prebuilt_voice = new { voice_name = voiceName }
-                    }
+                        prebuiltVoiceConfig = new { voiceName }
+                    },
+                    languageCode = languageCode
                 }
             }
         };
