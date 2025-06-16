@@ -99,8 +99,8 @@ public class TelegramMessageHelper
                 cancellationToken: ct);
         }
 
-        var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
-        await SendVoiceAsync(chatId, audioText, voiceLanguage, ct);
+        //var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
+        await SendVoiceAsync(chatId, word, voiceLanguage, ct);
         return msg;
     }
 
@@ -156,8 +156,8 @@ public class TelegramMessageHelper
                 cancellationToken: ct);
         }
 
-        var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
-        await SendVoiceAsync(chatId, audioText, voiceLanguage, ct);
+        //var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
+        await SendVoiceAsync(chatId, word, voiceLanguage, ct);
         return msg;
     }
 
@@ -281,8 +281,8 @@ public class TelegramMessageHelper
                 cancellationToken: ct);
         }
 
-        var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
-        await SendVoiceAsync(chatId, audioText, voiceLanguage, ct);
+        //var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
+        await SendVoiceAsync(chatId, word, voiceLanguage, ct);
         return msg;
     }
 
