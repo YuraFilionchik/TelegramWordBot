@@ -29,7 +29,7 @@ namespace TelegramWordBot.Repositories {
         {
             if (id == null) return null;
             using var conn = _factory.CreateConnection();
-            return await conn.QueryFirstOrDefaultAsync<Language>("SELECT * FROM languages WHERE id = @id", id);
+            return await conn.QueryFirstOrDefaultAsync<Language>("SELECT * FROM languages WHERE id = @id", new { id });
         }
 
         public async Task<Language?> GetByNameAsync(string? name)
