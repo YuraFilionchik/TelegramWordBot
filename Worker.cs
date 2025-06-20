@@ -197,10 +197,18 @@ namespace TelegramWordBot
             var action = parts[0];
             switch (action)
             {
-                case "learn": // learn:rem:wordId or learn:fail:wordId
-                    var success = parts[1] == "rem";
+                case "learn": // learn:rem:wordId or learn:fail:wordId or learn:skip:wordId
+                    var command = parts[1];
                     var wordId = Guid.Parse(parts[2]);
-                    await UpdateLearningProgressAsync(user, wordId, success, ct);
+                    if (command == "skip")
+                    {
+                        await MarkWordAsKnownAsync(user, wordId, ct);
+                    }
+                    else
+                    {
+                        var success = command == "rem";
+                        await UpdateLearningProgressAsync(user, wordId, success, ct);
+                    }
                     await SendNextLearningWordAsync(user, chatId, ct);
                     break;
                 case "delete":
@@ -484,12 +492,20 @@ namespace TelegramWordBot
             // --- Режим обучения: множественный выбор ---
             if (data.StartsWith("mc:"))
             {
-                // mc:correct:{wordId} или mc:wrong:{wordId}
-                var success = parts[1] == "correct";
+                // mc:correct:{wordId} или mc:wrong:{wordId} или mc:skip:{wordId}
+                var sub = parts[1];
                 var wordId = Guid.Parse(parts[2]);
-                // Обновляем прогресс (SM-2) точно так же, как в бинарном режиме
-                await UpdateLearningProgressAsync(user, wordId, success, ct);
-                await Task.Delay(1000, ct); // Задержка перед отправкой следующего слова    
+                if (sub == "skip")
+                {
+                    await MarkWordAsKnownAsync(user, wordId, ct);
+                }
+                else
+                {
+                    var success = sub == "correct";
+                    // Обновляем прогресс (SM-2) точно так же, как в бинарном режиме
+                    await UpdateLearningProgressAsync(user, wordId, success, ct);
+                }
+                await Task.Delay(1000, ct); // Задержка перед отправкой следующего слова
                 await SendNextLearningWordAsync(user, chatId, ct);
                 return;
             }
@@ -1648,6 +1664,29 @@ namespace TelegramWordBot
            // await SendNextLearningWordAsync(user, user.Telegram_Id, ct);
         }
 
+        private async Task MarkWordAsKnownAsync(User user, Guid wordId, CancellationToken ct)
+        {
+            var prog = await _progressRepo.GetAsync(user.Id, wordId) ?? new UserWordProgress
+            {
+                User_Id = user.Id,
+                Word_Id = wordId
+            };
+
+            prog.Repetition = 8;
+            prog.Interval_Hours = 24 * 365 * 10; // ~10 years
+            prog.Ease_Factor = Math.Max(prog.Ease_Factor, 2.5);
+            prog.Last_Review = DateTime.UtcNow;
+            prog.Next_Review = DateTime.UtcNow.AddYears(100);
+
+            await _progressRepo.InsertOrUpdateAsync(prog);
+
+            var word = await _wordRepo.GetWordById(wordId);
+            if (word != null)
+            {
+                await _msg.SendSuccessAsync(user.Telegram_Id, $"«{word.Base_Text}» помечено как выученное", ct);
+            }
+        }
+
         private async Task SendNextLearningWordAsync(User user, long chatId, CancellationToken ct)
         {
             var currentLang = await _languageRepo.GetByNameAsync(user.Current_Language!);
@@ -1701,7 +1740,9 @@ namespace TelegramWordBot
                 )
                 .ToArray();
             // Разбиваем на 2 колонки
-            var keyboard = new InlineKeyboardMarkup(buttons.Chunk(2));
+            var rows = buttons.Chunk(2).ToList();
+            rows.Insert(0, new[] { InlineKeyboardButton.WithCallbackData("Знаю/Не показывать", $"mc:skip:{word.Id}") });
+            var keyboard = new InlineKeyboardMarkup(rows);
             var filePath = FrameGenerator.GeneratePngFramedText(word.Base_Text, 200, 100, 16);
             string msg_text = $"Выберите правильный перевод для слова: {Environment.NewLine}";
             await _msg.SendPhotoWithCaptionAsync(user.Telegram_Id, filePath, msg_text, keyboard, ct);
@@ -1711,6 +1752,7 @@ namespace TelegramWordBot
         {
             var inline = new InlineKeyboardMarkup(new[]
             {
+                new[] { InlineKeyboardButton.WithCallbackData("Знаю/Не показывать", $"learn:skip:{word.Id}") },
                 new[] { InlineKeyboardButton.WithCallbackData("✅ Вспомнил", $"learn:rem:{word.Id}") },
                 new[] { InlineKeyboardButton.WithCallbackData("❌ Не вспомнил", $"learn:fail:{word.Id}") }
             });
