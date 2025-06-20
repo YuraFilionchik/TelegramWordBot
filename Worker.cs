@@ -1683,7 +1683,7 @@ namespace TelegramWordBot
             var word = await _wordRepo.GetWordById(wordId);
             if (word != null)
             {
-                await _msg.SendSuccessAsync(user.Telegram_Id, $"«{word.Base_Text}" помечено как выученное", ct);
+                await _msg.SendSuccessAsync(user.Telegram_Id, $"«{word.Base_Text}» помечено как выученное", ct);
             }
         }
 
@@ -1741,7 +1741,7 @@ namespace TelegramWordBot
                 .ToArray();
             // Разбиваем на 2 колонки
             var rows = buttons.Chunk(2).ToList();
-            rows.Add(new[] { InlineKeyboardButton.WithCallbackData("Знаю/Не показывать", $"mc:skip:{word.Id}") });
+            rows.Insert(0, new[] { InlineKeyboardButton.WithCallbackData("Знаю/Не показывать", $"mc:skip:{word.Id}") });
             var keyboard = new InlineKeyboardMarkup(rows);
             var filePath = FrameGenerator.GeneratePngFramedText(word.Base_Text, 200, 100, 16);
             string msg_text = $"Выберите правильный перевод для слова: {Environment.NewLine}";
@@ -1752,9 +1752,9 @@ namespace TelegramWordBot
         {
             var inline = new InlineKeyboardMarkup(new[]
             {
+                new[] { InlineKeyboardButton.WithCallbackData("Знаю/Не показывать", $"learn:skip:{word.Id}") },
                 new[] { InlineKeyboardButton.WithCallbackData("✅ Вспомнил", $"learn:rem:{word.Id}") },
-                new[] { InlineKeyboardButton.WithCallbackData("❌ Не вспомнил", $"learn:fail:{word.Id}") },
-                new[] { InlineKeyboardButton.WithCallbackData("Знаю/Не показывать", $"learn:skip:{word.Id}") }
+                new[] { InlineKeyboardButton.WithCallbackData("❌ Не вспомнил", $"learn:fail:{word.Id}") }
             });
 
             string escapedWordBaseText = TelegramMessageHelper.EscapeHtml(word.Base_Text ?? string.Empty);
