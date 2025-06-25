@@ -12,6 +12,7 @@ using TelegramWordBot.Repositories;
 using TelegramWordBot.Services;
 using User = TelegramWordBot.Models.User;
 using Microsoft.Extensions.Localization;
+using System.Globalization; // Добавлено для CultureInfo
 
 namespace TelegramWordBot
 {
