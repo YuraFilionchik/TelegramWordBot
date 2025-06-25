@@ -51,6 +51,7 @@ builder.Services.AddHttpClient<IAIHelper, AIHelper>();
 builder.Services.AddSingleton<TranslationRepository>();
 builder.Services.AddSingleton<UserLanguageRepository>();
 builder.Services.AddSingleton<TelegramMessageHelper>();
+builder.Services.AddSingleton<KeyboardFactory>(); // Добавляем KeyboardFactory в DI
 builder.Services.AddSingleton<SpacedRepetitionService>();
 builder.Services.AddSingleton<WordImageRepository>();
 builder.Services.AddHttpClient<IImageService, ImageService>();
@@ -63,7 +64,9 @@ builder.Services.AddHostedService<Worker>();
 var app = builder.Build();
 
 // Конфигурация middleware для локализации
+var russianCulture = new CultureInfo("ru-RU");
 var supportedCultures = new[] {
+    russianCulture, // Русский язык как культура по умолчанию
     new CultureInfo("en-US"),
     new CultureInfo("fr-FR"),
     new CultureInfo("pl-PL"),
@@ -74,7 +77,7 @@ var supportedCultures = new[] {
     // Добавьте сюда коды для других языков, которые вы планируете поддерживать
 };
 var localizationOptions = new RequestLocalizationOptions()
-    .SetDefaultCulture(supportedCultures[0].Name) // Язык по умолчанию - Английский
+    .SetDefaultCulture(russianCulture.Name) // Язык по умолчанию - Русский
     .AddSupportedCultures(supportedCultures.Select(c => c.Name).ToArray())
     .AddSupportedUICultures(supportedCultures.Select(c => c.Name).ToArray());
 
