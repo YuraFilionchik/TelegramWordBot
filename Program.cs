@@ -51,6 +51,7 @@ builder.Services.AddHttpClient<IAIHelper, AIHelper>();
 builder.Services.AddSingleton<TranslationRepository>();
 builder.Services.AddSingleton<UserLanguageRepository>();
 builder.Services.AddSingleton<TelegramMessageHelper>();
+builder.Services.AddSingleton<KeyboardFactory>(); // Добавляем KeyboardFactory в DI
 builder.Services.AddSingleton<SpacedRepetitionService>();
 builder.Services.AddSingleton<WordImageRepository>();
 builder.Services.AddHttpClient<IImageService, ImageService>();

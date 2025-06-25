@@ -19,7 +19,8 @@ namespace TelegramWordBot
     {
         private readonly ILogger<Worker> _logger;
         private readonly IStringLocalizer<Worker> _localizer;
-        private readonly IStringLocalizer<KeyboardFactory> _keyboardLocalizer;
+        //private readonly IStringLocalizer<KeyboardFactory> _keyboardLocalizer; // Removed, as KeyboardFactory now handles its own localization
+        private readonly KeyboardFactory _keyboardFactory; // Injected instance
         // private readonly IStringLocalizer<TelegramMessageHelper> _messageHelperLocalizer; // Already injected in TelegramMessageHelper
         private readonly ITelegramBotClient _botClient;
         private readonly WordRepository _wordRepo;
@@ -44,6 +45,8 @@ namespace TelegramWordBot
         private readonly SpacedRepetitionService _sr;
         private readonly IImageService _imageService;
         private readonly WordImageRepository _imageRepo;
+        private readonly List<string> _supportedCultureStrings;
+
         // Для режима редактирования:
         private readonly Dictionary<long, Guid> _pendingEditWordId = new();
         private readonly Dictionary<long, TranslatedTextClass> _editTranslationCandidates = new();
@@ -85,11 +88,13 @@ namespace TelegramWordBot
             IImageService imageService,
             WordImageRepository imageRepo,
             IStringLocalizer<Worker> localizer,
-            IStringLocalizer<KeyboardFactory> keyboardLocalizer)
+            //IStringLocalizer<KeyboardFactory> keyboardLocalizer, // Removed
+            KeyboardFactory keyboardFactory) // Added
         {
             _logger = logger;
             _localizer = localizer;
-            _keyboardLocalizer = keyboardLocalizer;
+            //_keyboardLocalizer = keyboardLocalizer; // Removed
+            _keyboardFactory = keyboardFactory; // Added
             _wordRepo = wordRepo;
             _userRepo = userRepo;
             _progressRepo = progressRepo;
@@ -106,7 +111,74 @@ namespace TelegramWordBot
             _imageService = imageService;
             _imageRepo = imageRepo;
             _appUrl = Environment.GetEnvironmentVariable("APP_URL") ?? string.Empty;
+
+            // Инициализируем список поддерживаемых культур из Program.cs (предполагается, что он там есть)
+            // Это упрощенный вариант; в идеале это должно приходить из конфигурации или общего сервиса.
+            _supportedCultureStrings = new List<string> { "ru-RU", "en-US", "fr-FR", "pl-PL", "de-DE", "zh-CN", "tr-TR", "et-EE" };
         }
+
+        // Словарь для сопоставления имен языков из БД с кодами культур .NET
+        private static readonly Dictionary<string, string> LanguageNameToCultureCodeMap = new()
+        {
+            // Основные языки из Program.cs
+            { "Russian", "ru-RU" },
+            { "English", "en-US" },
+            { "French", "fr-FR" },
+            { "Polish", "pl-PL" },
+            { "German", "de-DE" },
+            { "Chinese", "zh-CN" }, // Simplified Chinese
+            { "Turkish", "tr-TR" },
+            { "Estonian", "et-EE" },
+            // Дополнительные языки из DbInitializer.cs (добавьте по мере необходимости)
+            { "Hindi", "hi-IN" },
+            { "Spanish", "es-ES" }, // Общий испанский, можно уточнить (es-MX, es-AR и т.д.)
+            { "Arabic", "ar-SA" }, // Общий арабский, можно уточнить
+            { "Bengali", "bn-BD" }, // или bn-IN
+            { "Portuguese", "pt-PT" }, // или pt-BR
+            { "Indonesian", "id-ID" },
+            { "Urdu", "ur-PK" },
+            { "Japanese", "ja-JP" },
+            { "Swahili", "sw-KE" }, // Пример
+            { "Marathi", "mr-IN" },
+            { "Telugu", "te-IN" },
+            { "Tamil", "ta-IN" },
+            { "Vietnamese", "vi-VN" },
+            { "Korean", "ko-KR" },
+            { "Italian", "it-IT" },
+            { "Ukrainian", "uk-UA" },
+            { "Dutch", "nl-NL" },
+            { "Gujarati", "gu-IN" },
+            { "Persian", "fa-IR" },
+            { "Malayalam", "ml-IN" },
+            { "Thai", "th-TH" },
+            { "Filipino", "fil-PH" },
+            { "Burmese", "my-MM" },
+            { "Esperanto", "eo" }, // Esperanto не имеет стандартного кода страны
+            { "Swedish", "sv-SE" },
+            { "Norwegian", "nb-NO" }, // Bokmål, основной
+            { "Danish", "da-DK" },
+            { "Finnish", "fi-FI" },
+            { "Icelandic", "is-IS" },
+            { "Greek", "el-GR" },
+            { "Hungarian", "hu-HU" },
+            { "Czech", "cs-CZ" },
+            { "Slovak", "sk-SK" },
+            { "Romanian", "ro-RO" },
+            { "Bulgarian", "bg-BG" },
+            { "Croatian", "hr-HR" },
+            { "Serbian", "sr-RS" }, // или sr-Cyrl-RS / sr-Latn-RS
+            { "Slovenian", "sl-SI" },
+            { "Albanian", "sq-AL" },
+            { "Latvian", "lv-LV" },
+            { "Lithuanian", "lt-LT" },
+            { "Irish", "ga-IE" },
+            { "Maltese", "mt-MT" },
+            { "Catalan", "ca-ES" },
+            { "Basque", "eu-ES" },
+            { "Welsh", "cy-GB" }
+            // Добавьте остальные языки по аналогии
+        };
+
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -124,79 +196,73 @@ namespace TelegramWordBot
         private async Task<(bool handled, string newState)> HandleKeyboardCommandAsync(User user, string command, long chatId, CancellationToken ct)
         {
             // Локализуем команду для сравнения, если она пришла от клавиатуры
-            string localizedCommand = command; // По умолчанию оставляем как есть, если это не текстовая команда клавиатуры
+            // Используем _localizer для строк, которые могли быть определены в Worker.resx как общие команды,
+            // и строки напрямую из _keyboardFactory._localizer для специфичных кнопок клавиатуры.
+            // Однако, более чистым было бы, если бы KeyboardFactory возвращал не просто текст, а некий enum или константу команды.
+            // Пока что для упрощения будем сравнивать с локализованными строками из KeyboardFactory.
+            string commandKey = command; // По умолчанию ключ команды равен тексту команды
 
-            if (command == _keyboardLocalizer["Keyboard.MainMenu.MyWords"] || command == _localizer["MyWordsMenu.MyWords"]) // "📚 Мои слова"
-                localizedCommand = "my_words";
-            else if (command == _keyboardLocalizer["Keyboard.MyWordsMenu.ShowAllWords"] || command == _localizer["MyWordsMenu.ShowAllWords"]) // "🔍 Показать все слова"
-                localizedCommand = "show_all_words";
-            else if (command == _keyboardLocalizer["Keyboard.MyWordsMenu.DictionariesByTopics"] || command == _localizer["MyWordsMenu.DictionariesByTopics"]) // "📁 Словари по темам"
-                localizedCommand = "dictionaries_by_topics";
-            else if (command == _keyboardLocalizer["Keyboard.MyWordsMenu.EditWord"] || command == _localizer["MyWordsMenu.EditWord"]) // "📝 Изменить слово"
-                localizedCommand = "edit_word";
-            else if (command == _keyboardLocalizer["Keyboard.MyWordsMenu.DeleteWords"] || command == _localizer["MyWordsMenu.DeleteWords"]) // "🗑️ Удалить слова"
-                localizedCommand = "delete_words";
-            else if (command == _keyboardLocalizer["Keyboard.MyWordsMenu.Back"] || command == _localizer["MyWordsMenu.Back"]) // "⬅️ Назад"
-                localizedCommand = "back";
-            else if (command == _keyboardLocalizer["Keyboard.MainMenu.AddWord"] || command == _localizer["MainMenu.AddWord"]) // "➕ Добавить слово"
-                localizedCommand = "add_word";
-            else if (command == _keyboardLocalizer["Keyboard.MainMenu.Learn"] || command == _localizer["MainMenu.Learn"]) // "📖 Учить"
-                localizedCommand = "learn";
-            else if (command == _keyboardLocalizer["Keyboard.MainMenu.Settings"] || command == _localizer["MainMenu.Settings"]) // "🌐 Настройки"
-                localizedCommand = "settings";
-            else if (command == _keyboardLocalizer["Keyboard.MainMenu.Statistics"] || command == _localizer["MainMenu.Statistics"]) // "📊 Статистика"
-                localizedCommand = "statistics";
-            else if (command == _keyboardLocalizer["Keyboard.MainMenu.Profile"] || command == _localizer["MainMenu.Profile"]) // "👤 Профиль"
-                localizedCommand = "profile";
-            else if (command == _keyboardLocalizer["Keyboard.MyWordsMenu.GenerateNewWords"] || command == _localizer["MainMenu.GenerateNewWords"]) // "Генерация новых слов"
-                localizedCommand = "generate_new_words";
+            // mainMenu
+            if (command == _keyboardFactory.GetMainMenu().Keyboard.ElementAt(0).ElementAt(0).Text) commandKey = "my_words";
+            else if (command == _keyboardFactory.GetMainMenu().Keyboard.ElementAt(0).ElementAt(1).Text) commandKey = "add_word";
+            else if (command == _keyboardFactory.GetMainMenu().Keyboard.ElementAt(1).ElementAt(0).Text) commandKey = "statistics";
+            else if (command == _keyboardFactory.GetMainMenu().Keyboard.ElementAt(1).ElementAt(1).Text) commandKey = "learn";
+            else if (command == _keyboardFactory.GetMainMenu().Keyboard.ElementAt(2).ElementAt(0).Text) commandKey = "settings";
+            else if (command == _keyboardFactory.GetMainMenu().Keyboard.ElementAt(2).ElementAt(1).Text) commandKey = "profile";
+            // myWordsMenu
+            else if (command == _keyboardFactory.GetMyWordsMenu().Keyboard.ElementAt(0).ElementAt(0).Text) commandKey = "show_all_words";
+            else if (command == _keyboardFactory.GetMyWordsMenu().Keyboard.ElementAt(1).ElementAt(0).Text) commandKey = "dictionaries_by_topics";
+            else if (command == _keyboardFactory.GetMyWordsMenu().Keyboard.ElementAt(2).ElementAt(0).Text) commandKey = "generate_new_words";
+            else if (command == _keyboardFactory.GetMyWordsMenu().Keyboard.ElementAt(3).ElementAt(0).Text) commandKey = "edit_word";
+            else if (command == _keyboardFactory.GetMyWordsMenu().Keyboard.ElementAt(4).ElementAt(0).Text) commandKey = "delete_words";
+            else if (command == _keyboardFactory.GetMyWordsMenu().Keyboard.ElementAt(5).ElementAt(0).Text) commandKey = "back";
 
 
-            switch (localizedCommand)
+            switch (commandKey)
             {
-                case "my_words": // "📚 Мои слова"
-                    await KeyboardFactory.ShowMyWordsMenuAsync(_botClient, chatId, _keyboardLocalizer, ct);
+                case "my_words":
+                    await _keyboardFactory.ShowMyWordsMenuAsync(_botClient, chatId, ct);
                     return (true, string.Empty);
 
-                case "show_all_words": // "🔍 Показать все слова"
+                case "show_all_words":
                     await ShowMyWords(chatId, user, ct);
                     return (true, string.Empty);
 
-                case "dictionaries_by_topics": // "📁 Словари по темам"
+                case "dictionaries_by_topics":
                     await ShowDictionariesByTopics(chatId, ct);
                     return (true, string.Empty);
 
-                case "edit_word": // "📝 Изменить слово"
+                case "edit_word":
                     await _msg.SendInfoAsync(chatId, _localizer["Worker.EnterWordForEditing"], ct);
                     return (true, "awaiting_editsearch");
 
-                case "delete_words": // "🗑️ Удалить слова"
+                case "delete_words":
                     await ShowMyWordsForEdit(chatId, user, ct);
                     return (true, "awaiting_listdelete");
 
-                case "back": // "⬅️ Назад"
-                    await KeyboardFactory.ShowMainMenuAsync(_botClient, chatId, _keyboardLocalizer, ct);
+                case "back":
+                    await _keyboardFactory.ShowMainMenuAsync(_botClient, chatId, ct);
                     return (true, string.Empty);
 
-                case "add_word": // "➕ Добавить слово"
+                case "add_word":
                     await _msg.SendInfoAsync(chatId, _localizer["Worker.EnterWordToAdd"], ct);
                     return (true, "awaiting_addword");
 
-                case "learn": // "📖 Учить"
+                case "learn":
                     await StartLearningAsync(user, ct);
                     return (true, string.Empty);
 
-                case "settings": // "🌐 Настройки"
-                    await KeyboardFactory.ShowConfigMenuAsync(_botClient, chatId, _keyboardLocalizer, ct);
+                case "settings":
+                    await _keyboardFactory.ShowConfigMenuAsync(_botClient, chatId, ct);
                     return (true, string.Empty);
 
-                case "statistics": // "📊 Статистика"
-                    await KeyboardFactory.ShowStatisticsMenuAsync(_botClient, chatId, _keyboardLocalizer, ct);
+                case "statistics":
+                    await _keyboardFactory.ShowStatisticsMenuAsync(_botClient, chatId, ct);
                     return (true, string.Empty);
 
-                case "profile": // "👤 Профиль"
+                case "profile":
                     string url = _appUrl.StartsWith("http") ? _appUrl.Replace("http", "https") : "https://" + _appUrl;
-                    await KeyboardFactory.ShowProfileMenuAsync(_botClient, chatId, _keyboardLocalizer, user.Id, user.Telegram_Id, url, ct);
+                    await _keyboardFactory.ShowProfileMenuAsync(_botClient, chatId, user.Id, user.Telegram_Id, url, ct);
                     return (true, string.Empty);
                 case "generate_new_words": // "Генерация новых слов"
                     await _msg.SendInfoAsync(chatId, _localizer["Worker.EnterThemeForWordGeneration"], ct);
@@ -405,7 +471,7 @@ namespace TelegramWordBot
                     switch (parts[1])
                     {
                         case "main":
-                            await KeyboardFactory.ShowLearnConfig(bot, chatId, _keyboardLocalizer, user, ct);
+                            await _keyboardFactory.ShowLearnConfig(bot, chatId, user, ct);
                             return;
                         case "binary":
                             if (user.Prefer_Multiple_Choice)
@@ -588,6 +654,28 @@ namespace TelegramWordBot
         {
             if (update.CallbackQuery is { } callback)
             {
+                // Для CallbackQuery тоже нужно установить культуру, если это возможно и необходимо
+                var userForCallback = await _userRepo.GetByTelegramIdAsync(callback.From.Id);
+                if (userForCallback != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(userForCallback.Native_Language) &&
+                        LanguageNameToCultureCodeMap.TryGetValue(userForCallback.Native_Language, out var cultureCode) &&
+                        _supportedCultureStrings.Contains(cultureCode))
+                    {
+                        var cultureInfo = new CultureInfo(cultureCode);
+                        CultureInfo.CurrentCulture = cultureInfo;
+                        CultureInfo.CurrentUICulture = cultureInfo;
+                    }
+                    else
+                    {
+                        var fallbackCulture = new CultureInfo("en-US");
+                        CultureInfo.CurrentCulture = fallbackCulture;
+                        CultureInfo.CurrentUICulture = fallbackCulture;
+                    }
+                }
+                // Если userForCallback == null, будет использована культура по умолчанию из Program.cs или en-US, если предыдущий Message успел ее установить.
+                // Это редкий случай, но стоит иметь в виду.
+
                 await HandleCallbackAsync(botClient, callback, ct);
                 return;
             }
@@ -601,6 +689,24 @@ namespace TelegramWordBot
             try
             {
                 var (user, isNewUser) = await EnsureUserAsync(message);
+
+                // Установка культуры пользователя
+                if (!string.IsNullOrWhiteSpace(user.Native_Language) &&
+                    LanguageNameToCultureCodeMap.TryGetValue(user.Native_Language, out var cultureCode) &&
+                    _supportedCultureStrings.Contains(cultureCode))
+                {
+                    var cultureInfo = new CultureInfo(cultureCode);
+                    CultureInfo.CurrentCulture = cultureInfo;
+                    CultureInfo.CurrentUICulture = cultureInfo;
+                }
+                else
+                {
+                    // Если язык пользователя не найден, не поддерживается или не указан, используем английский (en-US)
+                    var fallbackCulture = new CultureInfo("en-US");
+                    CultureInfo.CurrentCulture = fallbackCulture;
+                    CultureInfo.CurrentUICulture = fallbackCulture;
+                }
+
                 if (isNewUser)
                 {
                     await SendWelcomeAsync(user, chatId, ct);
@@ -699,7 +805,7 @@ namespace TelegramWordBot
                         break;
 
                     case "/config":
-                        await KeyboardFactory.ShowConfigMenuAsync(_botClient, chatId, _keyboardLocalizer, ct);
+                        await _keyboardFactory.ShowConfigMenuAsync(_botClient, chatId, ct);
                         break;
 
                     case "/addlanguage":
@@ -941,7 +1047,7 @@ namespace TelegramWordBot
         private async Task filterMessages(Message? message)
         {
             if (message == null) return;
-            var keyboard = KeyboardFactory.GetMainMenu(_keyboardLocalizer); // Передаем локализатор
+            var keyboard = _keyboardFactory.GetMainMenu(); // Теперь не требует локализатора
             if (keyboard.Keyboard.Any(x => x.Any(c => c.Text.Contains(message.Text.Trim()))))
             {
                 await _botClient.DeleteMessage(message.Chat.Id, message.Id);
@@ -2028,7 +2134,7 @@ namespace TelegramWordBot
             user.Current_Language = lang.Name;
             await _userRepo.UpdateAsync(user);
             await _botClient.SendMessage(chatId,
-                _localizer["Worker.LanguageXAdded", lang.Name], replyMarkup: KeyboardFactory.GetMainMenu(_keyboardLocalizer), cancellationToken: ct);
+                _localizer["Worker.LanguageXAdded", lang.Name], replyMarkup: _keyboardFactory.GetMainMenu(), cancellationToken: ct);
         }
 
         private async Task ProcessStartCommand(User user, Message message, CancellationToken ct)
@@ -2040,7 +2146,7 @@ namespace TelegramWordBot
         private async Task SendWelcomeAsync(User user, long chatId, CancellationToken ct)
         {
             await _msg.SendText(chatId, _localizer["Worker.WelcomeMessage"], ct);
-            await KeyboardFactory.ShowMainMenuAsync(_botClient, chatId, _keyboardLocalizer, ct);
+            await _keyboardFactory.ShowMainMenuAsync(_botClient, chatId, ct);
 
             if (string.IsNullOrWhiteSpace(user.Native_Language))
             {
@@ -2233,7 +2339,7 @@ namespace TelegramWordBot
                 return;
             }
 
-            var inline = KeyboardFactory.GetDictionaryListInline(_keyboardLocalizer, dictionaries);
+            var inline = _keyboardFactory.GetDictionaryListInline(dictionaries);
             await _msg.SendText(chatId, _localizer["Worker.DictionariesByTopicsHeader"], inline, ct);
             
         }
@@ -2443,7 +2549,7 @@ namespace TelegramWordBot
                 sb.AppendLine(_localizer["Worker.DictionaryWordTranslationEntry", TelegramMessageHelper.EscapeHtml(w.Base_Text), TelegramMessageHelper.EscapeHtml(right)]);
             }
 
-            var actions = KeyboardFactory.GetTopicDictionaryActions(_keyboardLocalizer, dictId);
+            var actions = _keyboardFactory.GetTopicDictionaryActions(dictId);
             await _msg.SendText(chatId, sb.ToString(), actions, ct);
         }
 
@@ -2476,7 +2582,7 @@ namespace TelegramWordBot
                 prog.Repetition = 0;
                 prog.Interval_Hours = 0;
                 prog.Ease_Factor = 2.5;
-                p.Next_Review = DateTime.UtcNow; // Corrected: prog.Next_Review
+                prog.Next_Review = DateTime.UtcNow; // Corrected: prog.Next_Review
                 await _progressRepo.InsertOrUpdateAsync(prog);
             }
 
