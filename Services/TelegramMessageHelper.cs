@@ -15,9 +15,9 @@ public class TelegramMessageHelper
     private readonly ITelegramBotClient _bot;
     private readonly ITextToSpeechService _tts;
     private readonly TtsOptions _ttsOptions;
-    private readonly IStringLocalizer<TelegramMessageHelper> _localizer;
+    private readonly IStringLocalizer<SharedResource> _localizer;
 
-    public TelegramMessageHelper(ITelegramBotClient botClient, ITextToSpeechService tts, TtsOptions options, IStringLocalizer<TelegramMessageHelper> localizer)
+    public TelegramMessageHelper(ITelegramBotClient botClient, ITextToSpeechService tts, TtsOptions options, IStringLocalizer<SharedResource> localizer)
     {
         _bot = botClient;
         _tts = tts;
