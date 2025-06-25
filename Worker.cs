@@ -19,7 +19,7 @@ namespace TelegramWordBot
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        private readonly IStringLocalizer<Worker> _localizer;
+        private readonly IStringLocalizer<SharedResource> _localizer;
         //private readonly IStringLocalizer<KeyboardFactory> _keyboardLocalizer; // Removed, as KeyboardFactory now handles its own localization
         private readonly KeyboardFactory _keyboardFactory; // Injected instance
         // private readonly IStringLocalizer<TelegramMessageHelper> _messageHelperLocalizer; // Already injected in TelegramMessageHelper
@@ -88,7 +88,7 @@ namespace TelegramWordBot
             SpacedRepetitionService sr,
             IImageService imageService,
             WordImageRepository imageRepo,
-            IStringLocalizer<Worker> localizer,
+            IStringLocalizer<SharedResource> localizer,
             //IStringLocalizer<KeyboardFactory> keyboardLocalizer, // Removed
             KeyboardFactory keyboardFactory) // Added
         {

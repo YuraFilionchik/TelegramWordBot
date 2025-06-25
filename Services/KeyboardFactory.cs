@@ -11,9 +11,9 @@ namespace TelegramWordBot.Services;
 // если предполагается его использование в тестах или более сложная логика.
 public class KeyboardFactory
 {
-    private readonly IStringLocalizer<KeyboardFactory> _localizer;
+    private readonly IStringLocalizer<SharedResource> _localizer;
 
-    public KeyboardFactory(IStringLocalizer<KeyboardFactory> localizer)
+    public KeyboardFactory(IStringLocalizer<SharedResource> localizer)
     {
         _localizer = localizer;
     }
