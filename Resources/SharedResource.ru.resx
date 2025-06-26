@@ -317,6 +317,9 @@
   <data name="Worker.ErrorTelegramAPI" xml:space="preserve">
     <value>Telegram API Error: {0}</value>
   </data>
+  <data name="Worker.ErrorProcessingUpdate" xml:space="preserve">
+    <value>Ошибка обработки обновления</value>
+  </data>
   <data name="Worker.WordToSaveNotFound" xml:space="preserve">
     <value>Не найдено слово для сохранения</value>
   </data>
