@@ -59,7 +59,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="MyWordsMenu.MyWords" xml:space="preserve">
-    <value>📚 My words</value> <!-- Пример перевода -->
+    <value>📚 My words</value><!-- Example translation -->
   </data>
   <data name="MyWordsMenu.ShowAllWords" xml:space="preserve">
     <value>🔍 Show all words</value>
