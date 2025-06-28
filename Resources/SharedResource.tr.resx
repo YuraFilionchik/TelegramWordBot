@@ -1,51 +1,51 @@
-<?xml version="1.0" encoding="utf-8"?>
-<root>
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
@@ -59,699 +59,699 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="MyWordsMenu.MyWords" xml:space="preserve">
-    <value></value>
+    <value>📚 Kelimelerim</value>
   </data>
   <data name="MyWordsMenu.ShowAllWords" xml:space="preserve">
-    <value></value>
+    <value>🔍 Tüm kelimeleri göster</value>
   </data>
   <data name="MyWordsMenu.DictionariesByTopics" xml:space="preserve">
-    <value></value>
+    <value>📁 Konulara göre sözlükler</value>
   </data>
   <data name="MyWordsMenu.EditWord" xml:space="preserve">
-    <value></value>
+    <value>📝 Kelimeyi düzenle</value>
   </data>
   <data name="MyWordsMenu.DeleteWords" xml:space="preserve">
-    <value></value>
+    <value>🗑️ Kelimeleri sil</value>
   </data>
   <data name="MyWordsMenu.Back" xml:space="preserve">
-    <value></value>
+    <value>⬅️ Geri</value>
   </data>
   <data name="MainMenu.AddWord" xml:space="preserve">
-    <value></value>
+    <value>➕ Kelime ekle</value>
   </data>
   <data name="MainMenu.Learn" xml:space="preserve">
-    <value></value>
+    <value>📖 Öğren</value>
   </data>
   <data name="MainMenu.Settings" xml:space="preserve">
-    <value></value>
+    <value>🌐 Ayarlar</value>
   </data>
   <data name="MainMenu.Statistics" xml:space="preserve">
-    <value></value>
+    <value>📊 İstatistikler</value>
   </data>
   <data name="MainMenu.Profile" xml:space="preserve">
-    <value></value>
+    <value>👤 Profil</value>
   </data>
   <data name="MainMenu.GenerateNewWords" xml:space="preserve">
-    <value></value>
+    <value>Yeni kelimeler üret</value>
   </data>
   <data name="Worker.EnterWordForEditing" xml:space="preserve">
-    <value></value>
+    <value>Düzenlenecek kelimeyi veya bir kısmını girin:</value>
   </data>
   <data name="Worker.EnterWordToAdd" xml:space="preserve">
-    <value></value>
+    <value>Eklenecek bir kelime girin:</value>
   </data>
   <data name="Worker.EnterThemeForWordGeneration" xml:space="preserve">
-    <value></value>
+    <value>Hangi konuya kelime eklemeli?:</value>
   </data>
   <data name="Worker.WordDeleted" xml:space="preserve">
-    <value></value>
+    <value>„{0}“ kelimesi silindi</value>
   </data>
   <data name="Worker.WordNotFound" xml:space="preserve">
-    <value></value>
+    <value>„{0}“ kelimesi bulunamadı</value>
   </data>
   <data name="Worker.WordAddedToFavorites" xml:space="preserve">
-    <value></value>
+    <value>„{0}“ kelimesi favorilere eklendi</value>
   </data>
   <data name="Worker.EnterNativeLanguage" xml:space="preserve">
-    <value></value>
+    <value>Ana dilinizi girin:</value>
   </data>
   <data name="Worker.EnterLanguageToLearn" xml:space="preserve">
-    <value></value>
+    <value>Öğrenmek istediğiniz dilin adını girin:</value>
   </data>
   <data name="Worker.NoAddedLanguages" xml:space="preserve">
-    <value></value>
+    <value>Eklenmiş diliniz yok.</value>
   </data>
   <data name="Worker.YourLanguages" xml:space="preserve">
-    <value></value>
+    <value>Dilleriniz:\n{0}\nSilmek için kodu girin:</value>
   </data>
   <data name="Worker.ResetStatisticsConfirmation" xml:space="preserve">
-    <value></value>
+    <value>İstatistikleri sıfırla?</value>
   </data>
   <data name="Worker.EnterNewDictionaryName" xml:space="preserve">
-    <value></value>
+    <value>Yeni sözlüğün adını girin:</value>
   </data>
   <data name="Worker.AutoFillDictionaryCancelled" xml:space="preserve">
-    <value></value>
+    <value>Sözlük otomatik doldurma iptal edildi.</value>
   </data>
   <data name="Worker.FailedToGetWordsForTheme" xml:space="preserve">
-    <value></value>
+    <value>Konu için kelimeler alınamadı.</value>
   </data>
   <data name="Worker.DictionaryAutoFillSuccess" xml:space="preserve">
-    <value></value>
+    <value>„{0}“ sözlüğü otomatik doldurma başarıyla tamamlandı.</value>
   </data>
   <data name="Worker.ErrorSavingWords" xml:space="preserve">
-    <value></value>
+    <value>Kelimeler kaydedilirken bir hata oluştu.</value>
   </data>
   <data name="Worker.LearningModeChangedToBinary" xml:space="preserve">
-    <value></value>
+    <value>Öğrenme modu ikili olarak değiştirildi</value>
   </data>
   <data name="Worker.AlreadyUsingBinaryLearningMode" xml:space="preserve">
-    <value></value>
+    <value>Zaten ikili öğrenme modunu kullanıyorsunuz</value>
   </data>
   <data name="Worker.LearningModeChangedToMultipleChoice" xml:space="preserve">
-    <value></value>
+    <value>Öğrenme modu çoktan seçmeli olarak değiştirildi</value>
   </data>
   <data name="Worker.AlreadyUsingMultipleChoiceLearningMode" xml:space="preserve">
-    <value></value>
+    <value>Zaten çoktan seçmeli öğrenme modunu kullanıyorsunuz</value>
   </data>
   <data name="Worker.ConfirmDictionaryDeletion" xml:space="preserve">
-    <value></value>
+    <value>Sözlüğü silmek mi? Kelimeler tamamen kaldırılacak.</value>
   </data>
   <data name="Worker.ConfirmDictionaryDeletionMoveToDefault" xml:space="preserve">
-    <value></value>
+    <value>Sözlüğü silmek mi? Kelimeler genel sözlüğe taşınacak.</value>
   </data>
   <data name="Worker.ButtonYes" xml:space="preserve">
-    <value></value>
+    <value>Evet</value>
   </data>
   <data name="Worker.ButtonNo" xml:space="preserve">
-    <value></value>
+    <value>Hayır</value>
   </data>
   <data name="Worker.InvalidIdentifier" xml:space="preserve">
-    <value></value>
+    <value>Geçersiz kimlik</value>
   </data>
   <data name="Worker.UserNotFound" xml:space="preserve">
-    <value></value>
+    <value>Kullanıcı bulunamadı</value>
   </data>
   <data name="Worker.DictionaryNotFound" xml:space="preserve">
-    <value></value>
+    <value>Sözlük bulunamadı</value>
   </data>
   <data name="Worker.CannotDeleteDefaultDictionary" xml:space="preserve">
-    <value></value>
+    <value>Varsayılan sözlük silinemez</value>
   </data>
   <data name="Worker.WelcomeMessage" xml:space="preserve">
-    <value></value>
+    <value>Merhaba, ben </value>
   </data>
   <data name="Worker.WhatLanguageToLearn" xml:space="preserve">
-    <value></value>
+    <value>Hangi dili öğrenmek istiyorsunuz?</value>
   </data>
   <data name="Worker.AddLanguageFirst" xml:space="preserve">
-    <value></value>
+    <value>Önce /addlanguage ile bir dil ekleyin</value>
   </data>
   <data name="Worker.EnterWordToRemember" xml:space="preserve">
-    <value></value>
+    <value>Ezberlemek istediğiniz kelimeyi girin:</value>
   </data>
   <data name="Worker.EnterLanguageName" xml:space="preserve">
-    <value></value>
+    <value>Dilin adını girin:</value>
   </data>
   <data name="Worker.UsageRemoveLanguage" xml:space="preserve">
-    <value></value>
+    <value>Kullanım: /removelanguage [kod]</value>
   </data>
   <data name="Worker.LanguageListEmpty" xml:space="preserve">
-    <value></value>
+    <value>Liste boş.</value>
   </data>
   <data name="Worker.YourLearningLanguages" xml:space="preserve">
-    <value></value>
+    <value>Öğreniyorsunuz:\n{0}</value>
   </data>
   <data name="Worker.ResettingData" xml:space="preserve">
-    <value></value>
+    <value>Veriler sıfırlanıyor...</value>
   </data>
   <data name="Worker.Done" xml:space="preserve">
-    <value></value>
+    <value>Bitti</value>
   </data>
   <data name="Worker.ExampleRemoveWord" xml:space="preserve">
-    <value></value>
+    <value>örnek: /removeword kelime</value>
   </data>
   <data name="Worker.WordXDeleted" xml:space="preserve">
-    <value></value>
+    <value>„{0}“ kelimesi silindi</value>
   </data>
   <data name="Worker.WordXNotFound" xml:space="preserve">
-    <value></value>
+    <value>„{0}“ kelimesi bulunamadı</value>
   </data>
   <data name="Worker.UsageTodo" xml:space="preserve">
-    <value></value>
+    <value>Kullanım: /todo Metin : Açıklama</value>
   </data>
   <data name="Worker.TaskAdded" xml:space="preserve">
-    <value></value>
+    <value>Görev eklendi</value>
   </data>
   <data name="Worker.AccessDenied" xml:space="preserve">
-    <value></value>
+    <value>Erişim reddedildi</value>
   </data>
   <data name="Worker.UnknownCommand" xml:space="preserve">
-    <value></value>
+    <value>Bilinmeyen komut. Menüyü veya /start'ı kullanın.</value>
   </data>
   <data name="Worker.ThemeCannotBeEmpty" xml:space="preserve">
-    <value></value>
+    <value>Tema boş olamaz.</value>
   </data>
   <data name="Worker.ReceivedXWordsForTheme" xml:space="preserve">
-    <value></value>
+    <value>Konu '{1}' için {0} kelime alındı.\nHangi sözlüğe kaydedilsin?</value>
   </data>
   <data name="Worker.DictionaryNameCannotBeEmpty" xml:space="preserve">
-    <value></value>
+    <value>Sözlük adı boş olamaz.</value>
   </data>
   <data name="Worker.DictionaryXCreated" xml:space="preserve">
-    <value></value>
+    <value>„{0}“ sözlüğü başarıyla oluşturuldu.</value>
   </data>
   <data name="Worker.Add20WordsToDictionaryConfirmation" xml:space="preserve">
-    <value></value>
+    <value>Konu {0} ile ilgili 20 kelimeyi otomatik olarak eklemek ister misiniz?</value>
   </data>
   <data name="Worker.NoWordsInLanguage" xml:space="preserve">
-    <value></value>
+    <value>❌ Eklenmiş diliniz yok.</value>
   </data>
   <data name="Worker.NoWordsHeader" xml:space="preserve">
-    <value></value>
+    <value>{0}\nKelime yok.</value>
   </data>
   <data name="Worker.NavigateWordsWithButtons" xml:space="preserve">
-    <value></value>
+    <value>{0}\nNavigasyon için „⬅️” ve „➡️” düğmelerini kullanın.</value>
   </data>
   <data name="Worker.NoWordsToList" xml:space="preserve">
-    <value></value>
+    <value>❌ Kelime yok.</value>
   </data>
   <data name="Worker.PageXofY" xml:space="preserve">
-    <value></value>
+    <value>=== Sayfa {0}/{1} ===</value>
   </data>
   <data name="Worker.EnterWordNumbersToDelete" xml:space="preserve">
-    <value></value>
+    <value> séparés par des espaces :</value>
   </data>
   <data name="Worker.NumbersNotRecognized" xml:space="preserve">
-    <value></value>
+    <value>Numaralar tanınmadı</value>
   </data>
   <data name="Worker.WordsDeletedCount" xml:space="preserve">
-    <value></value>
+    <value>Silinen kelime sayısı: {0}</value>
   </data>
   <data name="Worker.ErrorTelegramAPI" xml:space="preserve">
-    <value></value>
+    <value>Telegram API Hatası: {0}</value>
   </data>
   <data name="Worker.ErrorProcessingUpdate" xml:space="preserve">
-    <value></value>
+    <value>Güncelleme işlenirken hata oluştu</value>
   </data>
   <data name="Worker.WordToSaveNotFound" xml:space="preserve">
-    <value></value>
+    <value>Kaydedilecek kelime bulunamadı</value>
   </data>
   <data name="Worker.WordAdded" xml:space="preserve">
-    <value></value>
+    <value>Eklendi «{0}»</value>
   </data>
   <data name="Worker.ErrorLoadingWord" xml:space="preserve">
-    <value></value>
+    <value>Kelime yüklenirken hata oluştu</value>
   </data>
   <data name="Worker.ErrorAiTranslation" xml:space="preserve">
-    <value></value>
+    <value>AI çeviri hatası</value>
   </data>
   <data name="Worker.EditTranslationsPrompt" xml:space="preserve">
-    <value></value>
+    <value>Çevirileri düzenle:</value>
   </data>
   <data name="Worker.EditExamplesPrompt" xml:space="preserve">
-    <value></value>
+    <value>Örnekleri düzenle:</value>
   </data>
   <data name="Worker.WordUpdated" xml:space="preserve">
-    <value></value>
+    <value>Güncellendi «{0}»</value>
   </data>
   <data name="Worker.EmptyQuery" xml:space="preserve">
-    <value></value>
+    <value>Boş sorgu</value>
   </data>
   <data name="Worker.NothingFound" xml:space="preserve">
-    <value></value>
+    <value>Hiçbir şey bulunamadı</value>
   </data>
   <data name="Worker.SelectWordPrompt" xml:space="preserve">
-    <value></value>
+    <value>Bir kelime seçin:</value>
   </data>
   <data name="Worker.InvalidLanguageId" xml:space="preserve">
-    <value></value>
+    <value>Geçersiz dil kimliği.</value>
   </data>
   <data name="Worker.LanguageNotOnYourList" xml:space="preserve">
-    <value></value>
+    <value>Bu dil listenizde bulunamadı.</value>
   </data>
   <data name="Worker.CurrentLanguageSwitched" xml:space="preserve">
-    <value></value>
+    <value>Mevcut dil «{0}» olarak değiştirildi.</value>
   </data>
   <data name="Worker.LanguageChangedSuccessfully" xml:space="preserve">
-    <value></value>
+    <value>Dil başarıyla değiştirildi.</value>
   </data>
   <data name="Worker.NoLanguagesToSwitch" xml:space="preserve">
-    <value></value>
+    <value>Henüz çalışmak için herhangi bir diliniz yok.</value>
   </data>
   <data name="Worker.SelectCurrentLanguagePrompt" xml:space="preserve">
-    <value></value>
+    <value>Sélectionnez la langue que vous souhaitez définir comme langue actuelle :</value>
   </data>
   <data name="Worker.CorrectAnswer" xml:space="preserve">
-    <value></value>
+    <value>Doğru! {0} = {1}</value>
   </data>
   <data name="Worker.IncorrectAnswer" xml:space="preserve">
-    <value></value>
+    <value>Yanlış! {0} = {1}</value>
   </data>
   <data name="Worker.WordMarkedAsLearned" xml:space="preserve">
-    <value></value>
+    <value>„{0}“ öğrenilmiş olarak işaretlendi</value>
   </data>
   <data name="Worker.NothingToRepeat" xml:space="preserve">
-    <value></value>
+    <value>Tekrar edilecek bir şey yok. Yeni kelimeler ekleyebilirsiniz</value>
   </data>
   <data name="Worker.ChooseCorrectTranslationFor" xml:space="preserve">
-    <value></value>
+    <value>Kelime için doğru çeviriyi seçin:</value>
   </data>
   <data name="Worker.TranslateWordPrompt" xml:space="preserve">
-    <value></value>
+    <value>Kelimeyi çevir</value>
   </data>
   <data name="Worker.LanguageXNotFound" xml:space="preserve">
-    <value></value>
+    <value>Dil {0} bulunamadı</value>
   </data>
   <data name="Worker.LanguageXRemoved" xml:space="preserve">
-    <value></value>
+    <value>Dil {0} kaldırıldı</value>
   </data>
   <data name="Worker.LanguagesNotSetup" xml:space="preserve">
-    <value></value>
+    <value>Diller ayarlanmadı</value>
   </data>
   <data name="Worker.CouldNotDetectLanguage" xml:space="preserve">
-    <value></value>
+    <value>Kelimenin dili belirlenemedi</value>
   </data>
   <data name="Worker.LanguageXNotInDb" xml:space="preserve">
-    <value></value>
+    <value>Dil '{0}' veritabanında yok</value>
   </data>
   <data name="Worker.WordAlreadyInYourDictionary" xml:space="preserve">
-    <value></value>
+    <value>„{0}“ zaten sözlüğünüzde.</value>
   </data>
   <data name="Worker.WordXAddedToDefaultDictionary" xml:space="preserve">
-    <value></value>
+    <value>„{0} - {1}“ genel sözlüğünüze eklendi.</value>
   </data>
   <data name="Worker.ChooseTranslationsPrompt" xml:space="preserve">
-    <value></value>
+    <value>Çeviri(ler)i seçin:</value>
   </data>
   <data name="Worker.ChooseExamplesPrompt" xml:space="preserve">
-    <value></value>
+    <value>Kullanım örneklerini seçin:</value>
   </data>
   <data name="Worker.CouldNotRecognizeLanguage" xml:space="preserve">
-    <value></value>
+    <value>Dil tanınamadı</value>
   </data>
   <data name="Worker.NativeLanguageSetTo" xml:space="preserve">
-    <value></value>
+    <value>Ana dil şu olarak ayarlandı: {0}</value>
   </data>
   <data name="Worker.LanguageXAdded" xml:space="preserve">
-    <value></value>
+    <value>Dil {0} eklendi. /addword veya menü aracılığıyla kelimeleri seçin</value>
   </data>
   <data name="Worker.EnterThemeToCreateDictionary" xml:space="preserve">
-    <value></value>
+    <value>Entrez un thème pour que je puisse créer un dictionnaire avec de nouveaux mots :</value>
   </data>
   <data name="Worker.TotalStatisticsHeader" xml:space="preserve">
-    <value></value>
+    <value>📈 </value>
   </data>
   <data name="Worker.TotalWords" xml:space="preserve">
-    <value></value>
+    <value>Toplam kelime:      </value>
   </data>
   <data name="Worker.FullyLearnedWords" xml:space="preserve">
-    <value></value>
+    <value>Tamamen öğrenildi: </value>
   </data>
   <data name="Worker.WordsInProgress" xml:space="preserve">
-    <value></value>
+    <value>Devam ediyor:       </value>
   </data>
   <data name="Worker.Top10HardestWords" xml:space="preserve">
-    <value></value>
+    <value>🔟 </value>
   </data>
   <data name="Worker.HardWordDisplay" xml:space="preserve">
-    <value></value>
+    <value> |--&gt; {0}\n |- Kolaylık Faktörü: {1}\n |- Tekrarlar: {2}\n_______________________________</value>
   </data>
   <data name="Worker.NoWords" xml:space="preserve">
-    <value></value>
+    <value>Kelime yok.</value>
   </data>
   <data name="Worker.TodayStatisticsHeader" xml:space="preserve">
-    <value></value>
+    <value>📈 </value>
   </data>
   <data name="Worker.WordsRepeatedToday" xml:space="preserve">
-    <value></value>
+    <value>Tekrarlanan kelime sayısı: </value>
   </data>
   <data name="Worker.WordsLearnedToday" xml:space="preserve">
-    <value></value>
+    <value>Öğrenildi: </value>
   </data>
   <data name="Worker.HardWordsHeader" xml:space="preserve">
-    <value></value>
+    <value>📈 </value>
   </data>
   <data name="Worker.HardWordSimple" xml:space="preserve">
-    <value></value>
+    <value>- {0}</value>
   </data>
   <data name="Worker.NoActivityToday" xml:space="preserve">
-    <value></value>
+    <value>Bugün henüz ders çalışmadınız.</value>
   </data>
   <data name="Worker.StatisticsByLanguageHeader" xml:space="preserve">
-    <value></value>
+    <value>📊 </value>
   </data>
   <data name="Worker.LanguageStats" xml:space="preserve">
-    <value></value>
+    <value>\n</value>
   </data>
   <data name="Worker.NoDictionaries" xml:space="preserve">
-    <value></value>
+    <value>Sözlüğünüz yok.</value>
   </data>
   <data name="Worker.DictionariesByTopicsHeader" xml:space="preserve">
-    <value></value>
+    <value>📁 </value>
   </data>
   <data name="Worker.DictionariesByLanguageHeader" xml:space="preserve">
-    <value></value>
+    <value>📚 </value>
   </data>
   <data name="Worker.UnknownLanguage" xml:space="preserve">
-    <value></value>
+    <value>Bilinmeyen</value>
   </data>
   <data name="Worker.DictionaryEntry" xml:space="preserve">
-    <value></value>
+    <value>- {0} ({1})</value>
   </data>
   <data name="Worker.AllWordProgressReset" xml:space="preserve">
-    <value></value>
+    <value>Tüm kelimelerin ilerlemesi sıfırlandı</value>
   </data>
   <data name="Worker.UserProfileHeader" xml:space="preserve">
-    <value></value>
+    <value>👤 </value>
   </data>
   <data name="Worker.ProfileId" xml:space="preserve">
-    <value></value>
+    <value>Kimlik: </value>
   </data>
   <data name="Worker.ProfileNativeLanguage" xml:space="preserve">
-    <value></value>
+    <value>Ana dil: </value>
   </data>
   <data name="Worker.ProfileCurrentLanguage" xml:space="preserve">
-    <value></value>
+    <value>Mevcut dil: </value>
   </data>
   <data name="Worker.ProfileLearningMode" xml:space="preserve">
-    <value></value>
+    <value>Öğrenme modu: </value>
   </data>
   <data name="Worker.ProfileLearningModeMultipleChoice" xml:space="preserve">
-    <value></value>
+    <value>Çoktan seçmeli</value>
   </data>
   <data name="Worker.ProfileLearningModeBinary" xml:space="preserve">
-    <value></value>
+    <value>ikili</value>
   </data>
   <data name="Worker.ProfileStudiedLanguages" xml:space="preserve">
-    <value></value>
+    <value>Öğrenilen diller: {0}</value>
   </data>
   <data name="Worker.ProfileNoStudiedLanguages" xml:space="preserve">
-    <value></value>
+    <value>hiçbiri</value>
   </data>
   <data name="Worker.ProfileTotalWords" xml:space="preserve">
-    <value></value>
+    <value>Toplam kelime: </value>
   </data>
   <data name="Worker.AllStatsReset" xml:space="preserve">
-    <value></value>
+    <value>Tüm istatistikler sıfırlandı</value>
   </data>
   <data name="Worker.AdminUsersHeader" xml:space="preserve">
-    <value></value>
+    <value>👥 Kullanıcılar</value>
   </data>
   <data name="Worker.AdminUserInfoLine1" xml:space="preserve">
-    <value></value>
+    <value>Kimlik: </value>
   </data>
   <data name="Worker.AdminUserInfoLine2" xml:space="preserve">
-    <value></value>
+    <value>Yerel: {0} | Mevcut: {1} | ÇS: {2}</value>
   </data>
   <data name="Worker.AdminUserWords" xml:space="preserve">
-    <value></value>
+    <value>Kelimeler: {0}</value>
   </data>
   <data name="Worker.AdminUserDictionaries" xml:space="preserve">
-    <value></value>
+    <value>Sözlükler: {0}</value>
   </data>
   <data name="Worker.AdminTotalWords" xml:space="preserve">
-    <value></value>
+    <value>Toplam kelime: {0}</value>
   </data>
   <data name="Worker.AdminWordsByLanguage" xml:space="preserve">
-    <value></value>
+    <value>{0}: {1}</value>
   </data>
   <data name="Worker.DictionaryEmpty" xml:space="preserve">
-    <value></value>
+    <value>Sözlük boş.</value>
   </data>
   <data name="Worker.DictionaryNameHeader" xml:space="preserve">
-    <value></value>
+    <value>📚 Sözlük: {0}</value>
   </data>
   <data name="Worker.DictionaryWordEntry" xml:space="preserve">
-    <value></value>
+    <value>- {0}</value>
   </data>
   <data name="Worker.DictionaryNameDefault" xml:space="preserve">
-    <value></value>
+    <value>Genel</value>
   </data>
   <data name="Worker.DictionaryWordTranslationEntry" xml:space="preserve">
-    <value></value>
+    <value>{0} — {1}</value>
   </data>
   <data name="Worker.NoWordsInDictionary" xml:space="preserve">
-    <value></value>
+    <value>Sözlükte kelime yok.</value>
   </data>
   <data name="Worker.DictionaryProgressReset" xml:space="preserve">
-    <value></value>
+    <value>Sözlük ilerlemesi sıfırlandı</value>
   </data>
   <data name="Worker.DictionaryDeleted" xml:space="preserve">
-    <value></value>
+    <value>Sözlük silindi</value>
   </data>
   <data name="Worker.HelpHeader" xml:space="preserve">
-    <value></value>
+    <value>❓ Yardım</value>
   </data>
   <data name="Worker.HelpAddWord" xml:space="preserve">
-    <value></value>
+    <value>/addword - yeni bir kelime ekle</value>
   </data>
   <data name="Worker.HelpMyWords" xml:space="preserve">
-    <value></value>
+    <value>/mywords - tüm kelimeleri göster</value>
   </data>
   <data name="Worker.HelpLearn" xml:space="preserve">
-    <value></value>
+    <value>/learn - öğrenmeye başla</value>
   </data>
   <data name="Worker.HelpUseMenu" xml:space="preserve">
-    <value></value>
+    <value>Diğer eylemler için bot menüsünü kullanın.</value>
   </data>
   <data name="TelegramMessageHelper.WordCardExample" xml:space="preserve">
-    <value></value>
+    <value>\n\n📘 Örnek: {0}</value>
   </data>
   <data name="TelegramMessageHelper.WordCardCategory" xml:space="preserve">
-    <value></value>
+    <value>\n🔖 Kategori: {0}</value>
   </data>
   <data name="TelegramMessageHelper.EditButton" xml:space="preserve">
-    <value></value>
+    <value>✏️ Düzenle</value>
   </data>
   <data name="TelegramMessageHelper.DeleteButton" xml:space="preserve">
-    <value></value>
+    <value>🗑 Sil</value>
   </data>
   <data name="TelegramMessageHelper.RepeatButton" xml:space="preserve">
-    <value></value>
+    <value>🔁 Tekrarla</value>
   </data>
   <data name="TelegramMessageHelper.LearnedButton" xml:space="preserve">
-    <value></value>
+    <value>✅ Öğrenildi</value>
   </data>
   <data name="TelegramMessageHelper.EditButtonAlternative" xml:space="preserve">
-    <value></value>
+    <value>✏️ Değiştir</value>
   </data>
   <data name="TelegramMessageHelper.BackButton" xml:space="preserve">
-    <value></value>
+    <value>⬅️ Geri</value>
   </data>
   <data name="TelegramMessageHelper.ForwardButton" xml:space="preserve">
-    <value></value>
+    <value>➡️ İleri</value>
   </data>
   <data name="TelegramMessageHelper.WordCardPageIndicator" xml:space="preserve">
-    <value></value>
+    <value>\n\n📄 {0}/{1}</value>
   </data>
   <data name="TelegramMessageHelper.ConfirmYesButton" xml:space="preserve">
-    <value></value>
+    <value>✅ Evet</value>
   </data>
   <data name="TelegramMessageHelper.ConfirmNoButton" xml:space="preserve">
-    <value></value>
+    <value>❌ Hayır</value>
   </data>
   <data name="TelegramMessageHelper.ConfirmationPrompt" xml:space="preserve">
-    <value></value>
+    <value>❓ {0}</value>
   </data>
   <data name="TelegramMessageHelper.ErrorMessage" xml:space="preserve">
-    <value></value>
+    <value>❌ </value>
   </data>
   <data name="TelegramMessageHelper.SuccessMessage" xml:space="preserve">
-    <value></value>
+    <value>✅ </value>
   </data>
   <data name="TelegramMessageHelper.InfoMessage" xml:space="preserve">
-    <value></value>
+    <value>ℹ️</value>
   </data>
   <data name="Keyboard.MainMenu.MyWords" xml:space="preserve">
-    <value></value>
+    <value>📚 Kelimelerim</value>
   </data>
   <data name="Keyboard.MainMenu.AddWord" xml:space="preserve">
-    <value></value>
+    <value>➕ Kelime ekle</value>
   </data>
   <data name="Keyboard.MainMenu.Statistics" xml:space="preserve">
-    <value></value>
+    <value>📊 İstatistikler</value>
   </data>
   <data name="Keyboard.MainMenu.Learn" xml:space="preserve">
-    <value></value>
+    <value>📖 Öğren</value>
   </data>
   <data name="Keyboard.MainMenu.Settings" xml:space="preserve">
-    <value></value>
+    <value>🌐 Ayarlar</value>
   </data>
   <data name="Keyboard.MainMenu.Profile" xml:space="preserve">
-    <value></value>
+    <value>👤 Profil</value>
   </data>
   <data name="Keyboard.MyWordsMenu.ShowAllWords" xml:space="preserve">
-    <value></value>
+    <value>🔍 Tüm kelimeleri göster</value>
   </data>
   <data name="Keyboard.MyWordsMenu.DictionariesByTopics" xml:space="preserve">
-    <value></value>
+    <value>📁 Konulara göre sözlükler</value>
   </data>
   <data name="Keyboard.MyWordsMenu.GenerateNewWords" xml:space="preserve">
-    <value></value>
+    <value>Yeni kelimeler üret</value>
   </data>
   <data name="Keyboard.MyWordsMenu.EditWord" xml:space="preserve">
-    <value></value>
+    <value>📝 Kelimeyi düzenle</value>
   </data>
   <data name="Keyboard.MyWordsMenu.DeleteWords" xml:space="preserve">
-    <value></value>
+    <value>🗑️ Kelimeleri sil</value>
   </data>
   <data name="Keyboard.MyWordsMenu.Back" xml:space="preserve">
-    <value></value>
+    <value>⬅️ Geri</value>
   </data>
   <data name="Keyboard.WordCard.Delete" xml:space="preserve">
-    <value></value>
+    <value>🗑 Sil</value>
   </data>
   <data name="Keyboard.WordCard.Repeat" xml:space="preserve">
-    <value></value>
+    <value>🔁 Tekrarla</value>
   </data>
   <data name="Keyboard.WordCard.Favorite" xml:space="preserve">
-    <value></value>
+    <value>⭐ Favorilere ekle</value>
   </data>
   <data name="Keyboard.Config.SwitchLanguage" xml:space="preserve">
-    <value></value>
+    <value>🌐 Çalışma dilini seçin</value>
   </data>
   <data name="Keyboard.Config.AddLanguage" xml:space="preserve">
-    <value></value>
+    <value>➕ Dil ekle</value>
   </data>
   <data name="Keyboard.Config.RemoveLanguage" xml:space="preserve">
-    <value></value>
+    <value>🔿️ Dili kaldır</value>
   </data>
   <data name="Keyboard.Config.NativeLanguage" xml:space="preserve">
-    <value></value>
+    <value>🌐 Ana dil</value>
   </data>
   <data name="Keyboard.Config.LearningMode" xml:space="preserve">
-    <value></value>
+    <value>🎓 Öğrenme modu</value>
   </data>
   <data name="Keyboard.Config.Help" xml:space="preserve">
-    <value></value>
+    <value>❓ Yardım</value>
   </data>
   <data name="Keyboard.LearnConfig.BinaryChoice" xml:space="preserve">
-    <value></value>
+    <value>Hatırladım/Unuttum</value>
   </data>
   <data name="Keyboard.LearnConfig.MultipleChoice" xml:space="preserve">
-    <value></value>
+    <value>Çoktan seçmeli</value>
   </data>
   <data name="Keyboard.LearnConfig.BinaryChoiceSelected" xml:space="preserve">
-    <value></value>
+    <value>✅ Hatırladım/Unuttum</value>
   </data>
   <data name="Keyboard.LearnConfig.MultipleChoiceSelected" xml:space="preserve">
-    <value></value>
+    <value>✅ Çoktan seçmeli</value>
   </data>
   <data name="Keyboard.Statistics.Today" xml:space="preserve">
-    <value></value>
+    <value>📅 Bugün için</value>
   </data>
   <data name="Keyboard.Statistics.TotalProgress" xml:space="preserve">
-    <value></value>
+    <value>📈 Genel ilerleme</value>
   </data>
   <data name="Keyboard.Statistics.ByLanguage" xml:space="preserve">
-    <value></value>
+    <value>🔍 Dile göre</value>
   </data>
   <data name="Keyboard.Profile.UserInfo" xml:space="preserve">
-    <value></value>
+    <value>👤 Kullanıcı bilgisi</value>
   </data>
   <data name="Keyboard.Profile.TodoApp" xml:space="preserve">
-    <value></value>
+    <value>📝 Yapılacaklar Uygulaması</value>
   </data>
   <data name="Keyboard.Profile.AdminDashboard" xml:space="preserve">
-    <value></value>
+    <value>🛠 Yönetici Paneli</value>
   </data>
   <data name="Keyboard.Profile.ResetStatistics" xml:space="preserve">
-    <value></value>
+    <value>🔄 İstatistikleri sıfırla</value>
   </data>
   <data name="Keyboard.DictionaryManage.Edit" xml:space="preserve">
-    <value></value>
+    <value>✏️ Düzenle</value>
   </data>
   <data name="Keyboard.DictionaryManage.ResetProgress" xml:space="preserve">
-    <value></value>
+    <value>🔄 İlerlemeyi sıfırla</value>
   </data>
   <data name="Keyboard.DictionaryManage.Delete" xml:space="preserve">
-    <value></value>
+    <value>🗑️ Sözlüğü sil</value>
   </data>
   <data name="Keyboard.DictionaryList.DefaultName" xml:space="preserve">
-    <value></value>
+    <value>Genel</value>
   </data>
   <data name="Keyboard.DictionaryList.CreateNew" xml:space="preserve">
-    <value></value>
+    <value>Yeni oluştur</value>
   </data>
   <data name="Keyboard.TopicDictionary.DeleteDictionaryNoWords" xml:space="preserve">
-    <value></value>
+    <value>🗑️ Sözlüğü sil (kelimesiz)</value>
   </data>
   <data name="Keyboard.TopicDictionary.DeleteDictionaryAndWords" xml:space="preserve">
-    <value></value>
+    <value>🗑️ Sözlüğü ve kelimeleri sil</value>
   </data>
   <data name="Keyboard.TopicDictionary.DeleteMultipleWords" xml:space="preserve">
-    <value></value>
+    <value>🗑️ Birden fazla kelimeyi sil</value>
   </data>
   <data name="Keyboard.TopicDictionaryMenu.DeleteDictionary" xml:space="preserve">
-    <value></value>
+    <value>🗑️ Sözlüğü sil</value>
   </data>
   <data name="Keyboard.TopicDictionaryMenu.DeleteMultipleWords" xml:space="preserve">
-    <value></value>
+    <value>🗑️ Birden fazla kelimeyi sil</value>
   </data>
   <data name="Keyboard.TopicDictionaryMenu.Back" xml:space="preserve">
-    <value></value>
+    <value>⬅️ Geri</value>
   </data>
   <data name="Keyboard.ShowTopicDictionaryMenu.Dictionary" xml:space="preserve">
-    <value></value>
+    <value>Sözlük:</value>
   </data>
   <data name="Keyboard.ShowMainMenu.MainMenu" xml:space="preserve">
-    <value></value>
+    <value>Ana menü:</value>
   </data>
   <data name="Keyboard.HideMainMenu.MenuHidden" xml:space="preserve">
-    <value></value>
+    <value>Menü gizli.</value>
   </data>
   <data name="Keyboard.ShowConfigMenu.Settings" xml:space="preserve">
-    <value></value>
+    <value>Ayarlar:</value>
   </data>
   <data name="Keyboard.ShowMyWordsMenu.MyWords" xml:space="preserve">
-    <value></value>
+    <value>Kelimelerim:</value>
   </data>
   <data name="Keyboard.ShowLearnConfig.LearnModePrompt" xml:space="preserve">
-    <value></value>
+    <value>Öğrenirken kelime görüntüleme modu</value>
   </data>
   <data name="Keyboard.ShowStatisticsMenu.Statistics" xml:space="preserve">
-    <value></value>
+    <value>İstatistikler:</value>
   </data>
   <data name="Keyboard.ShowProfileMenu.Profile" xml:space="preserve">
-    <value></value>
+    <value>Profil:</value>
   </data>
-   <data name="Worker.ButtonDone" xml:space="preserve">
-    <value></value>
+  <data name="Worker.ButtonDone" xml:space="preserve">
+    <value>✅ Bitti</value>
   </data>
   <data name="Worker.ButtonKnowSkip" xml:space="preserve">
-    <value></value>
+    <value>Biliyorum/Gösterme</value>
   </data>
   <data name="Worker.ButtonRemembered" xml:space="preserve">
-    <value></value>
+    <value>✅ Hatırladım</value>
   </data>
   <data name="Worker.ButtonNotRemembered" xml:space="preserve">
-    <value></value>
+    <value>❌ Unuttum</value>
   </data>
   <data name="Worker.ButtonCancel" xml:space="preserve">
-    <value></value>
+    <value>İptal</value>
   </data>
   <data name="Worker.ButtonNewTheme" xml:space="preserve">
-    <value></value>
+    <value>Yeni: {0}</value>
   </data>
 </root>
