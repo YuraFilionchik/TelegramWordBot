@@ -1,233 +1,233 @@
 Key,Russian,English,German,Estonian,French,Polish,Turkish,ChineseSimplified
-MyWordsMenu.MyWords,📚 Мои слова,📚 My words,,,,,,
-MyWordsMenu.ShowAllWords,🔍 Показать все слова,🔍 Show all words,,,,,,
-MyWordsMenu.DictionariesByTopics,📁 Словари по темам,📁 Dictionaries by topics,,,,,,
-MyWordsMenu.EditWord,📝 Изменить слово,📝 Edit word,,,,,,
-MyWordsMenu.DeleteWords,🗑️ Удалить слова,🗑️ Delete words,,,,,,
-MyWordsMenu.Back,⬅️ Назад,⬅️ Back,,,,,,
-MainMenu.AddWord,➕ Добавить слово,➕ Add word,,,,,,
-MainMenu.Learn,📖 Учить,📖 Learn,,,,,,
-MainMenu.Settings,🌐 Настройки,🌐 Settings,,,,,,
-MainMenu.Statistics,📊 Статистика,📊 Statistics,,,,,,
-MainMenu.Profile,👤 Профиль,👤 Profile,,,,,,
-MainMenu.GenerateNewWords,Генерация новых слов,Generate new words,,,,,,
-Worker.EnterWordForEditing,Введите слово или его часть:,Enter a word or part of it:,,,,,,
-Worker.EnterWordToAdd,Введите слово для добавления:,Enter a word to add:,,,,,,
-Worker.EnterThemeForWordGeneration,На какую тему добавить слова?:,What topic to add words for?:,,,,,,
-Worker.WordDeleted,Слово '{0}' удалено,Word '{0}' deleted,,,,,,
-Worker.WordNotFound,Слово '{0}' не найдено,Word '{0}' not found,,,,,,
-Worker.WordAddedToFavorites,Слово '{0}' добавлено в избранное,Word '{0}' added to favorites,,,,,,
-Worker.EnterNativeLanguage,Введите ваш родной язык:,Enter your native language:,,,,,,
-Worker.EnterLanguageToLearn,Введите название языка для изучения:,Enter the name of the language to learn:,,,,,,
-Worker.NoAddedLanguages,У вас нет добавленных языков.,You have no added languages.,,,,,,
-Worker.YourLanguages,Ваши языки:\n{0}\nВведите код для удаления:,Your languages:\n{0}\nEnter code to delete:,,,,,,
-Worker.ResetStatisticsConfirmation,Сбросить статистику?,Reset statistics?,,,,,,
-Worker.EnterNewDictionaryName,Введите название нового словаря:,Enter the name of the new dictionary:,,,,,,
-Worker.AutoFillDictionaryCancelled,Автозаполнение словаря отменено.,Dictionary autofill cancelled.,,,,,,
-Worker.FailedToGetWordsForTheme,Не удалось получить слова по теме.,Failed to get words for the topic.,,,,,,
-Worker.DictionaryAutoFillSuccess,Автозаполнение словаря '{0}' успешно завершено.,Dictionary '{0}' autofill completed successfully.,,,,,,
-Worker.ErrorSavingWords,Произошла ошибка при сохранении слов.,An error occurred while saving words.,,,,,,
-Worker.LearningModeChangedToBinary,Режим обучения изменён на бинарный,Learning mode changed to binary,,,,,,
-Worker.AlreadyUsingBinaryLearningMode,Вы уже используете бинарный режим обучения,You are already using binary learning mode,,,,,,
-Worker.LearningModeChangedToMultipleChoice,Режим обучения изменён на множественный выбор,Learning mode changed to multiple choice,,,,,,
-Worker.AlreadyUsingMultipleChoiceLearningMode,Вы уже используете режим множественного выбора,You are already using multiple choice learning mode,,,,,,
-Worker.ConfirmDictionaryDeletion,Удалить словарь? Слова будут удалены полностью.,Delete dictionary? Words will be completely removed.,,,,,,
-Worker.ConfirmDictionaryDeletionMoveToDefault,Удалить словарь? Слова будут перенесены в общий.,Delete dictionary? Words will be moved to the general dictionary.,,,,,,
-Worker.ButtonYes,Да,Yes,,,,,,
-Worker.ButtonNo,Нет,No,,,,,,
-Worker.InvalidIdentifier,Некорректный идентификатор,Invalid identifier,,,,,,
-Worker.UserNotFound,Пользователь не найден,User not found,,,,,,
-Worker.DictionaryNotFound,Словарь не найден,Dictionary not found,,,,,,
-Worker.CannotDeleteDefaultDictionary,Нельзя удалить общий словарь,Cannot delete the default dictionary,,,,,,
-Worker.WelcomeMessage,"Привет, я ","Hi, I'm ",,,,,,
-Worker.WhatLanguageToLearn,Какой язык хотите изучать?,What language do you want to learn?,,,,,,
-Worker.AddLanguageFirst,Сначала добавьте язык через /addlanguage,"First, add a language via /addlanguage",,,,,,
-Worker.EnterWordToRemember,Введите слово для запоминания:,Enter a word to memorize:,,,,,,
-Worker.EnterLanguageName,Введите название языка:,Enter the language name:,,,,,,
-Worker.UsageRemoveLanguage,Используйте /removelanguage [код],Use /removelanguage [code],,,,,,
-Worker.LanguageListEmpty,Список пуст.,The list is empty.,,,,,,
-Worker.YourLearningLanguages,Вы изучаете:\n{0},You are learning:\n{0},,,,,,
-Worker.ResettingData,Сброс данных...,Resetting data...,,,,,,
-Worker.Done,Готово,Done,,,,,,
-Worker.ExampleRemoveWord,пример: /removeword слово,example: /removeword word,,,,,,
-Worker.WordXDeleted,Слово '{0}' удалено,Word '{0}' deleted,,,,,,
-Worker.WordXNotFound,Слово '{0}' не найдено,Word '{0}' not found,,,,,,
-Worker.UsageTodo,Используйте /todo Текст : Описание,Use /todo Text : Description,,,,,,
-Worker.TaskAdded,Задача добавлена,Task added,,,,,,
-Worker.AccessDenied,Access denied,Access denied,,,,,,
-Worker.UnknownCommand,Неизвестная команда. Используйте меню или /start.,Unknown command. Use the menu or /start.,,,,,,
-Worker.ThemeCannotBeEmpty,Тема не может быть пустой.,Theme cannot be empty.,,,,,,
-Worker.ReceivedXWordsForTheme,Получено {0} слов по теме '{1}'.\nВ какой словарь сохранить?,Received {0} words for the topic '{1}'.\nWhich dictionary to save to?,,,,,,
-Worker.DictionaryNameCannotBeEmpty,Название словаря не может быть пустым.,Dictionary name cannot be empty.,,,,,,
-Worker.DictionaryXCreated,Словарь '{0}' успешно создан.,Dictionary '{0}' created successfully.,,,,,,
-Worker.Add20WordsToDictionaryConfirmation,Добавить автоматически 20 слов по теме {0}?,Automatically add 20 words on the topic {0}?,,,,,,
-Worker.NoWordsInLanguage,❌ У вас нет добавленных языков.,❌ You have no added languages.,,,,,,
-Worker.NoWordsHeader,{0}\nНет слов.,{0}\nNo words.,,,,,,
-Worker.NavigateWordsWithButtons,{0}\nИспользуйте кнопки «⬅️» и «➡️» для навигации.,{0}\nUse the «⬅️» and «➡️» buttons to navigate.,,,,,,
-Worker.NoWordsToList,❌ Нет слов.,❌ No words.,,,,,,
-Worker.PageXofY,=== Стр. {0}/{1} ===,=== Page {0}/{1} ===,,,,,,
-Worker.EnterWordNumbersToDelete,Введите номера слов для удаления через пробел:,"Enter word numbers to delete, separated by spaces:",,,,,,
-Worker.NumbersNotRecognized,Не распознаны номера,Numbers not recognized,,,,,,
-Worker.WordsDeletedCount,Удалено слов: {0},Words deleted: {0},,,,,,
-Worker.ErrorTelegramAPI,Telegram API Error: {0},Telegram API Error: {0},,,,,,
-Worker.ErrorProcessingUpdate,Ошибка обработки обновления,Error processing update,,,,,,
-Worker.WordToSaveNotFound,Не найдено слово для сохранения,Word to save not found,,,,,,
-Worker.WordAdded,Добавлено «{0}»,Added «{0}»,,,,,,
-Worker.ErrorLoadingWord,Ошибка при загрузке слова,Error loading word,,,,,,
-Worker.ErrorAiTranslation,Ошибка AI-перевода,AI translation error,,,,,,
-Worker.EditTranslationsPrompt,Редактируйте переводы:,Edit translations:,,,,,,
-Worker.EditExamplesPrompt,Редактируйте примеры:,Edit examples:,,,,,,
-Worker.WordUpdated,Обновлено «{0}»,Updated «{0}»,,,,,,
-Worker.EmptyQuery,Пустой запрос,Empty query,,,,,,
-Worker.NothingFound,Ничего не найдено,Nothing found,,,,,,
-Worker.SelectWordPrompt,Выберите слово:,Select a word:,,,,,,
-Worker.InvalidLanguageId,Неверный идентификатор языка.,Invalid language ID.,,,,,,
-Worker.LanguageNotOnYourList,Этот язык не найден в вашем списке.,This language is not found in your list.,,,,,,
-Worker.CurrentLanguageSwitched,Текущий язык переключён на «{0}».,Current language switched to «{0}».,,,,,,
-Worker.LanguageChangedSuccessfully,Язык успешно изменён.,Language changed successfully.,,,,,,
-Worker.NoLanguagesToSwitch,У вас ещё нет ни одного изучаемого языка.,You don't have any languages to study yet.,,,,,,
-Worker.SelectCurrentLanguagePrompt,"Выберите язык, который хотите сделать текущим:",Select the language you want to make current:,,,,,,
-Worker.CorrectAnswer,Верно!  {0} = {1},Correct!  {0} = {1},,,,,,
-Worker.IncorrectAnswer,Неправильно! {0} = {1},Incorrect! {0} = {1},,,,,,
-Worker.WordMarkedAsLearned,«{0}» помечено как выученное,«{0}» marked as learned,,,,,,
-Worker.NothingToRepeat,Нечего повторять. Можешь добавить новые слова,Nothing to repeat. You can add new words,,,,,,
-Worker.ChooseCorrectTranslationFor,Выберите правильный перевод для слова:,Choose the correct translation for the word:,,,,,,
-Worker.TranslateWordPrompt,Переведите слово,Translate the word,,,,,,
-Worker.LanguageXNotFound,Язык {0} не найден,Language {0} not found,,,,,,
-Worker.LanguageXRemoved,Язык {0} удалён,Language {0} removed,,,,,,
-Worker.LanguagesNotSetup,Языки не настроены,Languages are not set up,,,,,,
-Worker.CouldNotDetectLanguage,Не удалось определить язык слова,Could not determine the language of the word,,,,,,
-Worker.LanguageXNotInDb,Язык '{0}' не в базе,Language '{0}' is not in the database,,,,,,
-Worker.WordAlreadyInYourDictionary,«{0}» уже есть в вашем словаре.,«{0}» is already in your dictionary.,,,,,,
-Worker.WordXAddedToDefaultDictionary,«{0} - {1}» добавлено в ваш общий словарь.,«{0} - {1}» added to your general dictionary.,,,,,,
-Worker.ChooseTranslationsPrompt,Выберите перевод(ы):,Select translation(s):,,,,,,
-Worker.ChooseExamplesPrompt,Выберите примеры употребления:,Select usage examples:,,,,,,
-Worker.CouldNotRecognizeLanguage,Не удалось распознать язык,Could not recognize language,,,,,,
-Worker.NativeLanguageSetTo,Родной язык установлен: {0},Native language set to: {0},,,,,,
-Worker.LanguageXAdded,Язык {0} добавлен. Выберите слова через /addword или меню,Language {0} added. Select words via /addword or menu,,,,,,
-Worker.EnterThemeToCreateDictionary,"Введите тему, чтобы я создал словарь с новыми словами:",Enter a theme to create a dictionary with new words:,,,,,,
-Worker.TotalStatisticsHeader,📈 ,📈 ,,,,,,
-Worker.TotalWords,Всего слов:      ,Total words:      ,,,,,,
-Worker.FullyLearnedWords,Полностью выучено: ,Fully learned: ,,,,,,
-Worker.WordsInProgress,В процессе:       ,In progress:       ,,,,,,
-Worker.Top10HardestWords,🔟 ,🔟 ,,,,,,
-Worker.HardWordDisplay,  |--> {0}\n  |- Ease Factor: {1}\n  |- Repetitions: {2}\n_______________________________,  |--> {0}\n  |- Ease Factor: {1}\n  |- Repetitions: {2}\n_______________________________,,,,,,
-Worker.NoWords,Нет слов.,No words.,,,,,,
-Worker.TodayStatisticsHeader,📈 ,📈 ,,,,,,
-Worker.WordsRepeatedToday,Повторено слов: ,Words repeated: ,,,,,,
-Worker.WordsLearnedToday,Выучено: ,Learned: ,,,,,,
-Worker.HardWordsHeader,,,,,,,,
-Worker.HardWordSimple,- {0},- {0},,,,,,
-Worker.NoActivityToday,Сегодня вы ещё не занимались.,You haven't studied today yet.,,,,,,
-Worker.StatisticsByLanguageHeader,📊 ,📊 ,,,,,,
-Worker.LanguageStats,\n,\n,,,,,,
-Worker.NoDictionaries,У вас нет словарей.,You have no dictionaries.,,,,,,
-Worker.DictionariesByTopicsHeader,📁 ,📁 ,,,,,,
-Worker.DictionariesByLanguageHeader,📚 ,📚 ,,,,,,
-Worker.UnknownLanguage,Неизвестный,Unknown,,,,,,
-Worker.DictionaryEntry,- {0} ({1}),- {0} ({1}),,,,,,
-Worker.AllWordProgressReset,Прогресс по всем словам сброшен,Progress for all words has been reset,,,,,,
-Worker.UserProfileHeader,👤 ,👤 ,,,,,,
-Worker.ProfileId,ID: ,ID: ,,,,,,
-Worker.ProfileNativeLanguage,Родной язык: ,Native language: ,,,,,,
-Worker.ProfileCurrentLanguage,Текущий язык: ,Current language: ,,,,,,
-Worker.ProfileLearningMode,Режим обучения: ,Learning mode: ,,,,,,
-Worker.ProfileLearningModeMultipleChoice,множественный выбор,multiple choice,,,,,,
-Worker.ProfileLearningModeBinary,бинарный,binary,,,,,,
-Worker.ProfileStudiedLanguages,Изучаемые языки: {0},Languages studied: {0},,,,,,
-Worker.ProfileNoStudiedLanguages,нет,none,,,,,,
-Worker.ProfileTotalWords,Всего слов: ,Total words: ,,,,,,
-Worker.AllStatsReset,Вся статистика сброшена,All statistics have been reset,,,,,,
-Worker.AdminUsersHeader,,,,,,,,
-Worker.AdminUserInfoLine1,ID: ,ID: ,,,,,,
-Worker.AdminUserInfoLine2,Native: {0} | Current: {1} | MC: {2},Native: {0} | Current: {1} | MC: {2},,,,,,
-Worker.AdminUserWords,Words: {0},Words: {0},,,,,,
-Worker.AdminUserDictionaries,Dictionaries: {0},Dictionaries: {0},,,,,,
-Worker.AdminTotalWords,Total words: {0},Total words: {0},,,,,,
-Worker.AdminWordsByLanguage,{0}: {1},{0}: {1},,,,,,
-Worker.DictionaryEmpty,Словарь пуст.,Dictionary is empty.,,,,,,
-Worker.DictionaryNameHeader,,,,,,,,
-Worker.DictionaryWordEntry,- {0},- {0},,,,,,
-Worker.DictionaryNameDefault,Общий,General,,,,,,
-Worker.DictionaryWordTranslationEntry,{0} — {1},{0} — {1},,,,,,
-Worker.NoWordsInDictionary,В словаре нет слов.,There are no words in the dictionary.,,,,,,
-Worker.DictionaryProgressReset,Прогресс словаря сброшен,Dictionary progress has been reset,,,,,,
-Worker.DictionaryDeleted,Словарь удалён,Dictionary deleted,,,,,,
-Worker.HelpHeader,,,,,,,,
-Worker.HelpAddWord,/addword - добавить новое слово,/addword - add a new word,,,,,,
-Worker.HelpMyWords,/mywords - показать все слова,/mywords - show all words,,,,,,
-Worker.HelpLearn,/learn - начать обучение,/learn - start learning,,,,,,
-Worker.HelpUseMenu,Используйте меню бота для остальных действий.,Use the bot menu for other actions.,,,,,,
-TelegramMessageHelper.WordCardExample,\n\n📘 Пример: {0},\n\n📘 Example: {0},,,,,,
-TelegramMessageHelper.WordCardCategory,\n🔖 Категория: {0},\n🔖 Category: {0},,,,,,
-TelegramMessageHelper.EditButton,✏️ Редактировать,✏️ Edit,,,,,,
-TelegramMessageHelper.DeleteButton,🗑 Удалить,🗑 Delete,,,,,,
-TelegramMessageHelper.RepeatButton,🔁 Повторить,🔁 Repeat,,,,,,
-TelegramMessageHelper.LearnedButton,✅ Выучено,✅ Learned,,,,,,
-TelegramMessageHelper.EditButtonAlternative,✏️ Изменить,✏️ Change,,,,,,
-TelegramMessageHelper.BackButton,⬅️ Назад,⬅️ Back,,,,,,
-TelegramMessageHelper.ForwardButton,➡️ Вперед,➡️ Forward,,,,,,
-TelegramMessageHelper.WordCardPageIndicator,\n\n📄 {0}/{1},\n\n📄 {0}/{1},,,,,,
-TelegramMessageHelper.ConfirmYesButton,✅ Да,✅ Yes,,,,,,
-TelegramMessageHelper.ConfirmNoButton,❌ Нет,❌ No,,,,,,
-TelegramMessageHelper.ConfirmationPrompt,❓ {0},❓ {0},,,,,,
-TelegramMessageHelper.ErrorMessage,❌ ,❌ ,,,,,,
-TelegramMessageHelper.SuccessMessage,✅ ,✅ ,,,,,,
-TelegramMessageHelper.InfoMessage,ℹ️,ℹ️,,,,,,
-Keyboard.MainMenu.MyWords,📚 Мои слова,📚 My words,,,,,,
-Keyboard.MainMenu.AddWord,➕ Добавить слово,➕ Add word,,,,,,
-Keyboard.MainMenu.Statistics,📊 Статистика,📊 Statistics,,,,,,
-Keyboard.MainMenu.Learn,📖 Учить,📖 Learn,,,,,,
-Keyboard.MainMenu.Settings,🌐 Настройки,🌐 Settings,,,,,,
-Keyboard.MainMenu.Profile,👤 Профиль,👤 Profile,,,,,,
-Keyboard.MyWordsMenu.ShowAllWords,🔍 Показать все слова,🔍 Show all words,,,,,,
-Keyboard.MyWordsMenu.DictionariesByTopics,📁 Словари по темам,📁 Dictionaries by topics,,,,,,
-Keyboard.MyWordsMenu.GenerateNewWords,Генерация новых слов,Generate new words,,,,,,
-Keyboard.MyWordsMenu.EditWord,📝 Изменить слово,📝 Edit word,,,,,,
-Keyboard.MyWordsMenu.DeleteWords,🗑️ Удалить слова,🗑️ Delete words,,,,,,
-Keyboard.MyWordsMenu.Back,⬅️ Назад,⬅️ Back,,,,,,
-Keyboard.WordCard.Delete,🗑 Удалить,🗑 Delete,,,,,,
-Keyboard.WordCard.Repeat,🔁 Повторить,🔁 Repeat,,,,,,
-Keyboard.WordCard.Favorite,⭐ В избранное,⭐ Add to favorites,,,,,,
-Keyboard.Config.SwitchLanguage,🌐 Выбрать язык изучения,🌐 Select study language,,,,,,
-Keyboard.Config.AddLanguage,➕ Добавить язык,➕ Add language,,,,,,
-Keyboard.Config.RemoveLanguage,🔿️ Удалить язык,🔿️ Remove language,,,,,,
-Keyboard.Config.NativeLanguage,🌐 Родной язык,🌐 Native language,,,,,,
-Keyboard.Config.LearningMode,🎓 Режим обучения,🎓 Learning mode,,,,,,
-Keyboard.Config.Help,❓ Помощь,❓ Help,,,,,,
-Keyboard.LearnConfig.BinaryChoice,Вспомнил/Не вспомнил,Remembered/Forgot,,,,,,
-Keyboard.LearnConfig.MultipleChoice,Выбор из вариантов,Multiple choice,,,,,,
-Keyboard.LearnConfig.BinaryChoiceSelected,✅ Вспомнил/Не вспомнил,✅ Remembered/Forgot,,,,,,
-Keyboard.LearnConfig.MultipleChoiceSelected,✅ Выбор из вариантов,✅ Multiple choice,,,,,,
-Keyboard.Statistics.Today,📅 За сегодня,📅 For today,,,,,,
-Keyboard.Statistics.TotalProgress,📈 Общий прогресс,📈 Overall progress,,,,,,
-Keyboard.Statistics.ByLanguage,🔍 По языкам,🔍 By language,,,,,,
-Keyboard.Profile.UserInfo,👤 Инфо о пользователе,👤 User info,,,,,,
-Keyboard.Profile.TodoApp,📝 Todo App,📝 Todo App,,,,,,
-Keyboard.Profile.AdminDashboard,🛠 Admin Dashboard,🛠 Admin Dashboard,,,,,,
-Keyboard.Profile.ResetStatistics,🔄 Сбросить статистику,🔄 Reset statistics,,,,,,
-Keyboard.DictionaryManage.Edit,✏️ Редактировать,✏️ Edit,,,,,,
-Keyboard.DictionaryManage.ResetProgress,🔄 Обнулить прогресс,🔄 Reset progress,,,,,,
-Keyboard.DictionaryManage.Delete,🗑️ Удалить словарь,🗑️ Delete dictionary,,,,,,
-Keyboard.DictionaryList.DefaultName,Общий,General,,,,,,
-Keyboard.DictionaryList.CreateNew,Создать новый,Create new,,,,,,
-Keyboard.TopicDictionary.DeleteDictionaryNoWords,🗑️ Удалить словарь (без слов),🗑️ Delete dictionary (without words),,,,,,
-Keyboard.TopicDictionary.DeleteDictionaryAndWords,🗑️ Удалить словарь и слова,🗑️ Delete dictionary and words,,,,,,
-Keyboard.TopicDictionary.DeleteMultipleWords,🗑️ Удалить несколько слов,🗑️ Delete multiple words,,,,,,
-Keyboard.TopicDictionaryMenu.DeleteDictionary,🗑️ Удалить словарь,🗑️ Delete dictionary,,,,,,
-Keyboard.TopicDictionaryMenu.DeleteMultipleWords,🗑️ Удалить несколько слов,🗑️ Delete multiple words,,,,,,
-Keyboard.TopicDictionaryMenu.Back,⬅️ Назад,⬅️ Back,,,,,,
-Keyboard.ShowTopicDictionaryMenu.Dictionary,Словарь:,Dictionary:,,,,,,
-Keyboard.ShowMainMenu.MainMenu,Главное меню:,Main menu:,,,,,,
-Keyboard.HideMainMenu.MenuHidden,Меню скрыто.,Menu hidden.,,,,,,
-Keyboard.ShowConfigMenu.Settings,Настройки:,Settings:,,,,,,
-Keyboard.ShowMyWordsMenu.MyWords,Мои слова:,My words:,,,,,,
-Keyboard.ShowLearnConfig.LearnModePrompt,Режим показа слов при обучении,Word display mode during learning,,,,,,
-Keyboard.ShowStatisticsMenu.Statistics,Статистика:,Statistics:,,,,,,
-Keyboard.ShowProfileMenu.Profile,Профиль:,Profile:,,,,,,
-Worker.ButtonDone,✅ Готово,✅ Done,,,,,,
-Worker.ButtonKnowSkip,Знаю/Не показывать,Know/Don't show,,,,,,
-Worker.ButtonRemembered,✅ Вспомнил,✅ Remembered,,,,,,
-Worker.ButtonNotRemembered,❌ Не вспомнил,❌ Forgot,,,,,,
-Worker.ButtonCancel,cancel,cancel,,,,,,
-Worker.ButtonNewTheme,Новый: {0},New: {0},,,,,,
+MyWordsMenu.MyWords,📚 Мои слова,📚 My words,📚 Meine Wörter,📚 Minu sõnad,📚 Mes mots,📚 Moje słowa,📚 Kelimelerim,📚 我的单词
+MyWordsMenu.ShowAllWords,🔍 Показать все слова,🔍 Show all words,🔍 Alle Wörter anzeigen,🔍 Kuva kõik sõnad,🔍 Afficher tous les mots,🔍 Pokaż wszystkie słowa,🔍 Tüm kelimeleri göster,🔍 显示所有单词
+MyWordsMenu.DictionariesByTopics,📁 Словари по темам,📁 Dictionaries by topics,📁 Wörterbücher nach Themen,📁 Sõnastikud teemade kaupa,📁 Dictionnaires par thèmes,📁 Słowniki według tematów,📁 Konulara göre sözlükler,📁 按主题分类的词典
+MyWordsMenu.EditWord,📝 Изменить слово,📝 Edit word,📝 Wort bearbeiten,📝 Muuda sõna,📝 Modifier le mot,📝 Edytuj słowo,📝 Kelimeyi düzenle,📝 编辑单词
+MyWordsMenu.DeleteWords,🗑️ Удалить слова,🗑️ Delete words,🗑️ Wörter löschen,🗑️ Kustuta sõnad,🗑️ Supprimer les mots,🗑️ Usuń słowa,🗑️ Kelimeleri sil,🗑️ 删除单词
+MyWordsMenu.Back,⬅️ Назад,⬅️ Back,⬅️ Zurück,⬅️ Tagasi,⬅️ Retour,⬅️ Wróć,⬅️ Geri,⬅️ 返回
+MainMenu.AddWord,➕ Добавить слово,➕ Add word,➕ Wort hinzufügen,➕ Lisa sõna,➕ Ajouter un mot,➕ Dodaj słowo,➕ Kelime ekle,➕ 添加单词
+MainMenu.Learn,📖 Учить,📖 Learn,📖 Lernen,📖 Õpi,📖 Apprendre,📖 Ucz się,📖 Öğren,📖 学习
+MainMenu.Settings,🌐 Настройки,🌐 Settings,🌐 Einstellungen,🌐 Seaded,🌐 Paramètres,🌐 Ustawienia,🌐 Ayarlar,🌐 设置
+MainMenu.Statistics,📊 Статистика,📊 Statistics,📊 Statistik,📊 Statistika,📊 Statistiques,📊 Statystyki,📊 İstatistikler,📊 统计
+MainMenu.Profile,👤 Профиль,👤 Profile,👤 Profil,👤 Profiil,👤 Profil,👤 Profil,👤 Profil,👤 个人资料
+MainMenu.GenerateNewWords,Генерация новых слов,Generate new words,Neue Wörter generieren,Genereeri uusi sõnu,Générer de nouveaux mots,Generuj nowe słowa,Yeni kelimeler üret,生成新词
+Worker.EnterWordForEditing,Введите слово или его часть:,Enter a word or part of it:,Geben Sie ein Wort oder einen Teil davon ein:,Sisestage sõna või selle osa:,Entrez un mot ou une partie de celui-ci :,Wprowadź słowo lub jego część:,Düzenlenecek kelimeyi veya bir kısmını girin:,输入要编辑的单词或其部分:
+Worker.EnterWordToAdd,Введите слово для добавления:,Enter a word to add:,Geben Sie ein Wort zum Hinzufügen ein:,Sisestage lisatav sõna:,Entrez un mot à ajouter :,Wprowadź słowo do dodania:,Eklenecek bir kelime girin:,输入要添加的单词:
+Worker.EnterThemeForWordGeneration,На какую тему добавить слова?:,What topic to add words for?:,Zu welchem Thema sollen Wörter hinzugefügt werden?:,Millisele teemale sõnu lisada?:,Sur quel sujet ajouter des mots ?,Na jaki temat dodać słowa?:,Hangi konuya kelime eklemeli?:,要为哪个主题添加单词?:
+Worker.WordDeleted,Слово '{0}' удалено,Word '{0}' deleted,Wort „{0}“ gelöscht,Sõna „{0}“ kustutatud,Mot „{0}“ supprimé,Słowo „{0}” usunięte,„{0}“ kelimesi silindi,单词“{0}”已删除
+Worker.WordNotFound,Слово '{0}' не найдено,Word '{0}' not found,Wort „{0}“ nicht gefunden,Sõna „{0}“ ei leitud,Mot „{0}“ introuvable,Słowo „{0}” nie znaleziono,„{0}“ kelimesi bulunamadı,未找到单词“{0}”
+Worker.WordAddedToFavorites,Слово '{0}' добавлено в избранное,Word '{0}' added to favorites,Wort „{0}“ zu Favoriten hinzugefügt,Sõna „{0}“ lisatud lemmikutesse,Mot „{0}“ ajouté aux favoris,Słowo „{0}” dodano do ulubionych,„{0}“ kelimesi favorilere eklendi,单词“{0}”已添加到收藏夹
+Worker.EnterNativeLanguage,Введите ваш родной язык:,Enter your native language:,Geben Sie Ihre Muttersprache ein:,Sisestage oma emakeel:,Entrez votre langue maternelle :,Wprowadź swój język ojczysty:,Ana dilinizi girin:,输入您的母语:
+Worker.EnterLanguageToLearn,Введите название языка для изучения:,Enter the name of the language to learn:,Geben Sie den Namen der zu lernenden Sprache ein:,Sisestage õpitava keele nimi:,Entrez le nom de la langue à apprendre :,Wprowadź nazwę języka do nauki:,Öğrenmek istediğiniz dilin adını girin:,输入要学习的语言名称:
+Worker.NoAddedLanguages,У вас нет добавленных языков.,You have no added languages.,Sie haben keine Sprachen hinzugefügt.,Teil pole lisatud keeli.,Vous n'avez pas de langues ajoutées.,Nie masz dodanych języków.,Eklenmiş diliniz yok.,您没有添加任何语言。
+Worker.YourLanguages,Ваши языки:\n{0}\nВведите код для удаления:,Your languages:\n{0}\nEnter code to delete:,Ihre Sprachen:\n{0}\nGeben Sie den zu löschenden Code ein:,Teie keeled:\n{0}\nSisestage kustutatav kood:,Vos langues :\n{0}\nEntrez le code à supprimer :,Twoje języki:\n{0}\nWprowadź kod do usunięcia:,Dilleriniz:\n{0}\nSilmek için kodu girin:,您的语言:\n{0}\n输入要删除的代码:
+Worker.ResetStatisticsConfirmation,Сбросить статистику?,Reset statistics?,Statistiken zurücksetzen?,Lähtesta statistika?,Réinitialiser les statistiques ?,Zresetować statystyki?,İstatistikleri sıfırla?,重置统计数据?
+Worker.EnterNewDictionaryName,Введите название нового словаря:,Enter the name of the new dictionary:,Geben Sie den Namen des neuen Wörterbuchs ein:,Sisestage uue sõnastiku nimi:,Entrez le nom du nouveau dictionnaire :,Wprowadź nazwę nowego słownika:,Yeni sözlüğün adını girin:,输入新词典的名称:
+Worker.AutoFillDictionaryCancelled,Автозаполнение словаря отменено.,Dictionary autofill cancelled.,Wörterbuch-Autovervollständigung abgebrochen.,Sõnastiku automaatne täitmine tühistati.,Remplissage automatique du dictionnaire annulé.,Autouzupełnianie słownika anulowane.,Sözlük otomatik doldurma iptal edildi.,词典自动填充已取消。
+Worker.FailedToGetWordsForTheme,Не удалось получить слова по теме.,Failed to get words for the topic.,Es konnten keine Wörter für das Thema abgerufen werden.,Sõnu ei õnnestunud teema kohta hankida.,Impossible d'obtenir des mots pour le sujet.,Nie udało się pobrać słów dla tematu.,Konu için kelimeler alınamadı.,无法获取该主题的单词。
+Worker.DictionaryAutoFillSuccess,Автозаполнение словаря '{0}' успешно завершено.,Dictionary '{0}' autofill completed successfully.,Wörterbuch „{0}“ erfolgreich automatisch ausgefüllt.,Sõnastiku „{0}“ automaatne täitmine edukalt lõpetatud.,Remplissage automatique du dictionnaire „{0}“ terminé avec succès.,Autouzupełnianie słownika „{0}” zakończone pomyślnie.,„{0}“ sözlüğü otomatik doldurma başarıyla tamamlandı.,词典“{0}”自动填充成功完成。
+Worker.ErrorSavingWords,Произошла ошибка при сохранении слов.,An error occurred while saving words.,Beim Speichern der Wörter ist ein Fehler aufgetreten.,Sõnade salvestamisel ilmnes viga.,Une erreur s'est produite lors de l'enregistrement des mots.,Wystąpił błąd podczas zapisywania słów.,Kelimeler kaydedilirken bir hata oluştu.,保存单词时发生错误。
+Worker.LearningModeChangedToBinary,Режим обучения изменён на бинарный,Learning mode changed to binary,Lernmodus auf binär geändert,Õpperežiim muudetud binaarseks,Mode d'apprentissage changé en binaire,Tryb nauki zmieniony na binarny,Öğrenme modu ikili olarak değiştirildi,学习模式已更改为二进制
+Worker.AlreadyUsingBinaryLearningMode,Вы уже используете бинарный режим обучения,You are already using binary learning mode,Sie verwenden bereits den binären Lernmodus,Kasutate juba binaarset õpperežiimi,Vous utilisez déjà le mode d'apprentissage binaire,Już używasz binarnego trybu nauki,Zaten ikili öğrenme modunu kullanıyorsunuz,您已在使用二进制学习模式
+Worker.LearningModeChangedToMultipleChoice,Режим обучения изменён на множественный выбор,Learning mode changed to multiple choice,Lernmodus auf Multiple-Choice geändert,Õpperežiim muudetud valikvastustega,Mode d'apprentissage changé en choix multiple,Tryb nauki zmieniony na wielokrotny wybór,Öğrenme modu çoktan seçmeli olarak değiştirildi,学习模式已更改为多项选择
+Worker.AlreadyUsingMultipleChoiceLearningMode,Вы уже используете режим множественного выбора,You are already using multiple choice learning mode,Sie verwenden bereits den Multiple-Choice-Lernmodus,Kasutate juba valikvastustega õpperežiimi,Vous utilisez déjà le mode d'apprentissage à choix multiples,Już używasz trybu nauki wielokrotnego wyboru,Zaten çoktan seçmeli öğrenme modunu kullanıyorsunuz,您已在使用多项选择学习模式
+Worker.ConfirmDictionaryDeletion,Удалить словарь? Слова будут удалены полностью.,Delete dictionary? Words will be completely removed.,Wörterbuch löschen? Wörter werden vollständig entfernt.,Kustuta sõnastik? Sõnad eemaldatakse täielikult.,Supprimer le dictionnaire ? Les mots seront complètement supprimés.,Usunąć słownik? Słowa zostaną całkowicie usunięte.,Sözlüğü silmek mi? Kelimeler tamamen kaldırılacak.,删除词典？单词将完全删除。
+Worker.ConfirmDictionaryDeletionMoveToDefault,Удалить словарь? Слова будут перенесены в общий.,Delete dictionary? Words will be moved to the general dictionary.,Wörterbuch löschen? Wörter werden in das allgemeine Wörterbuch verschoben.,Kustuta sõnastik? Sõnad teisaldatakse üldisesse sõnastikku.,Supprimer le dictionnaire ? Les mots seront déplacés vers le dictionnaire général.,Usunąć słownik? Słowa zostaną przeniesione do ogólnego słownika.,Sözlüğü silmek mi? Kelimeler genel sözlüğe taşınacak.,删除词典？单词将移动到通用词典。
+Worker.ButtonYes,Да,Yes,Ja,Jah,Oui,Tak,Evet,是
+Worker.ButtonNo,Нет,No,Nein,Ei,Non,Nie,Hayır,不
+Worker.InvalidIdentifier,Некорректный идентификатор,Invalid identifier,Ungültiger Bezeichner,Kehtetu identifikaator,Identifiant invalide,Nieprawidłowy identyfikator,Geçersiz kimlik,无效标识符
+Worker.UserNotFound,Пользователь не найден,User not found,Benutzer nicht gefunden,Kasutajat ei leitud,Utilisateur introuvable,Użytkownik nie znaleziony,Kullanıcı bulunamadı,未找到用户
+Worker.DictionaryNotFound,Словарь не найден,Dictionary not found,Wörterbuch nicht gefunden,Sõnastikku ei leitud,Dictionnaire introuvable,Słownik nie znaleziony,Sözlük bulunamadı,未找到词典
+Worker.CannotDeleteDefaultDictionary,Нельзя удалить общий словарь,Cannot delete the default dictionary,Standardwörterbuch kann nicht gelöscht werden,Vaikesõnastikku ei saa kustutada,Impossible de supprimer le dictionnaire par défaut,Nie można usunąć domyślnego słownika,Varsayılan sözlük silinemez,无法删除默认词典
+Worker.WelcomeMessage,"Привет, я ","Hi, I'm ","Hallo, ich bin ","Tere, mina olen ","Salut, je suis ","Cześć, jestem ","Merhaba, ben ","你好，我是 "
+Worker.WhatLanguageToLearn,Какой язык хотите изучать?,What language do you want to learn?,Welche Sprache möchten Sie lernen?,Millist keelt soovite õppida?,Quelle langue voulez-vous apprendre ?,Który język chcesz się uczyć?,Hangi dili öğrenmek istiyorsunuz?,您想学习哪种语言？
+Worker.AddLanguageFirst,Сначала добавьте язык через /addlanguage,"First, add a language via /addlanguage",Fügen Sie zuerst eine Sprache über /addlanguage hinzu,Esmalt lisage keel /addlanguage kaudu,Ajoutez d'abord une langue via /addlanguage,Najpierw dodaj język przez /addlanguage,Önce /addlanguage ile bir dil ekleyin,首先通过 /addlanguage 添加一种语言
+Worker.EnterWordToRemember,Введите слово для запоминания:,Enter a word to memorize:,Geben Sie ein Wort zum Auswendiglernen ein:,Sisestage meeldejätmiseks sõna:,Entrez un mot à mémoriser :,Wprowadź słowo do zapamiętania:,Ezberlemek istediğiniz kelimeyi girin:,输入要记住的单词:
+Worker.EnterLanguageName,Введите название языка:,Enter the language name:,Geben Sie den Sprachnamen ein:,Sisestage keele nimi:,Entrez le nom de la langue :,Wprowadź nazwę języka:,Dilin adını girin:,输入语言名称:
+Worker.UsageRemoveLanguage,Используйте /removelanguage [код],Use /removelanguage [code],Verwenden Sie /removelanguage [Code],Kasutage /removelanguage [kood],Utilisez /removelanguage [code],Użyj /removelanguage [kod],Kullanım: /removelanguage [kod],使用 /removelanguage [代码]
+Worker.LanguageListEmpty,Список пуст.,The list is empty.,Die Liste ist leer.,Nimekiri on tühi.,La liste est vide.,Lista jest pusta.,Liste boş.,列表为空。
+Worker.YourLearningLanguages,Вы изучаете:\n{0},You are learning:\n{0},Sie lernen:\n{0},Te õpite:\n{0},Vous apprenez :\n{0},Uczysz się:\n{0},Öğreniyorsunuz:\n{0},您正在学习:\n{0}
+Worker.ResettingData,Сброс данных...,Resetting data...,Daten werden zurückgesetzt...,Andmete lähtestamine...,Réinitialisation des données...,Resetowanie danych...,Veriler sıfırlanıyor...,正在重置数据...
+Worker.Done,Готово,Done,Fertig,Valmis,Terminé,Gotowe,Bitti,完成
+Worker.ExampleRemoveWord,пример: /removeword слово,example: /removeword word,Beispiel: /removeword Wort,Näide: /removeword sõna,Exemple : /removeword mot,Przykład: /removeword słowo,örnek: /removeword kelime,示例: /removeword 单词
+Worker.WordXDeleted,Слово '{0}' удалено,Word '{0}' deleted,Wort „{0}“ gelöscht,Sõna „{0}“ kustutatud,Mot „{0}“ supprimé,Słowo „{0}” usunięte,„{0}“ kelimesi silindi,单词“{0}”已删除
+Worker.WordXNotFound,Слово '{0}' не найдено,Word '{0}' not found,Wort „{0}“ nicht gefunden,Sõna „{0}“ ei leitud,Mot „{0}“ introuvable,Słowo „{0}” nie znaleziono,„{0}“ kelimesi bulunamadı,未找到单词“{0}”
+Worker.UsageTodo,Используйте /todo Текст : Описание,Use /todo Text : Description,Verwenden Sie /todo Text : Beschreibung,Kasutage /todo Tekst : Kirjeldus,Utilisez /todo Texte : Description,Użyj /todo Tekst : Opis,Kullanım: /todo Metin : Açıklama,使用 /todo 文本 : 描述
+Worker.TaskAdded,Задача добавлена,Task added,Aufgabe hinzugefügt,Ülesanne lisatud,Tâche ajoutée,Zadanie dodane,Görev eklendi,任务已添加
+Worker.AccessDenied,Access denied,Access denied,Zugriff verweigert,Juurdepääs keelatud,Accès refusé,Dostęp zabroniony,Erişim reddedildi,访问被拒绝
+Worker.UnknownCommand,Неизвестная команда. Используйте меню или /start.,Unknown command. Use the menu or /start.,Unbekannter Befehl. Verwenden Sie das Menü oder /start.,Tundmatu käsk. Kasutage menüüd või /start.,Commande inconnue. Utilisez le menu ou /start.,Nieznana komenda. Użyj menu lub /start.,Bilinmeyen komut. Menüyü veya /start'ı kullanın.,未知命令。请使用菜单或 /start。
+Worker.ThemeCannotBeEmpty,Тема не может быть пустой.,Theme cannot be empty.,Das Thema darf nicht leer sein.,Teema ei saa olla tühi.,Le thème ne peut pas être vide.,Temat nie może być pusty.,Tema boş olamaz.,主题不能为空。
+Worker.ReceivedXWordsForTheme,Получено {0} слов по теме '{1}'.\nВ какой словарь сохранить?,Received {0} words for the topic '{1}'.\nWhich dictionary to save to?,{0} Wörter zum Thema „{1}“ erhalten.\nIn welchem Wörterbuch speichern?,Saadud {0} sõna teema „{1}“ kohta.\nMillisesse sõnastikku salvestada?,Reçu {0} mots pour le sujet „{1}“.\nDans quel dictionnaire sauvegarder ?,Otrzymano {0} słów na temat „{1}”.\nDo którego słownika zapisać?,Konu '{1}' için {0} kelime alındı.\nHangi sözlüğe kaydedilsin?,收到关于主题“{1}”的 {0} 个单词。\n保存到哪个词典？
+Worker.DictionaryNameCannotBeEmpty,Название словаря не может быть пустым.,Dictionary name cannot be empty.,Der Wörterbuchname darf nicht leer sein.,Sõnastiku nimi ei saa olla tühi.,Le nom du dictionnaire ne peut pas être vide.,Nazwa słownika nie może być pusta.,Sözlük adı boş olamaz.,词典名称不能为空。
+Worker.DictionaryXCreated,Словарь '{0}' успешно создан.,Dictionary '{0}' created successfully.,Wörterbuch „{0}“ erfolgreich erstellt.,Sõnastik „{0}“ edukalt loodud.,Dictionnaire „{0}“ créé avec succès.,Słownik „{0}” został pomyślnie utworzony.,„{0}“ sözlüğü başarıyla oluşturuldu.,词典“{0}”已成功创建。
+Worker.Add20WordsToDictionaryConfirmation,Добавить автоматически 20 слов по теме {0}?,Automatically add 20 words on the topic {0}?,Automatisch 20 Wörter zum Thema {0} hinzufügen?,Lisada automaatselt 20 sõna teema {0} kohta?,Ajouter automatiquement 20 mots sur le sujet {0} ?,Automatycznie dodać 20 słów na temat {0}?,Konu {0} ile ilgili 20 kelimeyi otomatik olarak eklemek ister misiniz?,是否自动添加关于主题 {0} 的 20 个单词？
+Worker.NoWordsInLanguage,❌ У вас нет добавленных языков.,❌ You have no added languages.,❌ Sie haben keine Sprachen hinzugefügt.,❌ Teil pole lisatud keeli.,❌ Vous n'avez pas de langues ajoutées.,❌ Nie masz dodanych języków.,❌ Eklenmiş diliniz yok.,❌ 您没有添加任何语言。
+Worker.NoWordsHeader,{0}\nНет слов.,{0}\nNo words.,{0}\nKeine Wörter.,{0}\nSõnu pole.,{0}\nPas de mots.,{0}\nBrak słów.,{0}\nKelime yok.,{0}\n没有单词。
+Worker.NavigateWordsWithButtons,{0}\nИспользуйте кнопки «⬅️» и «➡️» для навигации.,{0}\nUse the «⬅️» and «➡️» buttons to navigate.,{0}\nVerwenden Sie die Schaltflächen „⬅️“ und „➡️“ zum Navigieren.,{0}\nKasutage navigeerimiseks nuppe „⬅️“ ja „➡️“.,{0}\nUtilisez les boutons «⬅️» et «➡️» pour naviguer.,{0}\nUżyj przycisków „⬅️” i „➡️” do nawigacji.,{0}\nNavigasyon için „⬅️” ve „➡️” düğmelerini kullanın.,{0}\n使用“⬅️”和“➡️”按钮进行导航。
+Worker.NoWordsToList,❌ Нет слов.,❌ No words.,❌ Keine Wörter.,❌ Sõnu pole.,❌ Pas de mots.,❌ Brak słów.,❌ Kelime yok.,❌ 没有单词。
+Worker.PageXofY,=== Стр. {0}/{1} ===,=== Page {0}/{1} ===,=== Seite {0}/{1} ===,=== Lk {0}/{1} ===,=== Page {0}/{1} ===,=== Strona {0}/{1} ===,=== Sayfa {0}/{1} ===,=== 第 {0}/{1} 页 ===
+Worker.EnterWordNumbersToDelete,Введите номера слов для удаления через пробел:,Enter word numbers to delete, separated by spaces:,Geben Sie die zu löschenden Wortnummern durch Leerzeichen getrennt ein:,Sisestage kustutatavate sõnade numbrid tühikutega eraldatult:,Entrez les numéros de mots à supprimer, séparés par des espaces :,Wprowadź numery słów do usunięcia, oddzielone spacjami:,Silmek için kelime numaralarını boşluklarla ayırarak girin:,输入要删除的单词编号，用空格分隔:
+Worker.NumbersNotRecognized,Не распознаны номера,Numbers not recognized,Nummern nicht erkannt,Numbreid ei tuvastatud,Numéros non reconnus,Numery nierozpoznane,Numaralar tanınmadı,号码未识别
+Worker.WordsDeletedCount,Удалено слов: {0},Words deleted: {0},Gelöschte Wörter: {0},Kustutatud sõnu: {0},Mots supprimés : {0},Usunięto słów: {0},Silinen kelime sayısı: {0},已删除单词数: {0}
+Worker.ErrorTelegramAPI,Telegram API Error: {0},Telegram API Error: {0},Telegram API Fehler: {0},Telegram API viga: {0},Erreur de l'API Telegram : {0},Błąd API Telegram: {0},Telegram API Hatası: {0},Telegram API 错误: {0}
+Worker.ErrorProcessingUpdate,Ошибка обработки обновления,Error processing update,Fehler bei der Aktualisierungsverarbeitung,Viga värskenduse töötlemisel,Erreur de traitement de la mise à jour,Błąd przetwarzania aktualizacji,Güncelleme işlenirken hata oluştu,处理更新时出错
+Worker.WordToSaveNotFound,Не найдено слово для сохранения,Word to save not found,Zu speicherndes Wort nicht gefunden,Salvestatavat sõna ei leitud,Mot à enregistrer introuvable,Nie znaleziono słowa do zapisania,Kaydedilecek kelime bulunamadı,未找到要保存的单词
+Worker.WordAdded,Добавлено «{0}»,Added «{0}»,Hinzugefügt „{0}“,Lisatud „{0}“,Ajouté «{0}»,Dodano „{0}”,Eklendi «{0}»,已添加“{0}”
+Worker.ErrorLoadingWord,Ошибка при загрузке слова,Error loading word,Fehler beim Laden des Wortes,Sõna laadimisel ilmnes viga,Erreur lors du chargement du mot,Błąd podczas ładowania słowa,Kelime yüklenirken hata oluştu,加载单词时出错
+Worker.ErrorAiTranslation,Ошибка AI-перевода,AI translation error,KI-Übersetzungsfehler,AI-tõlke viga,Erreur de traduction IA,Błąd tłumaczenia AI,AI çeviri hatası,AI 翻译错误
+Worker.EditTranslationsPrompt,Редактируйте переводы:,Edit translations:,Übersetzungen bearbeiten:,Redigeeri tõlkeid:,Modifiez les traductions :,Edytuj tłumaczenia:,Çevirileri düzenle:,编辑翻译:
+Worker.EditExamplesPrompt,Редактируйте примеры:,Edit examples:,Beispiele bearbeiten:,Redigeeri näiteid:,Modifiez les exemples :,Edytuj przykłady:,Örnekleri düzenle:,编辑示例:
+Worker.WordUpdated,Обновлено «{0}»,Updated «{0}»,Aktualisiert „{0}“,Uuendatud „{0}“,Mis à jour «{0}»,Zaktualizowano „{0}”,Güncellendi «{0}»,已更新“{0}”
+Worker.EmptyQuery,Пустой запрос,Empty query,Leere Abfrage,Tühi päring,Requête vide,Puste zapytanie,Boş sorgu,空查询
+Worker.NothingFound,Ничего не найдено,Nothing found,Nichts gefunden,Midagi ei leitud,Rien trouvé,Nic nie znaleziono,Hiçbir şey bulunamadı,未找到任何内容
+Worker.SelectWordPrompt,Выберите слово:,Select a word:,Wählen Sie ein Wort:,Valige sõna:,Sélectionnez un mot :,Wybierz słowo:,Bir kelime seçin:,选择一个单词:
+Worker.InvalidLanguageId,Неверный идентификатор языка.,Invalid language ID.,Ungültige Sprach-ID.,Kehtetu keele ID.,ID de langue invalide.,Nieprawidłowy identyfikator języka.,Geçersiz dil kimliği.,无效的语言ID。
+Worker.LanguageNotOnYourList,Этот язык не найден в вашем списке.,This language is not found in your list.,Diese Sprache wurde in Ihrer Liste nicht gefunden.,Seda keelt teie loendist ei leitud.,Cette langue n'est pas trouvée dans votre liste.,Tego języka nie ma na Twojej liście.,Bu dil listenizde bulunamadı.,此语言不在您的列表中。
+Worker.CurrentLanguageSwitched,Текущий язык переключён на «{0}».,Current language switched to «{0}».,Aktuelle Sprache auf „{0}“ umgeschaltet.,Praegune keel lülitatud keelele „{0}“.,Langue actuelle passée à «{0}».,Bieżący język został przełączony na „{0}”.,Mevcut dil «{0}» olarak değiştirildi.,当前语言已切换到“{0}”。
+Worker.LanguageChangedSuccessfully,Язык успешно изменён.,Language changed successfully.,Sprache erfolgreich geändert.,Keele muutmine õnnestus.,Langue changée avec succès.,Język zmieniony pomyślnie.,Dil başarıyla değiştirildi.,语言已成功更改。
+Worker.NoLanguagesToSwitch,У вас ещё нет ни одного изучаемого языка.,You don't have any languages to study yet.,Sie haben noch keine Sprachen zum Lernen.,Teil pole veel ühtegi õpitavat keelt.,Vous n'avez pas encore de langues à étudier.,Nie masz jeszcze żadnych języków do nauki.,Henüz çalışmak için herhangi bir diliniz yok.,您还没有任何要学习的语言。
+Worker.SelectCurrentLanguagePrompt,"Выберите язык, который хотите сделать текущим:",Select the language you want to make current:,Wählen Sie die Sprache, die Sie zur aktuellen Sprache machen möchten:,Valige keel, mille soovite praeguseks teha:,Sélectionnez la langue que vous souhaitez définir comme langue actuelle :,Wybierz język, który chcesz ustawić jako bieżący:,Mevcut yapmak istediğiniz dili seçin:,选择您要设为当前语言的语言:
+Worker.CorrectAnswer,Верно! {0} = {1},Correct! {0} = {1},Richtig! {0} = {1},Õige! {0} = {1},Correct ! {0} = {1},Poprawnie! {0} = {1},Doğru! {0} = {1},正确！{0} = {1}
+Worker.IncorrectAnswer,Неправильно! {0} = {1},Incorrect! {0} = {1},Falsch! {0} = {1},Vale! {0} = {1},Incorrect ! {0} = {1},Niepoprawnie! {0} = {1},Yanlış! {0} = {1},不正确！{0} = {1}
+Worker.WordMarkedAsLearned,«{0}» помечено как выученное,«{0}» marked as learned,„{0}“ als gelernt markiert,„{0}“ märgitud õpituks,«{0}» marqué comme appris,„{0}” oznaczono jako nauczone,„{0}“ öğrenilmiş olarak işaretlendi, “{0}” 已标记为已学习
+Worker.NothingToRepeat,Нечего повторять. Можешь добавить новые слова,Nothing to repeat. You can add new words,Nichts zu wiederholen. Sie können neue Wörter hinzufügen,Midagi pole korrata. Saate lisada uusi sõnu,Rien à répéter. Vous pouvez ajouter de nouveaux mots,Nic do powtarzania. Możesz dodać nowe słowa,Tekrar edilecek bir şey yok. Yeni kelimeler ekleyebilirsiniz,没什么可重复的了。你可以添加新单词
+Worker.ChooseCorrectTranslationFor,Выберите правильный перевод для слова:,Choose the correct translation for the word:,Wählen Sie die richtige Übersetzung für das Wort:,Valige sõna jaoks õige tõlge:,Choisissez la bonne traduction pour le mot :,Wybierz poprawne tłumaczenie dla słowa:,Kelime için doğru çeviriyi seçin:,选择单词的正确翻译:
+Worker.TranslateWordPrompt,Переведите слово,Translate the word,Übersetzen Sie das Wort,Tõlgi sõna,Traduisez le mot,Przetłumacz słowo,Kelimeyi çevir,翻译单词
+Worker.LanguageXNotFound,Язык {0} не найден,Language {0} not found,Sprache {0} nicht gefunden,Keele {0} ei leitud,Langue {0} introuvable,Język {0} nie znaleziony,Dil {0} bulunamadı,未找到语言 {0}
+Worker.LanguageXRemoved,Язык {0} удалён,Language {0} removed,Sprache {0} entfernt,Keele {0} eemaldatud,Langue {0} supprimée,Język {0} usunięty,Dil {0} kaldırıldı,语言 {0} 已删除
+Worker.LanguagesNotSetup,Языки не настроены,Languages are not set up,Sprachen sind nicht eingerichtet,Keeled pole seadistatud,Les langues ne sont pas configurées,Języki nie są skonfigurowane,Diller ayarlanmadı,语言未设置
+Worker.CouldNotDetectLanguage,Не удалось определить язык слова,Could not determine the language of the word,Die Sprache des Wortes konnte nicht ermittelt werden,Sõna keelt ei õnnestunud tuvastada,Impossible de déterminer la langue du mot,Nie udało się wykryć języka słowa,Kelimenin dili belirlenemedi,无法检测到单词的语言
+Worker.LanguageXNotInDb,Язык '{0}' не в базе,Language '{0}' is not in the database,Sprache „{0}“ nicht in der Datenbank,Keele „{0}“ pole andmebaasis,La langue „{0}“ n'est pas dans la base de données,Język „{0}” nie znajduje się w bazie danych,Dil '{0}' veritabanında yok,语言“{0}”不在数据库中
+Worker.WordAlreadyInYourDictionary,«{0}» уже есть в вашем словаре.,«{0}» is already in your dictionary.,„{0}“ ist bereits in Ihrem Wörterbuch.,„{0}“ on juba teie sõnastikus.,«{0}» est déjà dans votre dictionnaire.,„{0}” jest już w Twoim słowniku.,„{0}“ zaten sözlüğünüzde.,“{0}” 已在您的词典中。
+Worker.WordXAddedToDefaultDictionary,«{0} - {1}» добавлено в ваш общий словарь.,«{0} - {1}» added to your general dictionary.,„{0} - {1}“ zu Ihrem allgemeinen Wörterbuch hinzugefügt.,„{0} - {1}“ lisatud teie üldisesse sõnastikku.,«{0} - {1}» ajouté à votre dictionnaire général.,„{0} - {1}” dodano do Twojego ogólnego słownika.,„{0} - {1}“ genel sözlüğünüze eklendi.,“{0} - {1}” 已添加到您的通用词典。
+Worker.ChooseTranslationsPrompt,Выберите перевод(ы):,Select translation(s):,Wählen Sie die Übersetzung(en) aus:,Valige tõlke(d):,Sélectionnez la ou les traductions :,Wybierz tłumaczenie(a):,Çeviri(ler)i seçin:,选择翻译:
+Worker.ChooseExamplesPrompt,Выберите примеры употребления:,Select usage examples:,Wählen Sie Anwendungsbeispiele aus:,Valige kasutusnäited:,Sélectionnez des exemples d'utilisation :,Wybierz przykłady użycia:,Kullanım örneklerini seçin:,选择用法示例:
+Worker.CouldNotRecognizeLanguage,Не удалось распознать язык,Could not recognize language,Sprache konnte nicht erkannt werden,Keele tuvastamine ebaõnnestus,Impossible de reconnaître la langue,Nie udało się rozpoznać języka,Dil tanınamadı,无法识别语言
+Worker.NativeLanguageSetTo,Родной язык установлен: {0},Native language set to: {0},Muttersprache eingestellt auf: {0},Emakeel määratud: {0},Langue maternelle définie sur : {0},Język ojczysty ustawiony na: {0},Ana dil şu olarak ayarlandı: {0},母语设置为: {0}
+Worker.LanguageXAdded,Язык {0} добавлен. Выберите слова через /addword или меню,Language {0} added. Select words via /addword or menu,Sprache {0} hinzugefügt. Wählen Sie Wörter über /addword oder das Menü aus,Keele {0} lisatud. Valige sõnad /addword või menüü kaudu,Langue {0} ajoutée. Sélectionnez des mots via /addword ou le menu,Język {0} dodany. Wybierz słowa za pomocą /addword lub menu,Dil {0} eklendi. /addword veya menü aracılığıyla kelimeleri seçin,已添加语言 {0}。通过 /addword 或菜单选择单词
+Worker.EnterThemeToCreateDictionary,"Введите тему, чтобы я создал словарь с новыми словами:",Enter a theme to create a dictionary with new words:,Geben Sie ein Thema ein, damit ich ein Wörterbuch mit neuen Wörtern erstellen kann:,Sisestage teema, et ma saaksin luua uute sõnadega sõnastiku:,Entrez un thème pour que je puisse créer un dictionnaire avec de nouveaux mots :,Wprowadź temat, abym utworzył słownik z nowymi słowami:,Yeni kelimeler içeren bir sözlük oluşturmak için bir tema girin:,输入一个主题，以便我创建一个包含新单词的词典:
+Worker.TotalStatisticsHeader,📈 ,📈 ,📈 ,📈 ,📈 ,📈 ,📈 ,📈 
+Worker.TotalWords,Всего слов:      ,Total words:      ,Gesamtzahl der Wörter:      ,Sõnade koguarv:      ,Total de mots :      ,Wszystkich słów:      ,Toplam kelime:      ,总词数:      
+Worker.FullyLearnedWords,Полностью выучено: ,Fully learned: ,Vollständig gelernt: ,Täielikult õpitud: ,Entièrement appris : ,W pełni nauczone: ,Tamamen öğrenildi: ,完全掌握: 
+Worker.WordsInProgress,В процессе:       ,In progress:       ,In Bearbeitung:       ,Töös:       ,En cours :       ,W trakcie:       ,Devam ediyor:       ,进行中:       
+Worker.Top10HardestWords,🔟 ,🔟 ,🔟 ,🔟 ,🔟 ,🔟 ,🔟 ,🔟 
+Worker.HardWordDisplay, |--> {0}\n |- Ease Factor: {1}\n |- Repetitions: {2}\n_______________________________, |--> {0}\n |- Ease Factor: {1}\n |- Repetitions: {2}\n_______________________________, |--> {0}\n |- Erleichterungsfaktor: {1}\n |- Wiederholungen: {2}\n_______________________________, |--> {0}\n |- Lihtsuskordaja: {1}\n |- Kordused: {2}\n_______________________________, |--> {0}\n |- Facteur de facilité : {1}\n |- Répétitions : {2}\n_______________________________, |--> {0}\n |- Współczynnik łatwości: {1}\n |- Powtórzenia: {2}\n_______________________________, |--> {0}\n |- Kolaylık Faktörü: {1}\n |- Tekrarlar: {2}\n_______________________________, |--> {0}\n |- 难度系数: {1}\n |- 重复次数: {2}\n_______________________________
+Worker.NoWords,Нет слов.,No words.,Keine Wörter.,Sõnu pole.,Pas de mots.,Brak słów.,Kelime yok.,没有单词。
+Worker.TodayStatisticsHeader,📈 ,📈 ,📈 ,📈 ,📈 ,📈 ,📈 ,📈 
+Worker.WordsRepeatedToday,Повторено слов: ,Words repeated: ,Wörter wiederholt: ,Korratud sõnad: ,Mots répétés : ,Powtórzono słów: ,Tekrarlanan kelime sayısı: ,今日重复单词: 
+Worker.WordsLearnedToday,Выучено: ,Learned: ,Gelernt: ,Õpitud: ,Appris : ,Nauczono: ,Öğrenildi: ,已学习: 
+Worker.HardWordsHeader,📈 ,📈 ,📈 ,📈 ,📈 ,📈 ,📈 ,📈 
+Worker.HardWordSimple,- {0},- {0},- {0},- {0},- {0},- {0},- {0},- {0}
+Worker.NoActivityToday,Сегодня вы ещё не занимались.,You haven't studied today yet.,Sie haben heute noch nicht gelernt.,Te pole täna veel õppinud.,Vous n'avez pas encore étudié aujourd'hui.,Dzisiaj jeszcze nie uczyłeś się.,Bugün henüz ders çalışmadınız.,您今天还没有学习。
+Worker.StatisticsByLanguageHeader,📊 ,📊 ,📊 ,📊 ,📊 ,📊 ,📊 ,📊 
+Worker.LanguageStats,\n,\n,\n,\n,\n,\n,\n,\n
+Worker.NoDictionaries,У вас нет словарей.,You have no dictionaries.,Sie haben keine Wörterbücher.,Teil pole sõnastikke.,Vous n'avez pas de dictionnaires.,Nie masz słowników.,Sözlüğünüz yok.,您没有词典。
+Worker.DictionariesByTopicsHeader,📁 ,📁 ,📁 ,📁 ,📁 ,📁 ,📁 ,📁 
+Worker.DictionariesByLanguageHeader,📚 ,📚 ,📚 ,📚 ,📚 ,📚 ,📚 ,📚 
+Worker.UnknownLanguage,Неизвестный,Unknown,Unbekannt,Tundmatu,Inconnu,Nieznany,Bilinmeyen,未知
+Worker.DictionaryEntry,- {0} ({1}),- {0} ({1}),- {0} ({1}),- {0} ({1}),- {0} ({1}),- {0} ({1}),- {0} ({1}),- {0} ({1})
+Worker.AllWordProgressReset,Прогресс по всем словам сброшен,Progress for all words has been reset,Fortschritt für alle Wörter zurückgesetzt,Kõigi sõnade edenemine lähtestati,Progression pour tous les mots réinitialisée,Postęp dla wszystkich słów został zresetowany,Tüm kelimelerin ilerlemesi sıfırlandı,所有单词的进度已重置
+Worker.UserProfileHeader,👤 ,👤 ,👤 ,👤 ,👤 ,👤 ,👤 ,👤 
+Worker.ProfileId,ID: ,ID: ,ID: ,ID: ,ID : ,ID: ,Kimlik: ,ID: 
+Worker.ProfileNativeLanguage,Родной язык: ,Native language: ,Muttersprache: ,Emakeel: ,Langue maternelle : ,Język ojczysty: ,Ana dil: ,母语: 
+Worker.ProfileCurrentLanguage,Текущий язык: ,Current language: ,Aktuelle Sprache: ,Praegune keel: ,Langue actuelle : ,Obecny język: ,Mevcut dil: ,当前语言: 
+Worker.ProfileLearningMode,Режим обучения: ,Learning mode: ,Lernmodus: ,Õpperežiim: ,Mode d'apprentissage : ,Tryb nauki: ,Öğrenme modu: ,学习模式: 
+Worker.ProfileLearningModeMultipleChoice,множественный выбор,multiple choice,Multiple-Choice,Valikvastustega,Choix multiple,Wielokrotny wybór,Çoktan seçmeli,多项选择
+Worker.ProfileLearningModeBinary,бинарный,binary,binär,binaarne,binaire,binarny,ikili,二进制
+Worker.ProfileStudiedLanguages,Изучаемые языки: {0},Languages studied: {0},Gelernte Sprachen: {0},Õpitud keeled: {0},Langues étudiées : {0},Uczone języki: {0},Öğrenilen diller: {0},学习的语言: {0}
+Worker.ProfileNoStudiedLanguages,нет,none,keine,puudub,aucun,brak,hiçbiri,无
+Worker.ProfileTotalWords,Всего слов: ,Total words: ,Gesamtzahl der Wörter: ,Sõnade koguarv: ,Total de mots : ,Wszystkich słów: ,Toplam kelime: ,总词数: 
+Worker.AllStatsReset,Вся статистика сброшена,All statistics have been reset,Alle Statistiken wurden zurückgesetzt,Kogu statistika on lähtestatud,Toutes les statistiques ont été réinitialisées,Wszystkie statystyki zostały zresetowane,Tüm istatistikler sıfırlandı,所有统计数据已重置
+Worker.AdminUsersHeader,👥 Пользователи,👥 Users,👥 Benutzer,👥 Kasutajad,👥 Utilisateurs,👥 Użytkownicy,👥 Kullanıcılar,👥 用户
+Worker.AdminUserInfoLine1,ID: ,ID: ,ID: ,ID: ,ID : ,ID: ,Kimlik: ,ID: 
+Worker.AdminUserInfoLine2,Native: {0} | Current: {1} | MC: {2},Native: {0} | Current: {1} | MC: {2},Nativ: {0} | Aktuell: {1} | MC: {2},Emakeel: {0} | Praegune: {1} | MC: {2},Natif : {0} | Actuel : {1} | MC : {2},Ojczysty: {0} | Bieżący: {1} | WC: {2},Yerel: {0} | Mevcut: {1} | ÇS: {2},母语: {0} | 当前: {1} | MC: {2}
+Worker.AdminUserWords,Words: {0},Words: {0},Wörter: {0},Sõnad: {0},Mots : {0},Słowa: {0},Kelimeler: {0},单词: {0}
+Worker.AdminUserDictionaries,Dictionaries: {0},Dictionaries: {0},Wörterbücher: {0},Sõnastikud: {0},Dictionnaires : {0},Słowniki: {0},Sözlükler: {0},词典: {0}
+Worker.AdminTotalWords,Total words: {0},Total words: {0},Gesamtzahl der Wörter: {0},Sõnade koguarv: {0},Total de mots : {0},Wszystkich słów: {0},Toplam kelime: {0},总词数: {0}
+Worker.AdminWordsByLanguage,{0}: {1},{0}: {1},{0}: {1},{0}: {1},{0} : {1},{0}: {1},{0}: {1},{0}: {1}
+Worker.DictionaryEmpty,Словарь пуст.,Dictionary is empty.,Wörterbuch ist leer.,Sõnastik on tühi.,Le dictionnaire est vide.,Słownik jest pusty.,Sözlük boş.,词典为空。
+Worker.DictionaryNameHeader,📚 Словарь: {0},📚 Dictionary: {0},📚 Wörterbuch: {0},📚 Sõnastik: {0},📚 Dictionnaire : {0},📚 Słownik: {0},📚 Sözlük: {0},📚 词典: {0}
+Worker.DictionaryWordEntry,- {0},- {0},- {0},- {0},- {0},- {0},- {0},- {0}
+Worker.DictionaryNameDefault,Общий,General,Allgemein,Üldine,Général,Ogólny,Genel,通用
+Worker.DictionaryWordTranslationEntry,{0} — {1},{0} — {1},{0} — {1},{0} — {1},{0} — {1},{0} — {1},{0} — {1},{0} — {1}
+Worker.NoWordsInDictionary,В словаре нет слов.,There are no words in the dictionary.,Es gibt keine Wörter im Wörterbuch.,Sõnastikus pole sõnu.,Il n'y a pas de mots dans le dictionnaire.,W słowniku nie ma słów.,Sözlükte kelime yok.,词典中没有单词。
+Worker.DictionaryProgressReset,Прогресс словаря сброшен,Dictionary progress has been reset,Wörterbuchfortschritt zurückgesetzt,Sõnastiku edenemine lähtestati,Progression du dictionnaire réinitialisée,Postęp słownika został zresetowany,Sözlük ilerlemesi sıfırlandı,词典进度已重置
+Worker.DictionaryDeleted,Словарь удалён,Dictionary deleted,Wörterbuch gelöscht,Sõnastik kustutatud,Dictionnaire supprimé,Słownik usunięty,Sözlük silindi,词典已删除
+Worker.HelpHeader,❓ Помощь,❓ Help,❓ Hilfe,❓ Abi,❓ Aide,❓ Pomoc,❓ Yardım,❓ 帮助
+Worker.HelpAddWord,/addword - добавить новое слово,/addword - add a new word,/addword - fügen Sie ein neues Wort hinzu,/addword - lisa uus sõna,/addword - ajouter un nouveau mot,/addword - dodaj nowe słowo,/addword - yeni bir kelime ekle,/addword - 添加一个新单词
+Worker.HelpMyWords,/mywords - показать все слова,/mywords - show all words,/mywords - zeigen Sie alle Wörter an,/mywords - kuva kõik sõnad,/mywords - afficher tous les mots,/mywords - pokaż wszystkie słowa,/mywords - tüm kelimeleri göster,/mywords - 显示所有单词
+Worker.HelpLearn,/learn - начать обучение,/learn - start learning,/learn - beginnen Sie mit dem Lernen,/learn - alusta õppimist,/learn - commencer à apprendre,/learn - rozpocznij naukę,/learn - öğrenmeye başla,/learn - 开始学习
+Worker.HelpUseMenu,Используйте меню бота для остальных действий.,Use the bot menu for other actions.,Verwenden Sie das Bot-Menü für andere Aktionen.,Kasutage muude toimingute jaoks boti menüüd.,Utilisez le menu du bot pour d'autres actions.,Użyj menu bota do innych działań.,Diğer eylemler için bot menüsünü kullanın.,使用机器人菜单进行其他操作。
+TelegramMessageHelper.WordCardExample,\n\n📘 Пример: {0},\n\n📘 Example: {0},\n\n📘 Beispiel: {0},\n\n📘 Näide: {0},\n\n📘 Exemple : {0},\n\n📘 Przykład: {0},\n\n📘 Örnek: {0},\n\n📘 示例: {0}
+TelegramMessageHelper.WordCardCategory,\n🔖 Категория: {0},\n🔖 Category: {0},\n🔖 Kategorie: {0},\n🔖 Kategooria: {0},\n🔖 Catégorie : {0},\n🔖 Kategoria: {0},\n🔖 Kategori: {0},\n🔖 类别: {0}
+TelegramMessageHelper.EditButton,✏️ Редактировать,✏️ Edit,✏️ Bearbeiten,✏️ Muuda,✏️ Modifier,✏️ Edytuj,✏️ Düzenle,✏️ 编辑
+TelegramMessageHelper.DeleteButton,🗑 Удалить,🗑 Delete,🗑 Löschen,🗑 Kustuta,🗑 Supprimer,🗑 Usuń,🗑 Sil,🗑 删除
+TelegramMessageHelper.RepeatButton,🔁 Повторить,🔁 Repeat,🔁 Wiederholen,🔁 Korda,🔁 Répéter,🔁 Powtórz,🔁 Tekrarla,🔁 重复
+TelegramMessageHelper.LearnedButton,✅ Выучено,✅ Learned,✅ Gelernt,✅ Õpitud,✅ Appris,✅ Nauczono,✅ Öğrenildi,✅ 已学习
+TelegramMessageHelper.EditButtonAlternative,✏️ Изменить,✏️ Change,✏️ Ändern,✏️ Muuda,✏️ Changer,✏️ Zmień,✏️ Değiştir,✏️ 更改
+TelegramMessageHelper.BackButton,⬅️ Назад,⬅️ Back,⬅️ Zurück,⬅️ Tagasi,⬅️ Retour,⬅️ Wróć,⬅️ Geri,⬅️ 返回
+TelegramMessageHelper.ForwardButton,➡️ Вперед,➡️ Forward,➡️ Vorwärts,➡️ Edasi,➡️ Suivant,➡️ Dalej,➡️ İleri,➡️ 前进
+TelegramMessageHelper.WordCardPageIndicator,\n\n📄 {0}/{1},\n\n📄 {0}/{1},\n\n📄 {0}/{1},\n\n📄 {0}/{1},\n\n📄 {0}/{1},\n\n📄 {0}/{1},\n\n📄 {0}/{1},\n\n📄 {0}/{1}
+TelegramMessageHelper.ConfirmYesButton,✅ Да,✅ Yes,✅ Ja,✅ Jah,✅ Oui,✅ Tak,✅ Evet,✅ 是
+TelegramMessageHelper.ConfirmNoButton,❌ Нет,❌ No,❌ Nein,❌ Ei,❌ Non,❌ Nie,❌ Hayır,❌ 否
+TelegramMessageHelper.ConfirmationPrompt,❓ {0},❓ {0},❓ {0},❓ {0},❓ {0},❓ {0},❓ {0},❓ {0}
+TelegramMessageHelper.ErrorMessage,❌ ,❌ ,❌ ,❌ ,❌ ,❌ ,❌ ,❌ 
+TelegramMessageHelper.SuccessMessage,✅ ,✅ ,✅ ,✅ ,✅ ,✅ ,✅ ,✅ 
+TelegramMessageHelper.InfoMessage,ℹ️,ℹ️,ℹ️,ℹ️,ℹ️,ℹ️,ℹ️,ℹ️
+Keyboard.MainMenu.MyWords,📚 Мои слова,📚 My words,📚 Meine Wörter,📚 Minu sõnad,📚 Mes mots,📚 Moje słowa,📚 Kelimelerim,📚 我的单词
+Keyboard.MainMenu.AddWord,➕ Добавить слово,➕ Add word,➕ Wort hinzufügen,➕ Lisa sõna,➕ Ajouter un mot,➕ Dodaj słowo,➕ Kelime ekle,➕ 添加单词
+Keyboard.MainMenu.Statistics,📊 Статистика,📊 Statistics,📊 Statistik,📊 Statistika,📊 Statistiques,📊 Statystyki,📊 İstatistikler,📊 统计
+Keyboard.MainMenu.Learn,📖 Учить,📖 Learn,📖 Lernen,📖 Õpi,📖 Apprendre,📖 Ucz się,📖 Öğren,📖 学习
+Keyboard.MainMenu.Settings,🌐 Настройки,🌐 Settings,🌐 Einstellungen,🌐 Seaded,🌐 Paramètres,🌐 Ustawienia,🌐 Ayarlar,🌐 设置
+Keyboard.MainMenu.Profile,👤 Профиль,👤 Profile,👤 Profil,👤 Profiil,👤 Profil,👤 Profil,👤 Profil,👤 个人资料
+Keyboard.MyWordsMenu.ShowAllWords,🔍 Показать все слова,🔍 Show all words,🔍 Alle Wörter anzeigen,🔍 Kuva kõik sõnad,🔍 Afficher tous les mots,🔍 Pokaż wszystkie słowa,🔍 Tüm kelimeleri göster,🔍 显示所有单词
+Keyboard.MyWordsMenu.DictionariesByTopics,📁 Словари по темам,📁 Dictionaries by topics,📁 Wörterbücher nach Themen,📁 Sõnastikud teemade kaupa,📁 Dictionnaires par thèmes,📁 Słowniki według tematów,📁 Konulara göre sözlükler,📁 按主题分类的词典
+Keyboard.MyWordsMenu.GenerateNewWords,Генерация новых слов,Generate new words,Neue Wörter generieren,Genereeri uusi sõnu,Générer de nouveaux mots,Generuj nowe słowa,Yeni kelimeler üret,生成新词
+Keyboard.MyWordsMenu.EditWord,📝 Изменить слово,📝 Edit word,📝 Wort bearbeiten,📝 Muuda sõna,📝 Modifier le mot,📝 Edytuj słowo,📝 Kelimeyi düzenle,📝 编辑单词
+Keyboard.MyWordsMenu.DeleteWords,🗑️ Удалить слова,🗑️ Delete words,🗑️ Wörter löschen,🗑️ Kustuta sõnad,🗑️ Supprimer les mots,🗑️ Usuń słowa,🗑️ Kelimeleri sil,🗑️ 删除单词
+Keyboard.MyWordsMenu.Back,⬅️ Назад,⬅️ Back,⬅️ Zurück,⬅️ Tagasi,⬅️ Retour,⬅️ Wróć,⬅️ Geri,⬅️ 返回
+Keyboard.WordCard.Delete,🗑 Удалить,🗑 Delete,🗑 Löschen,🗑 Kustuta,🗑 Supprimer,🗑 Usuń,🗑 Sil,🗑 删除
+Keyboard.WordCard.Repeat,🔁 Повторить,🔁 Repeat,🔁 Wiederholen,🔁 Korda,🔁 Répéter,🔁 Powtórz,🔁 Tekrarla,🔁 重复
+Keyboard.WordCard.Favorite,⭐ В избранное,⭐ Add to favorites,⭐ Zu Favoriten hinzufügen,⭐ Lisa lemmikutesse,⭐ Ajouter aux favoris,⭐ Dodaj do ulubionych,⭐ Favorilere ekle,⭐ 添加到收藏夹
+Keyboard.Config.SwitchLanguage,🌐 Выбрать язык изучения,🌐 Select study language,🌐 Lernsprache auswählen,🌐 Valige õppekeel,🌐 Sélectionner la langue d'étude,🌐 Wybierz język nauki,🌐 Çalışma dilini seçin,🌐 选择学习语言
+Keyboard.Config.AddLanguage,➕ Добавить язык,➕ Add language,➕ Sprache hinzufügen,➕ Lisa keel,➕ Ajouter une langue,➕ Dodaj język,➕ Dil ekle,➕ 添加语言
+Keyboard.Config.RemoveLanguage,🔿️ Удалить язык,🔿️ Remove language,🔿️ Sprache entfernen,🔿️ Eemalda keel,🔿️ Supprimer la langue,🔿️ Usuń język,🔿️ Dili kaldır,🔿️ 删除语言
+Keyboard.Config.NativeLanguage,🌐 Родной язык,🌐 Native language,🌐 Muttersprache,🌐 Emakeel,🌐 Langue maternelle,🌐 Język ojczysty,🌐 Ana dil,🌐 母语
+Keyboard.Config.LearningMode,🎓 Режим обучения,🎓 Learning mode,🎓 Lernmodus,🎓 Õpperežiim,🎓 Mode d'apprentissage,🎓 Tryb nauki,🎓 Öğrenme modu,🎓 学习模式
+Keyboard.Config.Help,❓ Помощь,❓ Help,❓ Hilfe,❓ Abi,❓ Aide,❓ Pomoc,❓ Yardım,❓ 帮助
+Keyboard.LearnConfig.BinaryChoice,Вспомнил/Не вспомнил,Remembered/Forgot,Erinnert/Vergessen,Mäletan/Ei mäleta,Rappelé/Oublié,Pamiętam/Nie pamiętam,Hatırladım/Unuttum,记住了/忘记了
+Keyboard.LearnConfig.MultipleChoice,Выбор из вариантов,Multiple choice,Multiple-Choice,Valikvastustega,Choix multiple,Wielokrotny wybór,Çoktan seçmeli,多项选择
+Keyboard.LearnConfig.BinaryChoiceSelected,✅ Вспомнил/Не вспомнил,✅ Remembered/Forgot,✅ Erinnert/Vergessen,✅ Mäletan/Ei mäleta,✅ Rappelé/Oublié,✅ Pamiętam/Nie pamiętam,✅ Hatırladım/Unuttum,✅ 记住了/忘记了
+Keyboard.LearnConfig.MultipleChoiceSelected,✅ Выбор из вариантов,✅ Multiple choice,✅ Multiple-Choice,✅ Valikvastustega,✅ Choix multiple,✅ Wielokrotny wybór,✅ Çoktan seçmeli,✅ 多项选择
+Keyboard.Statistics.Today,📅 За сегодня,📅 For today,📅 Für heute,📅 Tänaseks,📅 Pour aujourd'hui,📅 Na dziś,📅 Bugün için,📅 今天
+Keyboard.Statistics.TotalProgress,📈 Общий прогресс,📈 Overall progress,📈 Gesamtfortschritt,📈 Üldine edusamm,📈 Progression globale,📈 Całkowity postęp,📈 Genel ilerleme,📈 总体进度
+Keyboard.Statistics.ByLanguage,🔍 По языкам,🔍 By language,🔍 Nach Sprachen,🔍 Keele järgi,🔍 Par langue,🔍 Według języków,🔍 Dile göre,🔍 按语言
+Keyboard.Profile.UserInfo,👤 Инфо о пользователе,👤 User info,👤 Benutzerinfo,👤 Kasutajainfo,👤 Infos utilisateur,👤 Informacje o użytkowniku,👤 Kullanıcı bilgisi,👤 用户信息
+Keyboard.Profile.TodoApp,📝 Todo App,📝 Todo App,📝 Todo-App,📝 Todo rakendus,📝 Application Todo,📝 Aplikacja Todo,📝 Yapılacaklar Uygulaması,📝 待办事项应用
+Keyboard.Profile.AdminDashboard,🛠 Admin Dashboard,🛠 Admin Dashboard,🛠 Admin-Dashboard,🛠 Administraatori juhtpaneel,🛠 Tableau de bord administrateur,🛠 Panel administratora,🛠 Yönetici Paneli,🛠 管理仪表板
+Keyboard.Profile.ResetStatistics,🔄 Сбросить статистику,🔄 Reset statistics,🔄 Statistiken zurücksetzen,🔄 Lähtesta statistika,🔄 Réinitialiser les statistiques,🔄 Zresetuj statystyki,🔄 İstatistikleri sıfırla,🔄 重置统计数据
+Keyboard.DictionaryManage.Edit,✏️ Редактировать,✏️ Edit,✏️ Bearbeiten,✏️ Muuda,✏️ Modifier,✏️ Edytuj,✏️ Düzenle,✏️ 编辑
+Keyboard.DictionaryManage.ResetProgress,🔄 Обнулить прогресс,🔄 Reset progress,🔄 Fortschritt zurücksetzen,🔄 Lähtesta edenemine,🔄 Réinitialiser la progression,🔄 Zresetuj postęp,🔄 İlerlemeyi sıfırla,🔄 重置进度
+Keyboard.DictionaryManage.Delete,🗑️ Удалить словарь,🗑️ Delete dictionary,🗑️ Wörterbuch löschen,🗑️ Kustuta sõnastik,🗑️ Supprimer le dictionnaire,🗑️ Usuń słownik,🗑️ Sözlüğü sil,🗑️ 删除词典
+Keyboard.DictionaryList.DefaultName,Общий,General,Allgemein,Üldine,Général,Ogólny,Genel,通用
+Keyboard.DictionaryList.CreateNew,Создать новый,Create new,Neu erstellen,Loo uus,Créer un nouveau,Utwórz nowy,Yeni oluştur,创建新的
+Keyboard.TopicDictionary.DeleteDictionaryNoWords,🗑️ Удалить словарь (без слов),🗑️ Delete dictionary (without words),🗑️ Wörterbuch löschen (ohne Wörter),🗑️ Kustuta sõnastik (ilma sõnadeta),🗑️ Supprimer le dictionnaire (sans mots),🗑️ Usuń słownik (bez słów),🗑️ Sözlüğü sil (kelimesiz),🗑️ 删除词典（无单词）
+Keyboard.TopicDictionary.DeleteDictionaryAndWords,🗑️ Удалить словарь и слова,🗑️ Delete dictionary and words,🗑️ Wörterbuch und Wörter löschen,🗑️ Kustuta sõnastik ja sõnad,🗑️ Supprimer le dictionnaire et les mots,🗑️ Usuń słownik i słowa,🗑️ Sözlüğü ve kelimeleri sil,🗑️ 删除词典和单词
+Keyboard.TopicDictionary.DeleteMultipleWords,🗑️ Удалить несколько слов,🗑️ Delete multiple words,🗑️ Mehrere Wörter löschen,🗑️ Kustuta mitu sõna,🗑️ Supprimer plusieurs mots,🗑️ Usuń wiele słów,🗑️ Birden fazla kelimeyi sil,🗑️ 删除多个单词
+Keyboard.TopicDictionaryMenu.DeleteDictionary,🗑️ Удалить словарь,🗑️ Delete dictionary,🗑️ Wörterbuch löschen,🗑️ Kustuta sõnastik,🗑️ Supprimer le dictionnaire,🗑️ Usuń słownik,🗑️ Sözlüğü sil,🗑️ 删除词典
+Keyboard.TopicDictionaryMenu.DeleteMultipleWords,🗑️ Удалить несколько слов,🗑️ Delete multiple words,🗑️ Mehrere Wörter löschen,🗑️ Kustuta mitu sõna,🗑️ Supprimer plusieurs mots,🗑️ Usuń wiele słów,🗑️ Birden fazla kelimeyi sil,🗑️ 删除多个单词
+Keyboard.TopicDictionaryMenu.Back,⬅️ Назад,⬅️ Back,⬅️ Zurück,⬅️ Tagasi,⬅️ Retour,⬅️ Wróć,⬅️ Geri,⬅️ 返回
+Keyboard.ShowTopicDictionaryMenu.Dictionary,Словарь:,Dictionary:,Wörterbuch:,Sõnastik:,Dictionnaire :,Słownik:,Sözlük:,词典:
+Keyboard.ShowMainMenu.MainMenu,Главное меню:,Main menu:,Hauptmenü:,Peamenüü:,Menu principal :,Główne menu:,Ana menü:,主菜单:
+Keyboard.HideMainMenu.MenuHidden,Меню скрыто.,Menu hidden.,Menü ausgeblendet.,Menüü peidetud.,Menu caché.,Menu ukryte.,Menü gizli.,菜单已隐藏。
+Keyboard.ShowConfigMenu.Settings,Настройки:,Settings:,Einstellungen:,Seaded:,Paramètres :,Ustawienia:,Ayarlar:,设置:
+Keyboard.ShowMyWordsMenu.MyWords,Мои слова:,My words:,Meine Wörter:,Minu sõnad:,Mes mots :,Moje słowa:,Kelimelerim:,我的单词:
+Keyboard.ShowLearnConfig.LearnModePrompt,Режим показа слов при обучении,Word display mode during learning,Wortanzeigemodus während des Lernens,Sõnade kuvamisrežiim õppimise ajal,Mode d'affichage des mots pendant l'apprentissage,Tryb wyświetlania słów podczas nauki,Öğrenirken kelime görüntüleme modu,学习时的单词显示模式
+Keyboard.ShowStatisticsMenu.Statistics,Статистика:,Statistics:,Statistik:,Statistika:,Statistiques :,Statystyki:,İstatistikler:,统计:
+Keyboard.ShowProfileMenu.Profile,Профиль:,Profile:,Profil:,Profiil:,Profil :,Profil:,Profil:,个人资料:
+Worker.ButtonDone,✅ Готово,✅ Done,✅ Fertig,✅ Valmis,✅ Terminé,✅ Gotowe,✅ Bitti,✅ 完成
+Worker.ButtonKnowSkip,Знаю/Не показывать,Know/Don't show,Kennen/Nicht anzeigen,Tead/Ära näita,Connaître/Ne pas afficher,Znam/Nie pokazuj,Biliyorum/Gösterme,知道/不显示
+Worker.ButtonRemembered,✅ Вспомнил,✅ Remembered,✅ Erinnert,✅ Mäletan,✅ Rappelé,✅ Pamiętam,✅ Hatırladım,✅ 记住了
+Worker.ButtonNotRemembered,❌ Не вспомнил,❌ Forgot,❌ Vergessen,❌ Ei mäleta,❌ Oublié,❌ Nie pamiętam,❌ Unuttum,❌ 忘记了
+Worker.ButtonCancel,cancel,cancel,Abbrechen,Tühista,Annuler,anuluj,İptal,取消
+Worker.ButtonNewTheme,Новый: {0},New: {0},Neu: {0},Uus: {0},Nouveau : {0},Nowy: {0},Yeni: {0},新: {0}
