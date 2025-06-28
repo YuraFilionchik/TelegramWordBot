@@ -231,4 +231,3 @@ Worker.ButtonRemembered,✅ Вспомнил,✅ Remembered,✅ Erinnert,✅ Mä
 Worker.ButtonNotRemembered,❌ Не вспомнил,❌ Forgot,❌ Vergessen,❌ Ei mäleta,❌ Oublié,❌ Nie pamiętam,❌ Unuttum,❌ 忘记了
 Worker.ButtonCancel,cancel,cancel,Abbrechen,Tühista,Annuler,anuluj,İptal,取消
 Worker.ButtonNewTheme,Новый: {0},New: {0},Neu: {0},Uus: {0},Nouveau : {0},Nowy: {0},Yeni: {0},新: {0}
-
