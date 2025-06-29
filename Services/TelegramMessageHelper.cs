@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using TelegramWordBot.Services.TTS;
 using TelegramWordBot.Models;
+using Microsoft.Extensions.Localization;
 
 namespace TelegramWordBot.Services;
 
@@ -14,24 +15,26 @@ public class TelegramMessageHelper
     private readonly ITelegramBotClient _bot;
     private readonly ITextToSpeechService _tts;
     private readonly TtsOptions _ttsOptions;
+    private readonly IStringLocalizer<SharedResource> _localizer;
 
-    public TelegramMessageHelper(ITelegramBotClient botClient, ITextToSpeechService tts, TtsOptions options)
+    public TelegramMessageHelper(ITelegramBotClient botClient, ITextToSpeechService tts, TtsOptions options, IStringLocalizer<SharedResource> localizer)
     {
         _bot = botClient;
         _tts = tts;
         _ttsOptions = options;
+        _localizer = localizer;
     }
 
     // === Вспомогательный метод для генерации текста карточки слова ===
     public string GenerateWordCardText(string word, string translation, string? example = null, string? category = null)
     {
-        var text = $"<b>{EscapeHtml(word)}</b>\n<i>{EscapeHtml(translation)}</i>";
+        var text = $"<b>{EscapeHtml(word)}</b>\n<i>{EscapeHtml(translation)}</i>{Environment.NewLine}";
 
         if (!string.IsNullOrWhiteSpace(example))
-            text += $"\n\n📘 Пример: {EscapeHtml(example)}";
+            text += string.Format(_localizer["TelegramMessageHelper.WordCardExample"], EscapeHtml(example)) + Environment.NewLine;
 
         if (!string.IsNullOrWhiteSpace(category))
-            text += $"\n🔖 Категория: {EscapeHtml(category)}";
+            text += string.Format(_localizer["TelegramMessageHelper.WordCardCategory"], EscapeHtml(category));
 
         return text;
     }
@@ -42,13 +45,13 @@ public class TelegramMessageHelper
         {
         new[]
         {
-            InlineKeyboardButton.WithCallbackData("✏️ Редактировать", $"edit_{wordId}"),
-            InlineKeyboardButton.WithCallbackData("🗑 Удалить", $"delete_{wordId}")
+            InlineKeyboardButton.WithCallbackData(_localizer["TelegramMessageHelper.EditButton"], $"edit_{wordId}"),
+            InlineKeyboardButton.WithCallbackData(_localizer["TelegramMessageHelper.DeleteButton"], $"delete_{wordId}")
         },
         new[]
         {
-            InlineKeyboardButton.WithCallbackData("🔁 Повторить", $"repeat_{wordId}"),
-            InlineKeyboardButton.WithCallbackData("✅ Выучено", $"learned_{wordId}")
+            InlineKeyboardButton.WithCallbackData(_localizer["TelegramMessageHelper.RepeatButton"], $"repeat_{wordId}"),
+            InlineKeyboardButton.WithCallbackData(_localizer["TelegramMessageHelper.LearnedButton"], $"learned_{wordId}")
         }
     });
 
@@ -99,15 +102,15 @@ public class TelegramMessageHelper
                 cancellationToken: ct);
         }
 
-        var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
-        await SendVoiceAsync(chatId, audioText, voiceLanguage, ct);
+        //var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
+        await SendVoiceAsync(chatId, word, voiceLanguage, ct);
         return msg;
     }
 
     public async Task<Message> SendWordCardWithEdit(ChatId chatId, string word, string translation, Guid wordId, string? example = null, string? category = null, string? imageUrl = null, string? voiceLanguage = null, CancellationToken ct = default)
     {
         var keyboard = new InlineKeyboardMarkup(
-            InlineKeyboardButton.WithCallbackData("✏️ Изменить", $"edit:{wordId}"));
+            InlineKeyboardButton.WithCallbackData(_localizer["TelegramMessageHelper.EditButtonAlternative"], $"edit:{wordId}"));
 
         var text = GenerateWordCardText(word, translation, example, category);
 
@@ -156,8 +159,8 @@ public class TelegramMessageHelper
                 cancellationToken: ct);
         }
 
-        var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
-        await SendVoiceAsync(chatId, audioText, voiceLanguage, ct);
+        //var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
+        await SendVoiceAsync(chatId, word, voiceLanguage, ct);
         return msg;
     }
 
@@ -217,7 +220,7 @@ public class TelegramMessageHelper
         if (currentIndex > 0)
         {
             buttons.Add(InlineKeyboardButton.WithCallbackData(
-                text: "⬅️ Назад",
+                text: _localizer["TelegramMessageHelper.BackButton"],
                 callbackData: $"prev:{langId}:{currentIndex - 1}"
             ));
         }
@@ -225,7 +228,7 @@ public class TelegramMessageHelper
         if (currentIndex < totalWords - 1)
         {
             buttons.Add(InlineKeyboardButton.WithCallbackData(
-                text: "➡️ Вперед",
+                text: _localizer["TelegramMessageHelper.ForwardButton"],
                 callbackData: $"next:{langId}:{currentIndex + 1}"
             ));
         }
@@ -234,7 +237,7 @@ public class TelegramMessageHelper
 
         // Генерируем текст карточки (можно вынести в общий метод)
         var text = GenerateWordCardText(word, translation, example, category)
-                 + $"\n\n📄 {currentIndex + 1}/{totalWords}";
+                 + string.Format(_localizer["TelegramMessageHelper.WordCardPageIndicator"], currentIndex + 1, totalWords);
 
         Message msg;
         if (!string.IsNullOrWhiteSpace(imageUrl))
@@ -281,8 +284,9 @@ public class TelegramMessageHelper
                 cancellationToken: ct);
         }
 
-        var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
-        await SendVoiceAsync(chatId, audioText, voiceLanguage, ct);
+        //var audioText = string.IsNullOrWhiteSpace(example) ? word : $"{word}. {example}";
+        await SendVoiceAsync(chatId, word, voiceLanguage, ct);
+
         return msg;
     }
 
@@ -292,14 +296,14 @@ public class TelegramMessageHelper
         {
         new[]
         {
-            InlineKeyboardButton.WithCallbackData("✅ Да", confirmCallback),
-            InlineKeyboardButton.WithCallbackData("❌ Нет", cancelCallback)
+            InlineKeyboardButton.WithCallbackData(_localizer["TelegramMessageHelper.ConfirmYesButton"], confirmCallback),
+            InlineKeyboardButton.WithCallbackData(_localizer["TelegramMessageHelper.ConfirmNoButton"], cancelCallback)
         }
     });
 
         return await _bot.SendMessage(
             chatId: chatId,
-            text: $"❓ {EscapeHtml(question)}",
+            text: string.Format(_localizer["TelegramMessageHelper.ConfirmationPrompt"], EscapeHtml(question)),
             parseMode: ParseMode.Html,
             replyMarkup: keyboard,
             cancellationToken: ct);
@@ -461,18 +465,18 @@ public class TelegramMessageHelper
 
     public async Task SendErrorAsync(ChatId chatId, string message, CancellationToken ct)
     {
-        var text = $"❌ <i>{EscapeHtml(message)}</i>";
+        var text = string.Format(_localizer["TelegramMessageHelper.ErrorMessage"], EscapeHtml(message));
         await _bot.SendMessage(chatId, text, parseMode: ParseMode.Html, cancellationToken: ct);
     }
 
     public async Task SendSuccessAsync(ChatId chatId, string message, CancellationToken ct)
     {
-        var text = $"✅ <b>{EscapeHtml(message)}</b>";
+        var text = string.Format(_localizer["TelegramMessageHelper.SuccessMessage"], EscapeHtml(message));
         await _bot.SendMessage(chatId, text, parseMode: ParseMode.Html, cancellationToken: ct);
     }
     public async Task SendInfoAsync(ChatId chatId, string message, CancellationToken ct)
     {
-        var text = $"ℹ️<i>{EscapeHtml(message)}</i>";
+        var text = string.Format(_localizer["TelegramMessageHelper.InfoMessage"], EscapeHtml(message));
         await _bot.SendMessage(chatId, text, parseMode: ParseMode.Html, cancellationToken: ct);
     }
 
@@ -488,11 +492,14 @@ public class TelegramMessageHelper
     ChatId chatId,
     string filePath,
     string caption,
+    string word,
+    string voiceLanguage,
     ReplyMarkup replyMarkup,
     CancellationToken ct)
     {
         await using var stream = File.OpenRead(filePath);
         var inputFile = InputFile.FromStream(stream, Path.GetFileName(filePath));
+
         await _bot.SendPhoto(
             chatId: chatId,
             photo: inputFile,
@@ -501,6 +508,7 @@ public class TelegramMessageHelper
             replyMarkup: replyMarkup,
             cancellationToken: ct
         );
+        await SendVoiceAsync(chatId, word, voiceLanguage, ct);
     }
 
 

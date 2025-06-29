@@ -1,0 +1,757 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MyWordsMenu.MyWords" xml:space="preserve">
+    <value>📚 Mes mots</value>
+  </data>
+  <data name="MyWordsMenu.ShowAllWords" xml:space="preserve">
+    <value>🔍 Afficher tous les mots</value>
+  </data>
+  <data name="MyWordsMenu.DictionariesByTopics" xml:space="preserve">
+    <value>📁 Dictionnaires par thèmes</value>
+  </data>
+  <data name="MyWordsMenu.EditWord" xml:space="preserve">
+    <value>📝 Modifier le mot</value>
+  </data>
+  <data name="MyWordsMenu.DeleteWords" xml:space="preserve">
+    <value>🗑️ Supprimer les mots</value>
+  </data>
+  <data name="MyWordsMenu.Back" xml:space="preserve">
+    <value>⬅️ Retour</value>
+  </data>
+  <data name="MainMenu.AddWord" xml:space="preserve">
+    <value>➕ Ajouter un mot</value>
+  </data>
+  <data name="MainMenu.Learn" xml:space="preserve">
+    <value>📖 Apprendre</value>
+  </data>
+  <data name="MainMenu.Settings" xml:space="preserve">
+    <value>🌐 Paramètres</value>
+  </data>
+  <data name="MainMenu.Statistics" xml:space="preserve">
+    <value>📊 Statistiques</value>
+  </data>
+  <data name="MainMenu.Profile" xml:space="preserve">
+    <value>👤 Profil</value>
+  </data>
+  <data name="MainMenu.GenerateNewWords" xml:space="preserve">
+    <value>Générer de nouveaux mots</value>
+  </data>
+  <data name="Worker.EnterWordForEditing" xml:space="preserve">
+    <value>Entrez un mot ou une partie de celui-ci :</value>
+  </data>
+  <data name="Worker.EnterWordToAdd" xml:space="preserve">
+    <value>Entrez un mot à ajouter :</value>
+  </data>
+  <data name="Worker.EnterThemeForWordGeneration" xml:space="preserve">
+    <value>Sur quel sujet ajouter des mots ?</value>
+  </data>
+  <data name="Worker.WordDeleted" xml:space="preserve">
+    <value>Mot „{0}“ supprimé</value>
+  </data>
+  <data name="Worker.WordNotFound" xml:space="preserve">
+    <value>Mot „{0}“ introuvable</value>
+  </data>
+  <data name="Worker.WordAddedToFavorites" xml:space="preserve">
+    <value>Mot „{0}“ ajouté aux favoris</value>
+  </data>
+  <data name="Worker.EnterNativeLanguage" xml:space="preserve">
+    <value>Entrez votre langue maternelle :</value>
+  </data>
+  <data name="Worker.EnterLanguageToLearn" xml:space="preserve">
+    <value>Entrez le nom de la langue à apprendre :</value>
+  </data>
+  <data name="Worker.NoAddedLanguages" xml:space="preserve">
+    <value>Vous n'avez pas de langues ajoutées.</value>
+  </data>
+  <data name="Worker.YourLanguages" xml:space="preserve">
+    <value>Vos langues : {0} Entrez le code à supprimer :</value>
+  </data>
+  <data name="Worker.ResetStatisticsConfirmation" xml:space="preserve">
+    <value>Réinitialiser les statistiques ?</value>
+  </data>
+  <data name="Worker.EnterNewDictionaryName" xml:space="preserve">
+    <value>Entrez le nom du nouveau dictionnaire :</value>
+  </data>
+  <data name="Worker.AutoFillDictionaryCancelled" xml:space="preserve">
+    <value>Remplissage automatique du dictionnaire annulé.</value>
+  </data>
+  <data name="Worker.FailedToGetWordsForTheme" xml:space="preserve">
+    <value>Impossible d'obtenir des mots pour le sujet.</value>
+  </data>
+  <data name="Worker.DictionaryAutoFillSuccess" xml:space="preserve">
+    <value>Remplissage automatique du dictionnaire „{0}“ terminé avec succès.</value>
+  </data>
+  <data name="Worker.ErrorSavingWords" xml:space="preserve">
+    <value>Une erreur s'est produite lors de l'enregistrement des mots.</value>
+  </data>
+  <data name="Worker.LearningModeChangedToBinary" xml:space="preserve">
+    <value>Mode d'apprentissage changé en binaire</value>
+  </data>
+  <data name="Worker.AlreadyUsingBinaryLearningMode" xml:space="preserve">
+    <value>Vous utilisez déjà le mode d'apprentissage binaire</value>
+  </data>
+  <data name="Worker.LearningModeChangedToMultipleChoice" xml:space="preserve">
+    <value>Mode d'apprentissage changé en choix multiple</value>
+  </data>
+  <data name="Worker.AlreadyUsingMultipleChoiceLearningMode" xml:space="preserve">
+    <value>Vous utilisez déjà le mode d'apprentissage à choix multiples</value>
+  </data>
+  <data name="Worker.ConfirmDictionaryDeletion" xml:space="preserve">
+    <value>Supprimer le dictionnaire ? Les mots seront complètement supprimés.</value>
+  </data>
+  <data name="Worker.ConfirmDictionaryDeletionMoveToDefault" xml:space="preserve">
+    <value>Supprimer le dictionnaire ? Les mots seront déplacés vers le dictionnaire général.</value>
+  </data>
+  <data name="Worker.ButtonYes" xml:space="preserve">
+    <value>Oui</value>
+  </data>
+  <data name="Worker.ButtonNo" xml:space="preserve">
+    <value>Non</value>
+  </data>
+  <data name="Worker.InvalidIdentifier" xml:space="preserve">
+    <value>Identifiant invalide</value>
+  </data>
+  <data name="Worker.UserNotFound" xml:space="preserve">
+    <value>Utilisateur introuvable</value>
+  </data>
+  <data name="Worker.DictionaryNotFound" xml:space="preserve">
+    <value>Dictionnaire introuvable</value>
+  </data>
+  <data name="Worker.CannotDeleteDefaultDictionary" xml:space="preserve">
+    <value>Impossible de supprimer le dictionnaire par défaut</value>
+  </data>
+  <data name="Worker.WelcomeMessage" xml:space="preserve">
+    <value>Salut, je suis </value>
+  </data>
+  <data name="Worker.WhatLanguageToLearn" xml:space="preserve">
+    <value>Quelle langue voulez-vous apprendre ?</value>
+  </data>
+  <data name="Worker.AddLanguageFirst" xml:space="preserve">
+    <value>Ajoutez d'abord une langue via /addlanguage</value>
+  </data>
+  <data name="Worker.EnterWordToRemember" xml:space="preserve">
+    <value>Entrez un mot à mémoriser :</value>
+  </data>
+  <data name="Worker.EnterLanguageName" xml:space="preserve">
+    <value>Entrez le nom de la langue :</value>
+  </data>
+  <data name="Worker.UsageRemoveLanguage" xml:space="preserve">
+    <value>Utilisez /removelanguage [code]</value>
+  </data>
+  <data name="Worker.LanguageListEmpty" xml:space="preserve">
+    <value>La liste est vide.</value>
+  </data>
+  <data name="Worker.YourLearningLanguages" xml:space="preserve">
+    <value>Vous apprenez : {0}</value>
+  </data>
+  <data name="Worker.ResettingData" xml:space="preserve">
+    <value>Réinitialisation des données...</value>
+  </data>
+  <data name="Worker.Done" xml:space="preserve">
+    <value>Terminé</value>
+  </data>
+  <data name="Worker.ExampleRemoveWord" xml:space="preserve">
+    <value>Exemple : /removeword mot</value>
+  </data>
+  <data name="Worker.WordXDeleted" xml:space="preserve">
+    <value>Mot „{0}“ supprimé</value>
+  </data>
+  <data name="Worker.WordXNotFound" xml:space="preserve">
+    <value>Mot „{0}“ introuvable</value>
+  </data>
+  <data name="Worker.UsageTodo" xml:space="preserve">
+    <value>Utilisez /todo Texte : Description</value>
+  </data>
+  <data name="Worker.TaskAdded" xml:space="preserve">
+    <value>Tâche ajoutée</value>
+  </data>
+  <data name="Worker.AccessDenied" xml:space="preserve">
+    <value>Accès refusé</value>
+  </data>
+  <data name="Worker.UnknownCommand" xml:space="preserve">
+    <value>Commande inconnue. Utilisez le menu ou /start.</value>
+  </data>
+  <data name="Worker.ThemeCannotBeEmpty" xml:space="preserve">
+    <value>Le thème ne peut pas être vide.</value>
+  </data>
+  <data name="Worker.ReceivedXWordsForTheme" xml:space="preserve">
+    <value>Reçu {0} mots pour le sujet „{1}“. Dans quel dictionnaire sauvegarder ?</value>
+  </data>
+  <data name="Worker.DictionaryNameCannotBeEmpty" xml:space="preserve">
+    <value>Le nom du dictionnaire ne peut pas être vide.</value>
+  </data>
+  <data name="Worker.DictionaryXCreated" xml:space="preserve">
+    <value>Dictionnaire „{0}“ créé avec succès.</value>
+  </data>
+  <data name="Worker.Add20WordsToDictionaryConfirmation" xml:space="preserve">
+    <value>Ajouter automatiquement 20 mots sur le sujet {0} ?</value>
+  </data>
+  <data name="Worker.NoWordsInLanguage" xml:space="preserve">
+    <value>❌ Vous n'avez pas de langues ajoutées.</value>
+  </data>
+  <data name="Worker.NoWordsHeader" xml:space="preserve">
+    <value>{0} Pas de mots.</value>
+  </data>
+  <data name="Worker.NavigateWordsWithButtons" xml:space="preserve">
+    <value>{0} Utilisez les boutons «⬅️» et «➡️» pour naviguer.</value>
+  </data>
+  <data name="Worker.NoWordsToList" xml:space="preserve">
+    <value>❌ Pas de mots.</value>
+  </data>
+  <data name="Worker.PageXofY" xml:space="preserve">
+    <value>=== Page {0}/{1} ===</value>
+  </data>
+  <data name="Worker.EnterWordNumbersToDelete" xml:space="preserve">
+    <value>Sisestage kustutatavate sõnade numbrid tühikutega eraldatult:</value>
+  </data>
+  <data name="Worker.NumbersNotRecognized" xml:space="preserve">
+    <value>Numéros non reconnus</value>
+  </data>
+  <data name="Worker.WordsDeletedCount" xml:space="preserve">
+    <value>Mots supprimés : {0}</value>
+  </data>
+  <data name="Worker.ErrorTelegramAPI" xml:space="preserve">
+    <value>Erreur de l'API Telegram : {0}</value>
+  </data>
+  <data name="Worker.ErrorProcessingUpdate" xml:space="preserve">
+    <value>Erreur de traitement de la mise à jour</value>
+  </data>
+  <data name="Worker.WordToSaveNotFound" xml:space="preserve">
+    <value>Mot à enregistrer introuvable</value>
+  </data>
+  <data name="Worker.WordAdded" xml:space="preserve">
+    <value>Ajouté «{0}»</value>
+  </data>
+  <data name="Worker.ErrorLoadingWord" xml:space="preserve">
+    <value>Erreur lors du chargement du mot</value>
+  </data>
+  <data name="Worker.ErrorAiTranslation" xml:space="preserve">
+    <value>Erreur de traduction IA</value>
+  </data>
+  <data name="Worker.EditTranslationsPrompt" xml:space="preserve">
+    <value>Modifiez les traductions :</value>
+  </data>
+  <data name="Worker.EditExamplesPrompt" xml:space="preserve">
+    <value>Modifiez les exemples :</value>
+  </data>
+  <data name="Worker.WordUpdated" xml:space="preserve">
+    <value>Mis à jour «{0}»</value>
+  </data>
+  <data name="Worker.EmptyQuery" xml:space="preserve">
+    <value>Requête vide</value>
+  </data>
+  <data name="Worker.NothingFound" xml:space="preserve">
+    <value>Rien trouvé</value>
+  </data>
+  <data name="Worker.SelectWordPrompt" xml:space="preserve">
+    <value>Sélectionnez un mot :</value>
+  </data>
+  <data name="Worker.InvalidLanguageId" xml:space="preserve">
+    <value>ID de langue invalide.</value>
+  </data>
+  <data name="Worker.LanguageNotOnYourList" xml:space="preserve">
+    <value>Cette langue n'est pas trouvée dans votre liste.</value>
+  </data>
+  <data name="Worker.CurrentLanguageSwitched" xml:space="preserve">
+    <value>Langue actuelle passée à «{0}».</value>
+  </data>
+  <data name="Worker.LanguageChangedSuccessfully" xml:space="preserve">
+    <value>Langue changée avec succès.</value>
+  </data>
+  <data name="Worker.NoLanguagesToSwitch" xml:space="preserve">
+    <value>Vous n'avez pas encore de langues à étudier.</value>
+  </data>
+  <data name="Worker.SelectCurrentLanguagePrompt" xml:space="preserve">
+    <value>Valige keel</value>
+  </data>
+  <data name="Worker.CorrectAnswer" xml:space="preserve">
+    <value>Correct ! {0} = {1}</value>
+  </data>
+  <data name="Worker.IncorrectAnswer" xml:space="preserve">
+    <value>Incorrect ! {0} = {1}</value>
+  </data>
+  <data name="Worker.WordMarkedAsLearned" xml:space="preserve">
+    <value>«{0}» marqué comme appris</value>
+  </data>
+  <data name="Worker.NothingToRepeat" xml:space="preserve">
+    <value>Rien à répéter. Vous pouvez ajouter de nouveaux mots</value>
+  </data>
+  <data name="Worker.ChooseCorrectTranslationFor" xml:space="preserve">
+    <value>Choisissez la bonne traduction pour le mot :</value>
+  </data>
+  <data name="Worker.TranslateWordPrompt" xml:space="preserve">
+    <value>Traduisez le mot</value>
+  </data>
+  <data name="Worker.LanguageXNotFound" xml:space="preserve">
+    <value>Langue {0} introuvable</value>
+  </data>
+  <data name="Worker.LanguageXRemoved" xml:space="preserve">
+    <value>Langue {0} supprimée</value>
+  </data>
+  <data name="Worker.LanguagesNotSetup" xml:space="preserve">
+    <value>Les langues ne sont pas configurées</value>
+  </data>
+  <data name="Worker.CouldNotDetectLanguage" xml:space="preserve">
+    <value>Impossible de déterminer la langue du mot</value>
+  </data>
+  <data name="Worker.LanguageXNotInDb" xml:space="preserve">
+    <value>La langue „{0}“ n'est pas dans la base de données</value>
+  </data>
+  <data name="Worker.WordAlreadyInYourDictionary" xml:space="preserve">
+    <value>«{0}» est déjà dans votre dictionnaire.</value>
+  </data>
+  <data name="Worker.WordXAddedToDefaultDictionary" xml:space="preserve">
+    <value>«{0} - {1}» ajouté à votre dictionnaire général.</value>
+  </data>
+  <data name="Worker.ChooseTranslationsPrompt" xml:space="preserve">
+    <value>Sélectionnez la ou les traductions :</value>
+  </data>
+  <data name="Worker.ChooseExamplesPrompt" xml:space="preserve">
+    <value>Sélectionnez des exemples d'utilisation :</value>
+  </data>
+  <data name="Worker.CouldNotRecognizeLanguage" xml:space="preserve">
+    <value>Impossible de reconnaître la langue</value>
+  </data>
+  <data name="Worker.NativeLanguageSetTo" xml:space="preserve">
+    <value>Langue maternelle définie sur : {0}</value>
+  </data>
+  <data name="Worker.LanguageXAdded" xml:space="preserve">
+    <value>Langue {0} ajoutée. Sélectionnez des mots via /addword ou le menu</value>
+  </data>
+  <data name="Worker.EnterThemeToCreateDictionary" xml:space="preserve">
+    <value>Sisestage teema</value>
+  </data>
+  <data name="Worker.TotalStatisticsHeader" xml:space="preserve">
+    <value>📈 </value>
+  </data>
+  <data name="Worker.TotalWords" xml:space="preserve">
+    <value>Total de mots :      </value>
+  </data>
+  <data name="Worker.FullyLearnedWords" xml:space="preserve">
+    <value>Entièrement appris : </value>
+  </data>
+  <data name="Worker.WordsInProgress" xml:space="preserve">
+    <value>En cours :       </value>
+  </data>
+  <data name="Worker.Top10HardestWords" xml:space="preserve">
+    <value>🔟 </value>
+  </data>
+  <data name="Worker.HardWordDisplay" xml:space="preserve">
+    <value> |--&gt; {0} |- Facteur de facilité : {1} |- Répétitions : {2}_______________________________</value>
+  </data>
+  <data name="Worker.NoWords" xml:space="preserve">
+    <value>Pas de mots.</value>
+  </data>
+  <data name="Worker.TodayStatisticsHeader" xml:space="preserve">
+    <value>📈 </value>
+  </data>
+  <data name="Worker.WordsRepeatedToday" xml:space="preserve">
+    <value>Mots répétés : </value>
+  </data>
+  <data name="Worker.WordsLearnedToday" xml:space="preserve">
+    <value>Appris : </value>
+  </data>
+  <data name="Worker.HardWordsHeader" xml:space="preserve">
+    <value>📈 </value>
+  </data>
+  <data name="Worker.HardWordSimple" xml:space="preserve">
+    <value>- {0}</value>
+  </data>
+  <data name="Worker.NoActivityToday" xml:space="preserve">
+    <value>Vous n'avez pas encore étudié aujourd'hui.</value>
+  </data>
+  <data name="Worker.StatisticsByLanguageHeader" xml:space="preserve">
+    <value>📊 </value>
+  </data>
+  <data name="Worker.LanguageStats" xml:space="preserve">
+    <value> </value>
+  </data>
+  <data name="Worker.NoDictionaries" xml:space="preserve">
+    <value>Vous n'avez pas de dictionnaires.</value>
+  </data>
+  <data name="Worker.DictionariesByTopicsHeader" xml:space="preserve">
+    <value>📁 </value>
+  </data>
+  <data name="Worker.DictionariesByLanguageHeader" xml:space="preserve">
+    <value>📚 </value>
+  </data>
+  <data name="Worker.UnknownLanguage" xml:space="preserve">
+    <value>Inconnu</value>
+  </data>
+  <data name="Worker.DictionaryEntry" xml:space="preserve">
+    <value>- {0} ({1})</value>
+  </data>
+  <data name="Worker.AllWordProgressReset" xml:space="preserve">
+    <value>Progression pour tous les mots réinitialisée</value>
+  </data>
+  <data name="Worker.UserProfileHeader" xml:space="preserve">
+    <value>👤 </value>
+  </data>
+  <data name="Worker.ProfileId" xml:space="preserve">
+    <value>ID : </value>
+  </data>
+  <data name="Worker.ProfileNativeLanguage" xml:space="preserve">
+    <value>Langue maternelle : </value>
+  </data>
+  <data name="Worker.ProfileCurrentLanguage" xml:space="preserve">
+    <value>Langue actuelle : </value>
+  </data>
+  <data name="Worker.ProfileLearningMode" xml:space="preserve">
+    <value>Mode d'apprentissage : </value>
+  </data>
+  <data name="Worker.ProfileLearningModeMultipleChoice" xml:space="preserve">
+    <value>Choix multiple</value>
+  </data>
+  <data name="Worker.ProfileLearningModeBinary" xml:space="preserve">
+    <value>binaire</value>
+  </data>
+  <data name="Worker.ProfileStudiedLanguages" xml:space="preserve">
+    <value>Langues étudiées : {0}</value>
+  </data>
+  <data name="Worker.ProfileNoStudiedLanguages" xml:space="preserve">
+    <value>aucun</value>
+  </data>
+  <data name="Worker.ProfileTotalWords" xml:space="preserve">
+    <value>Total de mots : </value>
+  </data>
+  <data name="Worker.AllStatsReset" xml:space="preserve">
+    <value>Toutes les statistiques ont été réinitialisées</value>
+  </data>
+  <data name="Worker.AdminUsersHeader" xml:space="preserve">
+    <value>👥 Utilisateurs</value>
+  </data>
+  <data name="Worker.AdminUserInfoLine1" xml:space="preserve">
+    <value>ID : </value>
+  </data>
+  <data name="Worker.AdminUserInfoLine2" xml:space="preserve">
+    <value>Natif : {0} | Actuel : {1} | MC : {2}</value>
+  </data>
+  <data name="Worker.AdminUserWords" xml:space="preserve">
+    <value>Mots : {0}</value>
+  </data>
+  <data name="Worker.AdminUserDictionaries" xml:space="preserve">
+    <value>Dictionnaires : {0}</value>
+  </data>
+  <data name="Worker.AdminTotalWords" xml:space="preserve">
+    <value>Total de mots : {0}</value>
+  </data>
+  <data name="Worker.AdminWordsByLanguage" xml:space="preserve">
+    <value>{0} : {1}</value>
+  </data>
+  <data name="Worker.DictionaryEmpty" xml:space="preserve">
+    <value>Le dictionnaire est vide.</value>
+  </data>
+  <data name="Worker.DictionaryNameHeader" xml:space="preserve">
+    <value>📚 Dictionnaire : {0}</value>
+  </data>
+  <data name="Worker.DictionaryWordEntry" xml:space="preserve">
+    <value>- {0}</value>
+  </data>
+  <data name="Worker.DictionaryNameDefault" xml:space="preserve">
+    <value>Général</value>
+  </data>
+  <data name="Worker.DictionaryWordTranslationEntry" xml:space="preserve">
+    <value>{0} — {1}</value>
+  </data>
+  <data name="Worker.NoWordsInDictionary" xml:space="preserve">
+    <value>Il n'y a pas de mots dans le dictionnaire.</value>
+  </data>
+  <data name="Worker.DictionaryProgressReset" xml:space="preserve">
+    <value>Progression du dictionnaire réinitialisée</value>
+  </data>
+  <data name="Worker.DictionaryDeleted" xml:space="preserve">
+    <value>Dictionnaire supprimé</value>
+  </data>
+  <data name="Worker.HelpHeader" xml:space="preserve">
+    <value>❓ Aide</value>
+  </data>
+  <data name="Worker.HelpAddWord" xml:space="preserve">
+    <value>/addword - ajouter un nouveau mot</value>
+  </data>
+  <data name="Worker.HelpMyWords" xml:space="preserve">
+    <value>/mywords - afficher tous les mots</value>
+  </data>
+  <data name="Worker.HelpLearn" xml:space="preserve">
+    <value>/learn - commencer à apprendre</value>
+  </data>
+  <data name="Worker.HelpUseMenu" xml:space="preserve">
+    <value>Utilisez le menu du bot pour d'autres actions.</value>
+  </data>
+  <data name="TelegramMessageHelper.WordCardExample" xml:space="preserve">
+    <value>\n\n📘 Exemple : {0}</value>
+  </data>
+  <data name="TelegramMessageHelper.WordCardCategory" xml:space="preserve">
+    <value>\n🔖 Catégorie : {0}</value>
+  </data>
+  <data name="TelegramMessageHelper.EditButton" xml:space="preserve">
+    <value>✏️ Modifier</value>
+  </data>
+  <data name="TelegramMessageHelper.DeleteButton" xml:space="preserve">
+    <value>🗑 Supprimer</value>
+  </data>
+  <data name="TelegramMessageHelper.RepeatButton" xml:space="preserve">
+    <value>🔁 Répéter</value>
+  </data>
+  <data name="TelegramMessageHelper.LearnedButton" xml:space="preserve">
+    <value>✅ Appris</value>
+  </data>
+  <data name="TelegramMessageHelper.EditButtonAlternative" xml:space="preserve">
+    <value>✏️ Changer</value>
+  </data>
+  <data name="TelegramMessageHelper.BackButton" xml:space="preserve">
+    <value>⬅️ Retour</value>
+  </data>
+  <data name="TelegramMessageHelper.ForwardButton" xml:space="preserve">
+    <value>➡️ Suivant</value>
+  </data>
+  <data name="TelegramMessageHelper.WordCardPageIndicator" xml:space="preserve">
+    <value>\n\n📄 {0}/{1}</value>
+  </data>
+  <data name="TelegramMessageHelper.ConfirmYesButton" xml:space="preserve">
+    <value>✅ Oui</value>
+  </data>
+  <data name="TelegramMessageHelper.ConfirmNoButton" xml:space="preserve">
+    <value>❌ Non</value>
+  </data>
+  <data name="TelegramMessageHelper.ConfirmationPrompt" xml:space="preserve">
+    <value>❓ {0}</value>
+  </data>
+  <data name="TelegramMessageHelper.ErrorMessage" xml:space="preserve">
+    <value>❌ </value>
+  </data>
+  <data name="TelegramMessageHelper.SuccessMessage" xml:space="preserve">
+    <value>✅ </value>
+  </data>
+  <data name="TelegramMessageHelper.InfoMessage" xml:space="preserve">
+    <value>ℹ️</value>
+  </data>
+  <data name="Keyboard.MainMenu.MyWords" xml:space="preserve">
+    <value>📚 Mes mots</value>
+  </data>
+  <data name="Keyboard.MainMenu.AddWord" xml:space="preserve">
+    <value>➕ Ajouter un mot</value>
+  </data>
+  <data name="Keyboard.MainMenu.Statistics" xml:space="preserve">
+    <value>📊 Statistiques</value>
+  </data>
+  <data name="Keyboard.MainMenu.Learn" xml:space="preserve">
+    <value>📖 Apprendre</value>
+  </data>
+  <data name="Keyboard.MainMenu.Settings" xml:space="preserve">
+    <value>🌐 Paramètres</value>
+  </data>
+  <data name="Keyboard.MainMenu.Profile" xml:space="preserve">
+    <value>👤 Profil</value>
+  </data>
+  <data name="Keyboard.MyWordsMenu.ShowAllWords" xml:space="preserve">
+    <value>🔍 Afficher tous les mots</value>
+  </data>
+  <data name="Keyboard.MyWordsMenu.DictionariesByTopics" xml:space="preserve">
+    <value>📁 Dictionnaires par thèmes</value>
+  </data>
+  <data name="Keyboard.MyWordsMenu.GenerateNewWords" xml:space="preserve">
+    <value>Générer de nouveaux mots</value>
+  </data>
+  <data name="Keyboard.MyWordsMenu.EditWord" xml:space="preserve">
+    <value>📝 Modifier le mot</value>
+  </data>
+  <data name="Keyboard.MyWordsMenu.DeleteWords" xml:space="preserve">
+    <value>🗑️ Supprimer les mots</value>
+  </data>
+  <data name="Keyboard.MyWordsMenu.Back" xml:space="preserve">
+    <value>⬅️ Retour</value>
+  </data>
+  <data name="Keyboard.WordCard.Delete" xml:space="preserve">
+    <value>🗑 Supprimer</value>
+  </data>
+  <data name="Keyboard.WordCard.Repeat" xml:space="preserve">
+    <value>🔁 Répéter</value>
+  </data>
+  <data name="Keyboard.WordCard.Favorite" xml:space="preserve">
+    <value>⭐ Ajouter aux favoris</value>
+  </data>
+  <data name="Keyboard.Config.SwitchLanguage" xml:space="preserve">
+    <value>🌐 Sélectionner la langue d'étude</value>
+  </data>
+  <data name="Keyboard.Config.AddLanguage" xml:space="preserve">
+    <value>➕ Ajouter une langue</value>
+  </data>
+  <data name="Keyboard.Config.RemoveLanguage" xml:space="preserve">
+    <value>🔿️ Supprimer la langue</value>
+  </data>
+  <data name="Keyboard.Config.NativeLanguage" xml:space="preserve">
+    <value>🌐 Langue maternelle</value>
+  </data>
+  <data name="Keyboard.Config.LearningMode" xml:space="preserve">
+    <value>🎓 Mode d'apprentissage</value>
+  </data>
+  <data name="Keyboard.Config.Help" xml:space="preserve">
+    <value>❓ Aide</value>
+  </data>
+  <data name="Keyboard.LearnConfig.BinaryChoice" xml:space="preserve">
+    <value>Rappelé/Oublié</value>
+  </data>
+  <data name="Keyboard.LearnConfig.MultipleChoice" xml:space="preserve">
+    <value>Choix multiple</value>
+  </data>
+  <data name="Keyboard.LearnConfig.BinaryChoiceSelected" xml:space="preserve">
+    <value>✅ Rappelé/Oublié</value>
+  </data>
+  <data name="Keyboard.LearnConfig.MultipleChoiceSelected" xml:space="preserve">
+    <value>✅ Choix multiple</value>
+  </data>
+  <data name="Keyboard.Statistics.Today" xml:space="preserve">
+    <value>📅 Pour aujourd'hui</value>
+  </data>
+  <data name="Keyboard.Statistics.TotalProgress" xml:space="preserve">
+    <value>📈 Progression globale</value>
+  </data>
+  <data name="Keyboard.Statistics.ByLanguage" xml:space="preserve">
+    <value>🔍 Par langue</value>
+  </data>
+  <data name="Keyboard.Profile.UserInfo" xml:space="preserve">
+    <value>👤 Infos utilisateur</value>
+  </data>
+  <data name="Keyboard.Profile.TodoApp" xml:space="preserve">
+    <value>📝 Application Todo</value>
+  </data>
+  <data name="Keyboard.Profile.AdminDashboard" xml:space="preserve">
+    <value>🛠 Tableau de bord administrateur</value>
+  </data>
+  <data name="Keyboard.Profile.ResetStatistics" xml:space="preserve">
+    <value>🔄 Réinitialiser les statistiques</value>
+  </data>
+  <data name="Keyboard.DictionaryManage.Edit" xml:space="preserve">
+    <value>✏️ Modifier</value>
+  </data>
+  <data name="Keyboard.DictionaryManage.ResetProgress" xml:space="preserve">
+    <value>🔄 Réinitialiser la progression</value>
+  </data>
+  <data name="Keyboard.DictionaryManage.Delete" xml:space="preserve">
+    <value>🗑️ Supprimer le dictionnaire</value>
+  </data>
+  <data name="Keyboard.DictionaryList.DefaultName" xml:space="preserve">
+    <value>Général</value>
+  </data>
+  <data name="Keyboard.DictionaryList.CreateNew" xml:space="preserve">
+    <value>Créer un nouveau</value>
+  </data>
+  <data name="Keyboard.TopicDictionary.DeleteDictionaryNoWords" xml:space="preserve">
+    <value>🗑️ Supprimer le dictionnaire (sans mots)</value>
+  </data>
+  <data name="Keyboard.TopicDictionary.DeleteDictionaryAndWords" xml:space="preserve">
+    <value>🗑️ Supprimer le dictionnaire et les mots</value>
+  </data>
+  <data name="Keyboard.TopicDictionary.DeleteMultipleWords" xml:space="preserve">
+    <value>🗑️ Supprimer plusieurs mots</value>
+  </data>
+  <data name="Keyboard.TopicDictionaryMenu.DeleteDictionary" xml:space="preserve">
+    <value>🗑️ Supprimer le dictionnaire</value>
+  </data>
+  <data name="Keyboard.TopicDictionaryMenu.DeleteMultipleWords" xml:space="preserve">
+    <value>🗑️ Supprimer plusieurs mots</value>
+  </data>
+  <data name="Keyboard.TopicDictionaryMenu.Back" xml:space="preserve">
+    <value>⬅️ Retour</value>
+  </data>
+  <data name="Keyboard.ShowTopicDictionaryMenu.Dictionary" xml:space="preserve">
+    <value>Dictionnaire :</value>
+  </data>
+  <data name="Keyboard.ShowMainMenu.MainMenu" xml:space="preserve">
+    <value>Menu principal :</value>
+  </data>
+  <data name="Keyboard.HideMainMenu.MenuHidden" xml:space="preserve">
+    <value>Menu caché.</value>
+  </data>
+  <data name="Keyboard.ShowConfigMenu.Settings" xml:space="preserve">
+    <value>Paramètres :</value>
+  </data>
+  <data name="Keyboard.ShowMyWordsMenu.MyWords" xml:space="preserve">
+    <value>Mes mots :</value>
+  </data>
+  <data name="Keyboard.ShowLearnConfig.LearnModePrompt" xml:space="preserve">
+    <value>Mode d'affichage des mots pendant l'apprentissage</value>
+  </data>
+  <data name="Keyboard.ShowStatisticsMenu.Statistics" xml:space="preserve">
+    <value>Statistiques :</value>
+  </data>
+  <data name="Keyboard.ShowProfileMenu.Profile" xml:space="preserve">
+    <value>Profil :</value>
+  </data>
+  <data name="Worker.ButtonDone" xml:space="preserve">
+    <value>✅ Terminé</value>
+  </data>
+  <data name="Worker.ButtonKnowSkip" xml:space="preserve">
+    <value>Connaître/Ne pas afficher</value>
+  </data>
+  <data name="Worker.ButtonRemembered" xml:space="preserve">
+    <value>✅ Rappelé</value>
+  </data>
+  <data name="Worker.ButtonNotRemembered" xml:space="preserve">
+    <value>❌ Oublié</value>
+  </data>
+  <data name="Worker.ButtonCancel" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="Worker.ButtonNewTheme" xml:space="preserve">
+    <value>Nouveau : {0}</value>
+  </data>
+</root>

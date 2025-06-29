@@ -8,8 +8,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Добавление сервисов локализации
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
 var appUrl = Environment.GetEnvironmentVariable("APP_URL");
 appUrl = FixUrlAndPort(appUrl);
@@ -46,6 +51,7 @@ builder.Services.AddHttpClient<IAIHelper, AIHelper>();
 builder.Services.AddSingleton<TranslationRepository>();
 builder.Services.AddSingleton<UserLanguageRepository>();
 builder.Services.AddSingleton<TelegramMessageHelper>();
+builder.Services.AddSingleton<KeyboardFactory>(); // Добавляем KeyboardFactory в DI
 builder.Services.AddSingleton<SpacedRepetitionService>();
 builder.Services.AddSingleton<WordImageRepository>();
 builder.Services.AddHttpClient<IImageService, ImageService>();
@@ -56,6 +62,27 @@ builder.Services.AddControllers();
 builder.Services.AddHostedService<Worker>();
 
 var app = builder.Build();
+
+// Конфигурация middleware для локализации
+var russianCulture = new CultureInfo("ru-RU");
+var supportedCultures = new[] {
+    russianCulture, // Русский язык как культура по умолчанию
+    new CultureInfo("en-US"),
+    new CultureInfo("fr-FR"),
+    new CultureInfo("pl-PL"),
+    new CultureInfo("de-DE"),
+    new CultureInfo("zh-CN"),
+    new CultureInfo("tr-TR"),
+    new CultureInfo("et-EE")
+    // Добавьте сюда коды для других языков, которые вы планируете поддерживать
+};
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture(russianCulture.Name) // Язык по умолчанию - Русский
+    .AddSupportedCultures(supportedCultures.Select(c => c.Name).ToArray())
+    .AddSupportedUICultures(supportedCultures.Select(c => c.Name).ToArray());
+
+// Важно: UseRequestLocalization должен быть зарегистрирован до UseRouting и других middleware, которые могут зависеть от культуры
+app.UseRequestLocalization(localizationOptions);
 
 app.MapControllers();
 

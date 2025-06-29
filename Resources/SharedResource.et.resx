@@ -1,0 +1,757 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:ns1="urn:schemas-microsoft-com:xml-msdata" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:schema id="root">
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xs:element name="root" ns1:IsDataSet="true">
+      <xs:complexType>
+        <xs:choice maxOccurs="unbounded">
+          <xs:element name="metadata">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" />
+              </xs:sequence>
+              <xs:attribute name="name" use="required" type="xsd:string" />
+              <xs:attribute name="type" type="xsd:string" />
+              <xs:attribute name="mimetype" type="xsd:string" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="assembly">
+            <xs:complexType>
+              <xs:attribute name="alias" type="xsd:string" />
+              <xs:attribute name="name" type="xsd:string" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="data">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+                <xs:element name="comment" type="xsd:string" minOccurs="0" ns1:Ordinal="2" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" ns1:Ordinal="1" />
+              <xs:attribute name="type" type="xsd:string" ns1:Ordinal="3" />
+              <xs:attribute name="mimetype" type="xsd:string" ns1:Ordinal="4" />
+              <xs:attribute ref="xml:space" />
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="resheader">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="value" type="xsd:string" minOccurs="0" ns1:Ordinal="1" />
+              </xs:sequence>
+              <xs:attribute name="name" type="xsd:string" use="required" />
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:complexType>
+    </xs:element>
+  </xs:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="MyWordsMenu.MyWords" xml:space="preserve">
+    <value>📚 Minu sõnad</value>
+  </data>
+  <data name="MyWordsMenu.ShowAllWords" xml:space="preserve">
+    <value>🔍 Kuva kõik sõnad</value>
+  </data>
+  <data name="MyWordsMenu.DictionariesByTopics" xml:space="preserve">
+    <value>📁 Sõnastikud teemade kaupa</value>
+  </data>
+  <data name="MyWordsMenu.EditWord" xml:space="preserve">
+    <value>📝 Muuda sõna</value>
+  </data>
+  <data name="MyWordsMenu.DeleteWords" xml:space="preserve">
+    <value>🗑️ Kustuta sõnad</value>
+  </data>
+  <data name="MyWordsMenu.Back" xml:space="preserve">
+    <value>⬅️ Tagasi</value>
+  </data>
+  <data name="MainMenu.AddWord" xml:space="preserve">
+    <value>➕ Lisa sõna</value>
+  </data>
+  <data name="MainMenu.Learn" xml:space="preserve">
+    <value>📖 Õpi</value>
+  </data>
+  <data name="MainMenu.Settings" xml:space="preserve">
+    <value>🌐 Seaded</value>
+  </data>
+  <data name="MainMenu.Statistics" xml:space="preserve">
+    <value>📊 Statistika</value>
+  </data>
+  <data name="MainMenu.Profile" xml:space="preserve">
+    <value>👤 Profiil</value>
+  </data>
+  <data name="MainMenu.GenerateNewWords" xml:space="preserve">
+    <value>Genereeri uusi sõnu</value>
+  </data>
+  <data name="Worker.EnterWordForEditing" xml:space="preserve">
+    <value>Sisestage sõna või selle osa:</value>
+  </data>
+  <data name="Worker.EnterWordToAdd" xml:space="preserve">
+    <value>Sisestage lisatav sõna:</value>
+  </data>
+  <data name="Worker.EnterThemeForWordGeneration" xml:space="preserve">
+    <value>Millisele teemale sõnu lisada?:</value>
+  </data>
+  <data name="Worker.WordDeleted" xml:space="preserve">
+    <value>Sõna „{0}“ kustutatud</value>
+  </data>
+  <data name="Worker.WordNotFound" xml:space="preserve">
+    <value>Sõna „{0}“ ei leitud</value>
+  </data>
+  <data name="Worker.WordAddedToFavorites" xml:space="preserve">
+    <value>Sõna „{0}“ lisatud lemmikutesse</value>
+  </data>
+  <data name="Worker.EnterNativeLanguage" xml:space="preserve">
+    <value>Sisestage oma emakeel:</value>
+  </data>
+  <data name="Worker.EnterLanguageToLearn" xml:space="preserve">
+    <value>Sisestage õpitava keele nimi:</value>
+  </data>
+  <data name="Worker.NoAddedLanguages" xml:space="preserve">
+    <value>Teil pole lisatud keeli.</value>
+  </data>
+  <data name="Worker.YourLanguages" xml:space="preserve">
+    <value>Teie keeled: {0} Sisestage kustutatav kood:</value>
+  </data>
+  <data name="Worker.ResetStatisticsConfirmation" xml:space="preserve">
+    <value>Lähtesta statistika?</value>
+  </data>
+  <data name="Worker.EnterNewDictionaryName" xml:space="preserve">
+    <value>Sisestage uue sõnastiku nimi:</value>
+  </data>
+  <data name="Worker.AutoFillDictionaryCancelled" xml:space="preserve">
+    <value>Sõnastiku automaatne täitmine tühistati.</value>
+  </data>
+  <data name="Worker.FailedToGetWordsForTheme" xml:space="preserve">
+    <value>Sõnu ei õnnestunud teema kohta hankida.</value>
+  </data>
+  <data name="Worker.DictionaryAutoFillSuccess" xml:space="preserve">
+    <value>Sõnastiku „{0}“ automaatne täitmine edukalt lõpetatud.</value>
+  </data>
+  <data name="Worker.ErrorSavingWords" xml:space="preserve">
+    <value>Sõnade salvestamisel ilmnes viga.</value>
+  </data>
+  <data name="Worker.LearningModeChangedToBinary" xml:space="preserve">
+    <value>Õpperežiim muudetud binaarseks</value>
+  </data>
+  <data name="Worker.AlreadyUsingBinaryLearningMode" xml:space="preserve">
+    <value>Kasutate juba binaarset õpperežiimi</value>
+  </data>
+  <data name="Worker.LearningModeChangedToMultipleChoice" xml:space="preserve">
+    <value>Õpperežiim muudetud valikvastustega</value>
+  </data>
+  <data name="Worker.AlreadyUsingMultipleChoiceLearningMode" xml:space="preserve">
+    <value>Kasutate juba valikvastustega õpperežiimi</value>
+  </data>
+  <data name="Worker.ConfirmDictionaryDeletion" xml:space="preserve">
+    <value>Kustuta sõnastik? Sõnad eemaldatakse täielikult.</value>
+  </data>
+  <data name="Worker.ConfirmDictionaryDeletionMoveToDefault" xml:space="preserve">
+    <value>Kustuta sõnastik? Sõnad teisaldatakse üldisesse sõnastikku.</value>
+  </data>
+  <data name="Worker.ButtonYes" xml:space="preserve">
+    <value>Jah</value>
+  </data>
+  <data name="Worker.ButtonNo" xml:space="preserve">
+    <value>Ei</value>
+  </data>
+  <data name="Worker.InvalidIdentifier" xml:space="preserve">
+    <value>Kehtetu identifikaator</value>
+  </data>
+  <data name="Worker.UserNotFound" xml:space="preserve">
+    <value>Kasutajat ei leitud</value>
+  </data>
+  <data name="Worker.DictionaryNotFound" xml:space="preserve">
+    <value>Sõnastikku ei leitud</value>
+  </data>
+  <data name="Worker.CannotDeleteDefaultDictionary" xml:space="preserve">
+    <value>Vaikesõnastikku ei saa kustutada</value>
+  </data>
+  <data name="Worker.WelcomeMessage" xml:space="preserve">
+    <value>Tere, mina olen </value>
+  </data>
+  <data name="Worker.WhatLanguageToLearn" xml:space="preserve">
+    <value>Millist keelt soovite õppida?</value>
+  </data>
+  <data name="Worker.AddLanguageFirst" xml:space="preserve">
+    <value>Esmalt lisage keel /addlanguage kaudu</value>
+  </data>
+  <data name="Worker.EnterWordToRemember" xml:space="preserve">
+    <value>Sisestage meeldejätmiseks sõna:</value>
+  </data>
+  <data name="Worker.EnterLanguageName" xml:space="preserve">
+    <value>Sisestage keele nimi:</value>
+  </data>
+  <data name="Worker.UsageRemoveLanguage" xml:space="preserve">
+    <value>Kasutage /removelanguage [kood]</value>
+  </data>
+  <data name="Worker.LanguageListEmpty" xml:space="preserve">
+    <value>Nimekiri on tühi.</value>
+  </data>
+  <data name="Worker.YourLearningLanguages" xml:space="preserve">
+    <value>Te õpite: {0}</value>
+  </data>
+  <data name="Worker.ResettingData" xml:space="preserve">
+    <value>Andmete lähtestamine...</value>
+  </data>
+  <data name="Worker.Done" xml:space="preserve">
+    <value>Valmis</value>
+  </data>
+  <data name="Worker.ExampleRemoveWord" xml:space="preserve">
+    <value>Näide: /removeword sõna</value>
+  </data>
+  <data name="Worker.WordXDeleted" xml:space="preserve">
+    <value>Sõna „{0}“ kustutatud</value>
+  </data>
+  <data name="Worker.WordXNotFound" xml:space="preserve">
+    <value>Sõna „{0}“ ei leitud</value>
+  </data>
+  <data name="Worker.UsageTodo" xml:space="preserve">
+    <value>Kasutage /todo Tekst : Kirjeldus</value>
+  </data>
+  <data name="Worker.TaskAdded" xml:space="preserve">
+    <value>Ülesanne lisatud</value>
+  </data>
+  <data name="Worker.AccessDenied" xml:space="preserve">
+    <value>Juurdepääs keelatud</value>
+  </data>
+  <data name="Worker.UnknownCommand" xml:space="preserve">
+    <value>Tundmatu käsk. Kasutage menüüd või /start.</value>
+  </data>
+  <data name="Worker.ThemeCannotBeEmpty" xml:space="preserve">
+    <value>Teema ei saa olla tühi.</value>
+  </data>
+  <data name="Worker.ReceivedXWordsForTheme" xml:space="preserve">
+    <value>Saadud {0} sõna teema „{1}“ kohta. Millisesse sõnastikku salvestada?</value>
+  </data>
+  <data name="Worker.DictionaryNameCannotBeEmpty" xml:space="preserve">
+    <value>Sõnastiku nimi ei saa olla tühi.</value>
+  </data>
+  <data name="Worker.DictionaryXCreated" xml:space="preserve">
+    <value>Sõnastik „{0}“ edukalt loodud.</value>
+  </data>
+  <data name="Worker.Add20WordsToDictionaryConfirmation" xml:space="preserve">
+    <value>Lisada automaatselt 20 sõna teema {0} kohta?</value>
+  </data>
+  <data name="Worker.NoWordsInLanguage" xml:space="preserve">
+    <value>❌ Teil pole lisatud keeli.</value>
+  </data>
+  <data name="Worker.NoWordsHeader" xml:space="preserve">
+    <value>{0}\nSõnu pole.</value>
+  </data>
+  <data name="Worker.NavigateWordsWithButtons" xml:space="preserve">
+    <value>{0}\nKasutage navigeerimiseks nuppe „⬅️“ ja „➡️“.</value>
+  </data>
+  <data name="Worker.NoWordsToList" xml:space="preserve">
+    <value>❌ Sõnu pole.</value>
+  </data>
+  <data name="Worker.PageXofY" xml:space="preserve">
+    <value>=== Lk {0}/{1} ===</value>
+  </data>
+  <data name="Worker.EnterWordNumbersToDelete" xml:space="preserve">
+    <value>Geben Sie die zu löschenden Wortnummern durch Leerzeichen getrennt ein:</value>
+  </data>
+  <data name="Worker.NumbersNotRecognized" xml:space="preserve">
+    <value>Numbreid ei tuvastatud</value>
+  </data>
+  <data name="Worker.WordsDeletedCount" xml:space="preserve">
+    <value>Kustutatud sõnu: {0}</value>
+  </data>
+  <data name="Worker.ErrorTelegramAPI" xml:space="preserve">
+    <value>Telegram API viga: {0}</value>
+  </data>
+  <data name="Worker.ErrorProcessingUpdate" xml:space="preserve">
+    <value>Viga värskenduse töötlemisel</value>
+  </data>
+  <data name="Worker.WordToSaveNotFound" xml:space="preserve">
+    <value>Salvestatavat sõna ei leitud</value>
+  </data>
+  <data name="Worker.WordAdded" xml:space="preserve">
+    <value>Lisatud „{0}“</value>
+  </data>
+  <data name="Worker.ErrorLoadingWord" xml:space="preserve">
+    <value>Sõna laadimisel ilmnes viga</value>
+  </data>
+  <data name="Worker.ErrorAiTranslation" xml:space="preserve">
+    <value>AI-tõlke viga</value>
+  </data>
+  <data name="Worker.EditTranslationsPrompt" xml:space="preserve">
+    <value>Redigeeri tõlkeid:</value>
+  </data>
+  <data name="Worker.EditExamplesPrompt" xml:space="preserve">
+    <value>Redigeeri näiteid:</value>
+  </data>
+  <data name="Worker.WordUpdated" xml:space="preserve">
+    <value>Uuendatud „{0}“</value>
+  </data>
+  <data name="Worker.EmptyQuery" xml:space="preserve">
+    <value>Tühi päring</value>
+  </data>
+  <data name="Worker.NothingFound" xml:space="preserve">
+    <value>Midagi ei leitud</value>
+  </data>
+  <data name="Worker.SelectWordPrompt" xml:space="preserve">
+    <value>Valige sõna:</value>
+  </data>
+  <data name="Worker.InvalidLanguageId" xml:space="preserve">
+    <value>Kehtetu keele ID.</value>
+  </data>
+  <data name="Worker.LanguageNotOnYourList" xml:space="preserve">
+    <value>Seda keelt teie loendist ei leitud.</value>
+  </data>
+  <data name="Worker.CurrentLanguageSwitched" xml:space="preserve">
+    <value>Praegune keel lülitatud keelele „{0}“.</value>
+  </data>
+  <data name="Worker.LanguageChangedSuccessfully" xml:space="preserve">
+    <value>Keele muutmine õnnestus.</value>
+  </data>
+  <data name="Worker.NoLanguagesToSwitch" xml:space="preserve">
+    <value>Teil pole veel ühtegi õpitavat keelt.</value>
+  </data>
+  <data name="Worker.SelectCurrentLanguagePrompt" xml:space="preserve">
+    <value> die Sie zur aktuellen Sprache machen möchten:</value>
+  </data>
+  <data name="Worker.CorrectAnswer" xml:space="preserve">
+    <value>Õige! {0} = {1}</value>
+  </data>
+  <data name="Worker.IncorrectAnswer" xml:space="preserve">
+    <value>Vale! {0} = {1}</value>
+  </data>
+  <data name="Worker.WordMarkedAsLearned" xml:space="preserve">
+    <value>„{0}“ märgitud õpituks</value>
+  </data>
+  <data name="Worker.NothingToRepeat" xml:space="preserve">
+    <value>Midagi pole korrata. Saate lisada uusi sõnu</value>
+  </data>
+  <data name="Worker.ChooseCorrectTranslationFor" xml:space="preserve">
+    <value>Valige sõna jaoks õige tõlge:</value>
+  </data>
+  <data name="Worker.TranslateWordPrompt" xml:space="preserve">
+    <value>Tõlgi sõna</value>
+  </data>
+  <data name="Worker.LanguageXNotFound" xml:space="preserve">
+    <value>Keele {0} ei leitud</value>
+  </data>
+  <data name="Worker.LanguageXRemoved" xml:space="preserve">
+    <value>Keele {0} eemaldatud</value>
+  </data>
+  <data name="Worker.LanguagesNotSetup" xml:space="preserve">
+    <value>Keeled pole seadistatud</value>
+  </data>
+  <data name="Worker.CouldNotDetectLanguage" xml:space="preserve">
+    <value>Sõna keelt ei õnnestunud tuvastada</value>
+  </data>
+  <data name="Worker.LanguageXNotInDb" xml:space="preserve">
+    <value>Keele „{0}“ pole andmebaasis</value>
+  </data>
+  <data name="Worker.WordAlreadyInYourDictionary" xml:space="preserve">
+    <value>„{0}“ on juba teie sõnastikus.</value>
+  </data>
+  <data name="Worker.WordXAddedToDefaultDictionary" xml:space="preserve">
+    <value>„{0} - {1}“ lisatud teie üldisesse sõnastikku.</value>
+  </data>
+  <data name="Worker.ChooseTranslationsPrompt" xml:space="preserve">
+    <value>Valige tõlke(d):</value>
+  </data>
+  <data name="Worker.ChooseExamplesPrompt" xml:space="preserve">
+    <value>Valige kasutusnäited:</value>
+  </data>
+  <data name="Worker.CouldNotRecognizeLanguage" xml:space="preserve">
+    <value>Keele tuvastamine ebaõnnestus</value>
+  </data>
+  <data name="Worker.NativeLanguageSetTo" xml:space="preserve">
+    <value>Emakeel määratud: {0}</value>
+  </data>
+  <data name="Worker.LanguageXAdded" xml:space="preserve">
+    <value>Keele {0} lisatud. Valige sõnad /addword või menüü kaudu</value>
+  </data>
+  <data name="Worker.EnterThemeToCreateDictionary" xml:space="preserve">
+    <value> damit ich ein Wörterbuch mit neuen Wörtern erstellen kann:</value>
+  </data>
+  <data name="Worker.TotalStatisticsHeader" xml:space="preserve">
+    <value>📈 </value>
+  </data>
+  <data name="Worker.TotalWords" xml:space="preserve">
+    <value>Sõnade koguarv:      </value>
+  </data>
+  <data name="Worker.FullyLearnedWords" xml:space="preserve">
+    <value>Täielikult õpitud: </value>
+  </data>
+  <data name="Worker.WordsInProgress" xml:space="preserve">
+    <value>Töös:       </value>
+  </data>
+  <data name="Worker.Top10HardestWords" xml:space="preserve">
+    <value>🔟 </value>
+  </data>
+  <data name="Worker.HardWordDisplay" xml:space="preserve">
+    <value> |--&gt; {0} |- Lihtsuskordaja: {1} |- Kordused: {2}_______________________________</value>
+  </data>
+  <data name="Worker.NoWords" xml:space="preserve">
+    <value>Sõnu pole.</value>
+  </data>
+  <data name="Worker.TodayStatisticsHeader" xml:space="preserve">
+    <value>📈 </value>
+  </data>
+  <data name="Worker.WordsRepeatedToday" xml:space="preserve">
+    <value>Korratud sõnad: </value>
+  </data>
+  <data name="Worker.WordsLearnedToday" xml:space="preserve">
+    <value>Õpitud: </value>
+  </data>
+  <data name="Worker.HardWordsHeader" xml:space="preserve">
+    <value>📈 </value>
+  </data>
+  <data name="Worker.HardWordSimple" xml:space="preserve">
+    <value>- {0}</value>
+  </data>
+  <data name="Worker.NoActivityToday" xml:space="preserve">
+    <value>Te pole täna veel õppinud.</value>
+  </data>
+  <data name="Worker.StatisticsByLanguageHeader" xml:space="preserve">
+    <value>📊 </value>
+  </data>
+  <data name="Worker.LanguageStats" xml:space="preserve">
+    <value> </value>
+  </data>
+  <data name="Worker.NoDictionaries" xml:space="preserve">
+    <value>Teil pole sõnastikke.</value>
+  </data>
+  <data name="Worker.DictionariesByTopicsHeader" xml:space="preserve">
+    <value>📁 </value>
+  </data>
+  <data name="Worker.DictionariesByLanguageHeader" xml:space="preserve">
+    <value>📚 </value>
+  </data>
+  <data name="Worker.UnknownLanguage" xml:space="preserve">
+    <value>Tundmatu</value>
+  </data>
+  <data name="Worker.DictionaryEntry" xml:space="preserve">
+    <value>- {0} ({1})</value>
+  </data>
+  <data name="Worker.AllWordProgressReset" xml:space="preserve">
+    <value>Kõigi sõnade edenemine lähtestati</value>
+  </data>
+  <data name="Worker.UserProfileHeader" xml:space="preserve">
+    <value>👤 </value>
+  </data>
+  <data name="Worker.ProfileId" xml:space="preserve">
+    <value>ID: </value>
+  </data>
+  <data name="Worker.ProfileNativeLanguage" xml:space="preserve">
+    <value>Emakeel: </value>
+  </data>
+  <data name="Worker.ProfileCurrentLanguage" xml:space="preserve">
+    <value>Praegune keel: </value>
+  </data>
+  <data name="Worker.ProfileLearningMode" xml:space="preserve">
+    <value>Õpperežiim: </value>
+  </data>
+  <data name="Worker.ProfileLearningModeMultipleChoice" xml:space="preserve">
+    <value>Valikvastustega</value>
+  </data>
+  <data name="Worker.ProfileLearningModeBinary" xml:space="preserve">
+    <value>binaarne</value>
+  </data>
+  <data name="Worker.ProfileStudiedLanguages" xml:space="preserve">
+    <value>Õpitud keeled: {0}</value>
+  </data>
+  <data name="Worker.ProfileNoStudiedLanguages" xml:space="preserve">
+    <value>puudub</value>
+  </data>
+  <data name="Worker.ProfileTotalWords" xml:space="preserve">
+    <value>Sõnade koguarv: </value>
+  </data>
+  <data name="Worker.AllStatsReset" xml:space="preserve">
+    <value>Kogu statistika on lähtestatud</value>
+  </data>
+  <data name="Worker.AdminUsersHeader" xml:space="preserve">
+    <value>👥 Kasutajad</value>
+  </data>
+  <data name="Worker.AdminUserInfoLine1" xml:space="preserve">
+    <value>ID: </value>
+  </data>
+  <data name="Worker.AdminUserInfoLine2" xml:space="preserve">
+    <value>Emakeel: {0} | Praegune: {1} | MC: {2}</value>
+  </data>
+  <data name="Worker.AdminUserWords" xml:space="preserve">
+    <value>Sõnad: {0}</value>
+  </data>
+  <data name="Worker.AdminUserDictionaries" xml:space="preserve">
+    <value>Sõnastikud: {0}</value>
+  </data>
+  <data name="Worker.AdminTotalWords" xml:space="preserve">
+    <value>Sõnade koguarv: {0}</value>
+  </data>
+  <data name="Worker.AdminWordsByLanguage" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="Worker.DictionaryEmpty" xml:space="preserve">
+    <value>Sõnastik on tühi.</value>
+  </data>
+  <data name="Worker.DictionaryNameHeader" xml:space="preserve">
+    <value>📚 Sõnastik: {0}</value>
+  </data>
+  <data name="Worker.DictionaryWordEntry" xml:space="preserve">
+    <value>- {0}</value>
+  </data>
+  <data name="Worker.DictionaryNameDefault" xml:space="preserve">
+    <value>Üldine</value>
+  </data>
+  <data name="Worker.DictionaryWordTranslationEntry" xml:space="preserve">
+    <value>{0} — {1}</value>
+  </data>
+  <data name="Worker.NoWordsInDictionary" xml:space="preserve">
+    <value>Sõnastikus pole sõnu.</value>
+  </data>
+  <data name="Worker.DictionaryProgressReset" xml:space="preserve">
+    <value>Sõnastiku edenemine lähtestati</value>
+  </data>
+  <data name="Worker.DictionaryDeleted" xml:space="preserve">
+    <value>Sõnastik kustutatud</value>
+  </data>
+  <data name="Worker.HelpHeader" xml:space="preserve">
+    <value>❓ Abi</value>
+  </data>
+  <data name="Worker.HelpAddWord" xml:space="preserve">
+    <value>/addword - lisa uus sõna</value>
+  </data>
+  <data name="Worker.HelpMyWords" xml:space="preserve">
+    <value>/mywords - kuva kõik sõnad</value>
+  </data>
+  <data name="Worker.HelpLearn" xml:space="preserve">
+    <value>/learn - alusta õppimist</value>
+  </data>
+  <data name="Worker.HelpUseMenu" xml:space="preserve">
+    <value>Kasutage muude toimingute jaoks boti menüüd.</value>
+  </data>
+  <data name="TelegramMessageHelper.WordCardExample" xml:space="preserve">
+    <value> 📘 Näide: {0}</value>
+  </data>
+  <data name="TelegramMessageHelper.WordCardCategory" xml:space="preserve">
+    <value> 🔖 Kategooria: {0}</value>
+  </data>
+  <data name="TelegramMessageHelper.EditButton" xml:space="preserve">
+    <value>✏️ Muuda</value>
+  </data>
+  <data name="TelegramMessageHelper.DeleteButton" xml:space="preserve">
+    <value>🗑 Kustuta</value>
+  </data>
+  <data name="TelegramMessageHelper.RepeatButton" xml:space="preserve">
+    <value>🔁 Korda</value>
+  </data>
+  <data name="TelegramMessageHelper.LearnedButton" xml:space="preserve">
+    <value>✅ Õpitud</value>
+  </data>
+  <data name="TelegramMessageHelper.EditButtonAlternative" xml:space="preserve">
+    <value>✏️ Muuda</value>
+  </data>
+  <data name="TelegramMessageHelper.BackButton" xml:space="preserve">
+    <value>⬅️ Tagasi</value>
+  </data>
+  <data name="TelegramMessageHelper.ForwardButton" xml:space="preserve">
+    <value>➡️ Edasi</value>
+  </data>
+  <data name="TelegramMessageHelper.WordCardPageIndicator" xml:space="preserve">
+    <value> 📄 {0}/{1}</value>
+  </data>
+  <data name="TelegramMessageHelper.ConfirmYesButton" xml:space="preserve">
+    <value>✅ Jah</value>
+  </data>
+  <data name="TelegramMessageHelper.ConfirmNoButton" xml:space="preserve">
+    <value>❌ Ei</value>
+  </data>
+  <data name="TelegramMessageHelper.ConfirmationPrompt" xml:space="preserve">
+    <value>❓ {0}</value>
+  </data>
+  <data name="TelegramMessageHelper.ErrorMessage" xml:space="preserve">
+    <value>❌ </value>
+  </data>
+  <data name="TelegramMessageHelper.SuccessMessage" xml:space="preserve">
+    <value>✅ </value>
+  </data>
+  <data name="TelegramMessageHelper.InfoMessage" xml:space="preserve">
+    <value>ℹ️</value>
+  </data>
+  <data name="Keyboard.MainMenu.MyWords" xml:space="preserve">
+    <value>📚 Minu sõnad</value>
+  </data>
+  <data name="Keyboard.MainMenu.AddWord" xml:space="preserve">
+    <value>➕ Lisa sõna</value>
+  </data>
+  <data name="Keyboard.MainMenu.Statistics" xml:space="preserve">
+    <value>📊 Statistika</value>
+  </data>
+  <data name="Keyboard.MainMenu.Learn" xml:space="preserve">
+    <value>📖 Õpi</value>
+  </data>
+  <data name="Keyboard.MainMenu.Settings" xml:space="preserve">
+    <value>🌐 Seaded</value>
+  </data>
+  <data name="Keyboard.MainMenu.Profile" xml:space="preserve">
+    <value>👤 Profiil</value>
+  </data>
+  <data name="Keyboard.MyWordsMenu.ShowAllWords" xml:space="preserve">
+    <value>🔍 Kuva kõik sõnad</value>
+  </data>
+  <data name="Keyboard.MyWordsMenu.DictionariesByTopics" xml:space="preserve">
+    <value>📁 Sõnastikud teemade kaupa</value>
+  </data>
+  <data name="Keyboard.MyWordsMenu.GenerateNewWords" xml:space="preserve">
+    <value>Genereeri uusi sõnu</value>
+  </data>
+  <data name="Keyboard.MyWordsMenu.EditWord" xml:space="preserve">
+    <value>📝 Muuda sõna</value>
+  </data>
+  <data name="Keyboard.MyWordsMenu.DeleteWords" xml:space="preserve">
+    <value>🗑️ Kustuta sõnad</value>
+  </data>
+  <data name="Keyboard.MyWordsMenu.Back" xml:space="preserve">
+    <value>⬅️ Tagasi</value>
+  </data>
+  <data name="Keyboard.WordCard.Delete" xml:space="preserve">
+    <value>🗑 Kustuta</value>
+  </data>
+  <data name="Keyboard.WordCard.Repeat" xml:space="preserve">
+    <value>🔁 Korda</value>
+  </data>
+  <data name="Keyboard.WordCard.Favorite" xml:space="preserve">
+    <value>⭐ Lisa lemmikutesse</value>
+  </data>
+  <data name="Keyboard.Config.SwitchLanguage" xml:space="preserve">
+    <value>🌐 Valige õppekeel</value>
+  </data>
+  <data name="Keyboard.Config.AddLanguage" xml:space="preserve">
+    <value>➕ Lisa keel</value>
+  </data>
+  <data name="Keyboard.Config.RemoveLanguage" xml:space="preserve">
+    <value>🔿️ Eemalda keel</value>
+  </data>
+  <data name="Keyboard.Config.NativeLanguage" xml:space="preserve">
+    <value>🌐 Emakeel</value>
+  </data>
+  <data name="Keyboard.Config.LearningMode" xml:space="preserve">
+    <value>🎓 Õpperežiim</value>
+  </data>
+  <data name="Keyboard.Config.Help" xml:space="preserve">
+    <value>❓ Abi</value>
+  </data>
+  <data name="Keyboard.LearnConfig.BinaryChoice" xml:space="preserve">
+    <value>Mäletan/Ei mäleta</value>
+  </data>
+  <data name="Keyboard.LearnConfig.MultipleChoice" xml:space="preserve">
+    <value>Valikvastustega</value>
+  </data>
+  <data name="Keyboard.LearnConfig.BinaryChoiceSelected" xml:space="preserve">
+    <value>✅ Mäletan/Ei mäleta</value>
+  </data>
+  <data name="Keyboard.LearnConfig.MultipleChoiceSelected" xml:space="preserve">
+    <value>✅ Valikvastustega</value>
+  </data>
+  <data name="Keyboard.Statistics.Today" xml:space="preserve">
+    <value>📅 Tänaseks</value>
+  </data>
+  <data name="Keyboard.Statistics.TotalProgress" xml:space="preserve">
+    <value>📈 Üldine edusamm</value>
+  </data>
+  <data name="Keyboard.Statistics.ByLanguage" xml:space="preserve">
+    <value>🔍 Keele järgi</value>
+  </data>
+  <data name="Keyboard.Profile.UserInfo" xml:space="preserve">
+    <value>👤 Kasutajainfo</value>
+  </data>
+  <data name="Keyboard.Profile.TodoApp" xml:space="preserve">
+    <value>📝 Todo rakendus</value>
+  </data>
+  <data name="Keyboard.Profile.AdminDashboard" xml:space="preserve">
+    <value>🛠 Administraatori juhtpaneel</value>
+  </data>
+  <data name="Keyboard.Profile.ResetStatistics" xml:space="preserve">
+    <value>🔄 Lähtesta statistika</value>
+  </data>
+  <data name="Keyboard.DictionaryManage.Edit" xml:space="preserve">
+    <value>✏️ Muuda</value>
+  </data>
+  <data name="Keyboard.DictionaryManage.ResetProgress" xml:space="preserve">
+    <value>🔄 Lähtesta edenemine</value>
+  </data>
+  <data name="Keyboard.DictionaryManage.Delete" xml:space="preserve">
+    <value>🗑️ Kustuta sõnastik</value>
+  </data>
+  <data name="Keyboard.DictionaryList.DefaultName" xml:space="preserve">
+    <value>Üldine</value>
+  </data>
+  <data name="Keyboard.DictionaryList.CreateNew" xml:space="preserve">
+    <value>Loo uus</value>
+  </data>
+  <data name="Keyboard.TopicDictionary.DeleteDictionaryNoWords" xml:space="preserve">
+    <value>🗑️ Kustuta sõnastik (ilma sõnadeta)</value>
+  </data>
+  <data name="Keyboard.TopicDictionary.DeleteDictionaryAndWords" xml:space="preserve">
+    <value>🗑️ Kustuta sõnastik ja sõnad</value>
+  </data>
+  <data name="Keyboard.TopicDictionary.DeleteMultipleWords" xml:space="preserve">
+    <value>🗑️ Kustuta mitu sõna</value>
+  </data>
+  <data name="Keyboard.TopicDictionaryMenu.DeleteDictionary" xml:space="preserve">
+    <value>🗑️ Kustuta sõnastik</value>
+  </data>
+  <data name="Keyboard.TopicDictionaryMenu.DeleteMultipleWords" xml:space="preserve">
+    <value>🗑️ Kustuta mitu sõna</value>
+  </data>
+  <data name="Keyboard.TopicDictionaryMenu.Back" xml:space="preserve">
+    <value>⬅️ Tagasi</value>
+  </data>
+  <data name="Keyboard.ShowTopicDictionaryMenu.Dictionary" xml:space="preserve">
+    <value>Sõnastik:</value>
+  </data>
+  <data name="Keyboard.ShowMainMenu.MainMenu" xml:space="preserve">
+    <value>Peamenüü:</value>
+  </data>
+  <data name="Keyboard.HideMainMenu.MenuHidden" xml:space="preserve">
+    <value>Menüü peidetud.</value>
+  </data>
+  <data name="Keyboard.ShowConfigMenu.Settings" xml:space="preserve">
+    <value>Seaded:</value>
+  </data>
+  <data name="Keyboard.ShowMyWordsMenu.MyWords" xml:space="preserve">
+    <value>Minu sõnad:</value>
+  </data>
+  <data name="Keyboard.ShowLearnConfig.LearnModePrompt" xml:space="preserve">
+    <value>Sõnade kuvamisrežiim õppimise ajal</value>
+  </data>
+  <data name="Keyboard.ShowStatisticsMenu.Statistics" xml:space="preserve">
+    <value>Statistika:</value>
+  </data>
+  <data name="Keyboard.ShowProfileMenu.Profile" xml:space="preserve">
+    <value>Profiil:</value>
+  </data>
+  <data name="Worker.ButtonDone" xml:space="preserve">
+    <value>✅ Valmis</value>
+  </data>
+  <data name="Worker.ButtonKnowSkip" xml:space="preserve">
+    <value>Tead/Ära näita</value>
+  </data>
+  <data name="Worker.ButtonRemembered" xml:space="preserve">
+    <value>✅ Mäletan</value>
+  </data>
+  <data name="Worker.ButtonNotRemembered" xml:space="preserve">
+    <value>❌ Ei mäleta</value>
+  </data>
+  <data name="Worker.ButtonCancel" xml:space="preserve">
+    <value>Tühista</value>
+  </data>
+  <data name="Worker.ButtonNewTheme" xml:space="preserve">
+    <value>Uus: {0}</value>
+  </data>
+</root>
