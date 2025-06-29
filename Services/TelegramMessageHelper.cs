@@ -28,10 +28,10 @@ public class TelegramMessageHelper
     // === Вспомогательный метод для генерации текста карточки слова ===
     public string GenerateWordCardText(string word, string translation, string? example = null, string? category = null)
     {
-        var text = $"<b>{EscapeHtml(word)}</b>\n<i>{EscapeHtml(translation)}</i>";
+        var text = $"<b>{EscapeHtml(word)}</b>\n<i>{EscapeHtml(translation)}</i>{Environment.NewLine}";
 
         if (!string.IsNullOrWhiteSpace(example))
-            text += string.Format(_localizer["TelegramMessageHelper.WordCardExample"], EscapeHtml(example));
+            text += string.Format(_localizer["TelegramMessageHelper.WordCardExample"], EscapeHtml(example)) + Environment.NewLine;
 
         if (!string.IsNullOrWhiteSpace(category))
             text += string.Format(_localizer["TelegramMessageHelper.WordCardCategory"], EscapeHtml(category));
@@ -492,11 +492,15 @@ public class TelegramMessageHelper
     ChatId chatId,
     string filePath,
     string caption,
+    string word,
+    string voiceLanguage,
     ReplyMarkup replyMarkup,
     CancellationToken ct)
     {
         await using var stream = File.OpenRead(filePath);
         var inputFile = InputFile.FromStream(stream, Path.GetFileName(filePath));
+        await SendVoiceAsync(chatId, word, voiceLanguage, ct);
+
         await _bot.SendPhoto(
             chatId: chatId,
             photo: inputFile,

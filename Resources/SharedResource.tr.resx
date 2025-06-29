@@ -122,7 +122,7 @@
     <value>Eklenmiş diliniz yok.</value>
   </data>
   <data name="Worker.YourLanguages" xml:space="preserve">
-    <value>Dilleriniz:\n{0}\nSilmek için kodu girin:</value>
+    <value>Dilleriniz:{0}Silmek için kodu girin:</value>
   </data>
   <data name="Worker.ResetStatisticsConfirmation" xml:space="preserve">
     <value>İstatistikleri sıfırla?</value>
@@ -200,7 +200,7 @@
     <value>Liste boş.</value>
   </data>
   <data name="Worker.YourLearningLanguages" xml:space="preserve">
-    <value>Öğreniyorsunuz:\n{0}</value>
+    <value>Öğreniyorsunuz:{0}</value>
   </data>
   <data name="Worker.ResettingData" xml:space="preserve">
     <value>Veriler sıfırlanıyor...</value>
@@ -233,7 +233,7 @@
     <value>Tema boş olamaz.</value>
   </data>
   <data name="Worker.ReceivedXWordsForTheme" xml:space="preserve">
-    <value>Konu '{1}' için {0} kelime alındı.\nHangi sözlüğe kaydedilsin?</value>
+    <value>Konu '{1}' için {0} kelime alındı.Hangi sözlüğe kaydedilsin?</value>
   </data>
   <data name="Worker.DictionaryNameCannotBeEmpty" xml:space="preserve">
     <value>Sözlük adı boş olamaz.</value>
@@ -248,10 +248,10 @@
     <value>❌ Eklenmiş diliniz yok.</value>
   </data>
   <data name="Worker.NoWordsHeader" xml:space="preserve">
-    <value>{0}\nKelime yok.</value>
+    <value>{0}Kelime yok.</value>
   </data>
   <data name="Worker.NavigateWordsWithButtons" xml:space="preserve">
-    <value>{0}\nNavigasyon için „⬅️” ve „➡️” düğmelerini kullanın.</value>
+    <value>{0}Navigasyon için „⬅️” ve „➡️” düğmelerini kullanın.</value>
   </data>
   <data name="Worker.NoWordsToList" xml:space="preserve">
     <value>❌ Kelime yok.</value>
@@ -395,7 +395,7 @@
     <value>🔟 </value>
   </data>
   <data name="Worker.HardWordDisplay" xml:space="preserve">
-    <value> |--&gt; {0}\n |- Kolaylık Faktörü: {1}\n |- Tekrarlar: {2}\n_______________________________</value>
+    <value> |--&gt; {0} |- Kolaylık Faktörü: {1} |- Tekrarlar: {2}_______________________________</value>
   </data>
   <data name="Worker.NoWords" xml:space="preserve">
     <value>Kelime yok.</value>
@@ -422,7 +422,7 @@
     <value>📊 </value>
   </data>
   <data name="Worker.LanguageStats" xml:space="preserve">
-    <value>\n</value>
+    <value></value>
   </data>
   <data name="Worker.NoDictionaries" xml:space="preserve">
     <value>Sözlüğünüz yok.</value>
@@ -536,10 +536,10 @@
     <value>Diğer eylemler için bot menüsünü kullanın.</value>
   </data>
   <data name="TelegramMessageHelper.WordCardExample" xml:space="preserve">
-    <value>\n\n📘 Örnek: {0}</value>
+    <value>📘 Örnek: {0}</value>
   </data>
   <data name="TelegramMessageHelper.WordCardCategory" xml:space="preserve">
-    <value>\n🔖 Kategori: {0}</value>
+    <value>🔖 Kategori: {0}</value>
   </data>
   <data name="TelegramMessageHelper.EditButton" xml:space="preserve">
     <value>✏️ Düzenle</value>
@@ -563,7 +563,7 @@
     <value>➡️ İleri</value>
   </data>
   <data name="TelegramMessageHelper.WordCardPageIndicator" xml:space="preserve">
-    <value>\n\n📄 {0}/{1}</value>
+    <value>📄 {0}/{1}</value>
   </data>
   <data name="TelegramMessageHelper.ConfirmYesButton" xml:space="preserve">
     <value>✅ Evet</value>

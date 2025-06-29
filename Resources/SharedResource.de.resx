@@ -122,7 +122,7 @@
     <value>Sie haben keine Sprachen hinzugefügt.</value>
   </data>
   <data name="Worker.YourLanguages" xml:space="preserve">
-    <value>Ihre Sprachen:\n{0}\nGeben Sie den zu löschenden Code ein:</value>
+    <value>Ihre Sprachen: {0} Geben Sie den zu löschenden Code ein:</value>
   </data>
   <data name="Worker.ResetStatisticsConfirmation" xml:space="preserve">
     <value>Statistiken zurücksetzen?</value>
@@ -200,7 +200,7 @@
     <value>Die Liste ist leer.</value>
   </data>
   <data name="Worker.YourLearningLanguages" xml:space="preserve">
-    <value>Sie lernen:\n{0}</value>
+    <value>Sie lernen: {0}</value>
   </data>
   <data name="Worker.ResettingData" xml:space="preserve">
     <value>Daten werden zurückgesetzt...</value>
@@ -233,7 +233,7 @@
     <value>Das Thema darf nicht leer sein.</value>
   </data>
   <data name="Worker.ReceivedXWordsForTheme" xml:space="preserve">
-    <value>{0} Wörter zum Thema „{1}“ erhalten.\nIn welchem Wörterbuch speichern?</value>
+    <value>{0} Wörter zum Thema „{1}“ erhalten. In welchem Wörterbuch speichern?</value>
   </data>
   <data name="Worker.DictionaryNameCannotBeEmpty" xml:space="preserve">
     <value>Der Wörterbuchname darf nicht leer sein.</value>
@@ -248,10 +248,10 @@
     <value>❌ Sie haben keine Sprachen hinzugefügt.</value>
   </data>
   <data name="Worker.NoWordsHeader" xml:space="preserve">
-    <value>{0}\nKeine Wörter.</value>
+    <value>{0} Keine Wörter.</value>
   </data>
   <data name="Worker.NavigateWordsWithButtons" xml:space="preserve">
-    <value>{0}\nVerwenden Sie die Schaltflächen „⬅️“ und „➡️“ zum Navigieren.</value>
+    <value>{0} Verwenden Sie die Schaltflächen „⬅️“ und „➡️“ zum Navigieren.</value>
   </data>
   <data name="Worker.NoWordsToList" xml:space="preserve">
     <value>❌ Keine Wörter.</value>
@@ -395,7 +395,7 @@
     <value>🔟 </value>
   </data>
   <data name="Worker.HardWordDisplay" xml:space="preserve">
-    <value> |--&gt; {0}\n |- Erleichterungsfaktor: {1}\n |- Wiederholungen: {2}\n_______________________________</value>
+    <value> |--&gt; {0} |- Erleichterungsfaktor: {1} |- Wiederholungen: {2}_______________________________</value>
   </data>
   <data name="Worker.NoWords" xml:space="preserve">
     <value>Keine Wörter.</value>
@@ -422,7 +422,7 @@
     <value>📊 </value>
   </data>
   <data name="Worker.LanguageStats" xml:space="preserve">
-    <value>\n</value>
+    <value> </value>
   </data>
   <data name="Worker.NoDictionaries" xml:space="preserve">
     <value>Sie haben keine Wörterbücher.</value>
@@ -536,10 +536,10 @@
     <value>Verwenden Sie das Bot-Menü für andere Aktionen.</value>
   </data>
   <data name="TelegramMessageHelper.WordCardExample" xml:space="preserve">
-    <value>\n\n📘 Beispiel: {0}</value>
+    <value> 📘 Beispiel: {0}</value>
   </data>
   <data name="TelegramMessageHelper.WordCardCategory" xml:space="preserve">
-    <value>\n🔖 Kategorie: {0}</value>
+    <value> 🔖 Kategorie: {0}</value>
   </data>
   <data name="TelegramMessageHelper.EditButton" xml:space="preserve">
     <value>✏️ Bearbeiten</value>
@@ -563,7 +563,7 @@
     <value>➡️ Vorwärts</value>
   </data>
   <data name="TelegramMessageHelper.WordCardPageIndicator" xml:space="preserve">
-    <value>\n\n📄 {0}/{1}</value>
+    <value> 📄 {0}/{1}</value>
   </data>
   <data name="TelegramMessageHelper.ConfirmYesButton" xml:space="preserve">
     <value>✅ Ja</value>

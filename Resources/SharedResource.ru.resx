@@ -122,7 +122,7 @@
     <value>У вас нет добавленных языков.</value>
   </data>
   <data name="Worker.YourLanguages" xml:space="preserve">
-    <value>Ваши языки:\n{0}\nВведите код для удаления:</value>
+    <value>Ваши языки:{0}Введите код для удаления:</value>
   </data>
   <data name="Worker.ResetStatisticsConfirmation" xml:space="preserve">
     <value>Сбросить статистику?</value>
@@ -179,7 +179,7 @@
     <value>Нельзя удалить общий словарь</value>
   </data>
   <data name="Worker.WelcomeMessage" xml:space="preserve">
-    <value>Привет, я <b>WordBot</b> – твой помощник в изучении иностранных слов!\nДобавляй собственные словари, тренируйся с карточками и следи за прогрессом.\nГотов начать?</value>
+    <value>Привет, я <b>WordBot</b> – твой помощник в изучении иностранных слов!Добавляй собственные словари, тренируйся с карточками и следи за прогрессом.Готов начать?</value>
   </data>
   <data name="Worker.WhatLanguageToLearn" xml:space="preserve">
     <value>Какой язык хотите изучать?</value>
@@ -200,7 +200,7 @@
     <value>Список пуст.</value>
   </data>
   <data name="Worker.YourLearningLanguages" xml:space="preserve">
-    <value>Вы изучаете:\n{0}</value>
+    <value>Вы изучаете:{0}</value>
   </data>
   <data name="Worker.ResettingData" xml:space="preserve">
     <value>Сброс данных...</value>
@@ -233,7 +233,7 @@
     <value>Тема не может быть пустой.</value>
   </data>
   <data name="Worker.ReceivedXWordsForTheme" xml:space="preserve">
-    <value>Получено {0} слов по теме '{1}'.\nВ какой словарь сохранить?</value>
+    <value>Получено {0} слов по теме '{1}'.В какой словарь сохранить?</value>
   </data>
   <data name="Worker.DictionaryNameCannotBeEmpty" xml:space="preserve">
     <value>Название словаря не может быть пустым.</value>
@@ -248,10 +248,10 @@
     <value>❌ У вас нет добавленных языков.</value>
   </data>
   <data name="Worker.NoWordsHeader" xml:space="preserve">
-    <value>{0}\nНет слов.</value>
+    <value>{0}Нет слов.</value>
   </data>
   <data name="Worker.NavigateWordsWithButtons" xml:space="preserve">
-    <value>{0}\nИспользуйте кнопки «⬅️» и «➡️» для навигации.</value>
+    <value>{0}Используйте кнопки «⬅️» и «➡️» для навигации.</value>
   </data>
   <data name="Worker.NoWordsToList" xml:space="preserve">
     <value>❌ Нет слов.</value>
@@ -400,7 +400,7 @@
     </value>
   </data>
   <data name="Worker.HardWordDisplay" xml:space="preserve">
-    <value> |--&gt; {0}\n |- Ease Factor: {1}\n |- Repetitions: {2}\n_______________________________</value>
+    <value> |--&gt; {0} |- Ease Factor: {1} |- Repetitions: {2}_______________________________</value>
   </data>
   <data name="Worker.NoWords" xml:space="preserve">
     <value>Нет слов.</value>
@@ -432,7 +432,7 @@
     </value>
   </data>
   <data name="Worker.LanguageStats" xml:space="preserve">
-    <value>\n<b>{0}</b>\nВсего слов: <b>{1}</b>\nВыучено: <b>{2}</b>\nВ процессе: <b>{3}</b>
+    <value><b>{0}</b>Всего слов: <b>{1}</b>Выучено: <b>{2}</b>В процессе: <b>{3}</b>
     </value>
   </data>
   <data name="Worker.NoDictionaries" xml:space="preserve">
@@ -558,10 +558,10 @@
     <value>Используйте меню бота для остальных действий.</value>
   </data>
   <data name="TelegramMessageHelper.WordCardExample" xml:space="preserve">
-    <value>\n\n📘 Пример: {0}</value>
+    <value>📘 Пример: {0}</value>
   </data>
   <data name="TelegramMessageHelper.WordCardCategory" xml:space="preserve">
-    <value>\n🔖 Категория: {0}</value>
+    <value>🔖 Категория: {0}</value>
   </data>
   <data name="TelegramMessageHelper.EditButton" xml:space="preserve">
     <value>✏️ Редактировать</value>
@@ -585,7 +585,7 @@
     <value>➡️ Вперед</value>
   </data>
   <data name="TelegramMessageHelper.WordCardPageIndicator" xml:space="preserve">
-    <value>\n\n📄 {0}/{1}</value>
+    <value>📄 {0}/{1}</value>
   </data>
   <data name="TelegramMessageHelper.ConfirmYesButton" xml:space="preserve">
     <value>✅ Да</value>

@@ -122,7 +122,7 @@
     <value>Vous n'avez pas de langues ajoutées.</value>
   </data>
   <data name="Worker.YourLanguages" xml:space="preserve">
-    <value>Vos langues :\n{0}\nEntrez le code à supprimer :</value>
+    <value>Vos langues : {0} Entrez le code à supprimer :</value>
   </data>
   <data name="Worker.ResetStatisticsConfirmation" xml:space="preserve">
     <value>Réinitialiser les statistiques ?</value>
@@ -200,7 +200,7 @@
     <value>La liste est vide.</value>
   </data>
   <data name="Worker.YourLearningLanguages" xml:space="preserve">
-    <value>Vous apprenez :\n{0}</value>
+    <value>Vous apprenez : {0}</value>
   </data>
   <data name="Worker.ResettingData" xml:space="preserve">
     <value>Réinitialisation des données...</value>
@@ -233,7 +233,7 @@
     <value>Le thème ne peut pas être vide.</value>
   </data>
   <data name="Worker.ReceivedXWordsForTheme" xml:space="preserve">
-    <value>Reçu {0} mots pour le sujet „{1}“.\nDans quel dictionnaire sauvegarder ?</value>
+    <value>Reçu {0} mots pour le sujet „{1}“. Dans quel dictionnaire sauvegarder ?</value>
   </data>
   <data name="Worker.DictionaryNameCannotBeEmpty" xml:space="preserve">
     <value>Le nom du dictionnaire ne peut pas être vide.</value>
@@ -248,10 +248,10 @@
     <value>❌ Vous n'avez pas de langues ajoutées.</value>
   </data>
   <data name="Worker.NoWordsHeader" xml:space="preserve">
-    <value>{0}\nPas de mots.</value>
+    <value>{0} Pas de mots.</value>
   </data>
   <data name="Worker.NavigateWordsWithButtons" xml:space="preserve">
-    <value>{0}\nUtilisez les boutons «⬅️» et «➡️» pour naviguer.</value>
+    <value>{0} Utilisez les boutons «⬅️» et «➡️» pour naviguer.</value>
   </data>
   <data name="Worker.NoWordsToList" xml:space="preserve">
     <value>❌ Pas de mots.</value>
@@ -395,7 +395,7 @@
     <value>🔟 </value>
   </data>
   <data name="Worker.HardWordDisplay" xml:space="preserve">
-    <value> |--&gt; {0}\n |- Facteur de facilité : {1}\n |- Répétitions : {2}\n_______________________________</value>
+    <value> |--&gt; {0} |- Facteur de facilité : {1} |- Répétitions : {2}_______________________________</value>
   </data>
   <data name="Worker.NoWords" xml:space="preserve">
     <value>Pas de mots.</value>
@@ -422,7 +422,7 @@
     <value>📊 </value>
   </data>
   <data name="Worker.LanguageStats" xml:space="preserve">
-    <value>\n</value>
+    <value> </value>
   </data>
   <data name="Worker.NoDictionaries" xml:space="preserve">
     <value>Vous n'avez pas de dictionnaires.</value>

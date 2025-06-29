@@ -1849,6 +1849,7 @@ namespace TelegramWordBot
             // 1) Собираем варианты: первый — верный, остальные — «отвлекающие»
             var native_lang = await _languageRepo.GetByNameAsync(user.Native_Language);
             var word_native = await _translationRepo.GetTranslationAsync(word.Id, native_lang.Id);
+            var voice_language = await _languageRepo.GetByIdAsync(word.Language_Id);
             if (word_native == null) throw new Exception("GetTranslationAsync = null, ShowMultipleChoiceAsync"); // Эту ошибку лучше не локализовать, т.к. она для разработчика
             var variants = await _ai.GetVariants(word.Base_Text, word_native.Text, native_lang.Name);
             var correct = variants.First();
@@ -1872,7 +1873,7 @@ namespace TelegramWordBot
             var keyboard = new InlineKeyboardMarkup(rows);
             var filePath = FrameGenerator.GeneratePngFramedText(word.Base_Text, 200, 100, 16);
             string msg_text = _localizer["Worker.ChooseCorrectTranslationFor"] + Environment.NewLine;
-            await _msg.SendPhotoWithCaptionAsync(user.Telegram_Id, filePath, msg_text, keyboard, ct);
+            await _msg.SendPhotoWithCaptionAsync(user.Telegram_Id, filePath, msg_text, word.Base_Text, voice_language.Name, keyboard, ct);
         }
 
         private async Task ShowBinaryChoiceAsync(long chatId, Word word, CancellationToken ct)
@@ -1883,11 +1884,11 @@ namespace TelegramWordBot
                 new[] { InlineKeyboardButton.WithCallbackData(_localizer["Worker.ButtonRemembered"], $"learn:rem:{word.Id}") },
                 new[] { InlineKeyboardButton.WithCallbackData(_localizer["Worker.ButtonNotRemembered"], $"learn:fail:{word.Id}") }
             });
-
+            var voice_language = await _languageRepo.GetByIdAsync(word.Language_Id);
             string escapedWordBaseText = TelegramMessageHelper.EscapeHtml(word.Base_Text ?? string.Empty);
             string msg_text = _localizer["Worker.TranslateWordPrompt"] + Environment.NewLine;
             var filePath = FrameGenerator.GeneratePngFramedText(escapedWordBaseText, 200, 100, 16);
-            await _msg.SendPhotoWithCaptionAsync(chatId, filePath, msg_text, inline, ct);
+            await _msg.SendPhotoWithCaptionAsync(chatId, filePath, msg_text, word.Base_Text, voice_language.Name, inline, ct);
         }
 
 

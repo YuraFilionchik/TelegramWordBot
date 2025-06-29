@@ -122,7 +122,7 @@
     <value>You have no added languages.</value>
   </data>
   <data name="Worker.YourLanguages" xml:space="preserve">
-    <value>Your languages:\n{0}\nEnter code to delete:</value>
+    <value>Your languages: {0} Enter code to delete:</value>
   </data>
   <data name="Worker.ResetStatisticsConfirmation" xml:space="preserve">
     <value>Reset statistics?</value>
@@ -200,7 +200,7 @@
     <value>The list is empty.</value>
   </data>
   <data name="Worker.YourLearningLanguages" xml:space="preserve">
-    <value>You are learning:\n{0}</value>
+    <value>You are learning: {0}</value>
   </data>
   <data name="Worker.ResettingData" xml:space="preserve">
     <value>Resetting data...</value>
@@ -233,7 +233,7 @@
     <value>Theme cannot be empty.</value>
   </data>
   <data name="Worker.ReceivedXWordsForTheme" xml:space="preserve">
-    <value>Received {0} words for the topic '{1}'.\nWhich dictionary to save to?</value>
+    <value>Received {0} words for the topic '{1}'. Which dictionary to save to?</value>
   </data>
   <data name="Worker.DictionaryNameCannotBeEmpty" xml:space="preserve">
     <value>Dictionary name cannot be empty.</value>
@@ -400,7 +400,7 @@
     </value>
   </data>
   <data name="Worker.HardWordDisplay" xml:space="preserve">
-    <value> |--&gt; {0}\n |- Ease Factor: {1}\n |- Repetitions: {2}\n_______________________________</value>
+    <value> |--&gt; {0} |- Ease Factor: {1} |- Repetitions: {2}_______________________________</value>
   </data>
   <data name="Worker.NoWords" xml:space="preserve">
     <value>No words.</value>
@@ -432,7 +432,7 @@
     </value>
   </data>
   <data name="Worker.LanguageStats" xml:space="preserve">
-    <value>\n<b>{0}</b>\nTotal words: <b>{1}</b>\nLearned: <b>{2}</b>\nIn progress: <b>{3}</b>
+    <value> <b>{0}</b>Total words: <b>{1}</b>Learned: <b>{2}</b>In progress: <b>{3}</b>
     </value>
   </data>
   <data name="Worker.NoDictionaries" xml:space="preserve">
@@ -558,10 +558,10 @@
     <value>Use the bot menu for other actions.</value>
   </data>
   <data name="TelegramMessageHelper.WordCardExample" xml:space="preserve">
-    <value>\n\n📘 Example: {0}</value>
+    <value> 📘 Example: {0}</value>
   </data>
   <data name="TelegramMessageHelper.WordCardCategory" xml:space="preserve">
-    <value>\n🔖 Category: {0}</value>
+    <value> 🔖 Category: {0}</value>
   </data>
   <data name="TelegramMessageHelper.EditButton" xml:space="preserve">
     <value>✏️ Edit</value>
@@ -585,7 +585,7 @@
     <value>➡️ Forward</value>
   </data>
   <data name="TelegramMessageHelper.WordCardPageIndicator" xml:space="preserve">
-    <value>\n\n📄 {0}/{1}</value>
+    <value> 📄 {0}/{1}</value>
   </data>
   <data name="TelegramMessageHelper.ConfirmYesButton" xml:space="preserve">
     <value>✅ Yes</value>
