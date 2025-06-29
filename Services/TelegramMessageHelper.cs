@@ -499,7 +499,6 @@ public class TelegramMessageHelper
     {
         await using var stream = File.OpenRead(filePath);
         var inputFile = InputFile.FromStream(stream, Path.GetFileName(filePath));
-        await SendVoiceAsync(chatId, word, voiceLanguage, ct);
 
         await _bot.SendPhoto(
             chatId: chatId,
@@ -509,6 +508,7 @@ public class TelegramMessageHelper
             replyMarkup: replyMarkup,
             cancellationToken: ct
         );
+        await SendVoiceAsync(chatId, word, voiceLanguage, ct);
     }
 
 
