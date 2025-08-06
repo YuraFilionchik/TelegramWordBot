@@ -47,6 +47,9 @@ namespace TelegramWordBot
         private readonly IImageService _imageService;
         private readonly WordImageRepository _imageRepo;
         private readonly List<string> _supportedCultureStrings;
+        private readonly TimeSpan _reminderCheckInterval = TimeSpan.FromMinutes(1);
+        private readonly int[] _reminderHours = { 9, 12, 15, 19 };
+        private DateTime _lastReminder = DateTime.MinValue;
 
         // Для режима редактирования:
         private readonly Dictionary<long, Guid> _pendingEditWordId = new();
@@ -188,6 +191,8 @@ namespace TelegramWordBot
                 HandleErrorAsync,
                 new ReceiverOptions { AllowedUpdates = Array.Empty<UpdateType>() },
                 cancellationToken: stoppingToken);
+
+            _ = Task.Run(() => ReminderLoop(stoppingToken), stoppingToken);
 
             var me = await _botClient.GetMe();
             _logger.LogInformation($"Bot {me.Username} started");
@@ -2667,6 +2672,56 @@ namespace TelegramWordBot
             await _dictionaryRepo.DeleteAsync(dictId);
             _pendingDeleteDict.Remove(chatId);
             await _msg.SendSuccessAsync(chatId, _localizer["Worker.DictionaryDeleted"], ct);
+        }
+
+        private async Task ReminderLoop(CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                try
+                {
+                    var now = DateTime.Now;
+                    if (_reminderHours.Contains(now.Hour) &&
+                        (_lastReminder.Date != now.Date || _lastReminder.Hour != now.Hour))
+                    {
+                        await NotifyUsersWithDueWordsAsync(ct);
+                        _lastReminder = now;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Reminder loop failed");
+                }
+
+                await Task.Delay(_reminderCheckInterval, ct);
+            }
+        }
+
+        private async Task NotifyUsersWithDueWordsAsync(CancellationToken ct)
+        {
+            var users = await _userRepo.GetAllUsersAsync();
+
+            foreach (var user in users)
+            {
+                if (await HasDueWordsAsync(user))
+                {
+                    await StartLearningAsync(user, ct);
+                }
+            }
+        }
+
+        private async Task<bool> HasDueWordsAsync(User user)
+        {
+            var currentLang = await _languageRepo.GetByNameAsync(user.Current_Language!);
+            var all = await _userWordRepo.GetWordsByUserId(user.Id);
+            all = all.Where(w => w.Language_Id == currentLang.Id);
+            foreach (var w in all)
+            {
+                var prog = await _progressRepo.GetAsync(user.Id, w.Id);
+                if (prog == null || prog.Next_Review <= DateTime.UtcNow)
+                    return true;
+            }
+            return false;
         }
 
         private Task ShowHelpInformation(long chatId, CancellationToken ct)
