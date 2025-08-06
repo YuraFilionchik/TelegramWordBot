@@ -47,6 +47,8 @@ namespace TelegramWordBot
         private readonly IImageService _imageService;
         private readonly WordImageRepository _imageRepo;
         private readonly List<string> _supportedCultureStrings;
+        private readonly TimeSpan _reminderCheckInterval = TimeSpan.FromMinutes(1);
+        private readonly TimeSpan _reminderPostpone = TimeSpan.FromHours(1);
 
         // Для режима редактирования:
         private readonly Dictionary<long, Guid> _pendingEditWordId = new();
@@ -188,6 +190,8 @@ namespace TelegramWordBot
                 HandleErrorAsync,
                 new ReceiverOptions { AllowedUpdates = Array.Empty<UpdateType>() },
                 cancellationToken: stoppingToken);
+
+            _ = Task.Run(() => ReminderLoop(stoppingToken), stoppingToken);
 
             var me = await _botClient.GetMe();
             _logger.LogInformation($"Bot {me.Username} started");
@@ -2667,6 +2671,52 @@ namespace TelegramWordBot
             await _dictionaryRepo.DeleteAsync(dictId);
             _pendingDeleteDict.Remove(chatId);
             await _msg.SendSuccessAsync(chatId, _localizer["Worker.DictionaryDeleted"], ct);
+        }
+
+        private async Task ReminderLoop(CancellationToken ct)
+        {
+            while (!ct.IsCancellationRequested)
+            {
+                try
+                {
+                    await SendDueWordCardsAsync(ct);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Reminder loop failed");
+                }
+
+                await Task.Delay(_reminderCheckInterval, ct);
+            }
+        }
+
+        private async Task SendDueWordCardsAsync(CancellationToken ct)
+        {
+            var users = await _userRepo.GetAllUsersAsync();
+
+            foreach (var user in users)
+            {
+                var nativeLang = await _languageRepo.GetByNameAsync(user.Native_Language);
+                if (nativeLang == null) continue;
+
+                var words = await _userWordRepo.GetWordsByUserId(user.Id);
+                foreach (var word in words)
+                {
+                    var prog = await _progressRepo.GetAsync(user.Id, word.Id);
+                    if (prog == null || prog.Next_Review > DateTime.UtcNow)
+                        continue;
+
+                    var translation = await _translationRepo.GetTranslationAsync(word.Id, nativeLang.Id);
+                    var imgPath = await _imageService.GetImagePathAsync(word);
+                    var lang = await _languageRepo.GetByIdAsync(word.Language_Id);
+
+                    await _msg.SendWordCardAsync(user.Telegram_Id, word.Base_Text, translation?.Text ?? string.Empty,
+                        translation?.Examples, imgPath, lang?.Name, ct);
+
+                    prog.Next_Review = DateTime.UtcNow.Add(_reminderPostpone);
+                    await _progressRepo.InsertOrUpdateAsync(prog);
+                }
+            }
         }
 
         private Task ShowHelpInformation(long chatId, CancellationToken ct)
