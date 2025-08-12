@@ -395,7 +395,17 @@
     <value>🔟 </value>
   </data>
   <data name="Worker.HardWordDisplay" xml:space="preserve">
-    <value> |--&gt; {0} |- Kolaylık Faktörü: {1} |- Tekrarlar: {2}_______________________________</value>
+    <value>|--&gt; {0}
+ |- Tekrarlar: {1}
+ |- Kolaylık Faktörü: {2}
+ |- Sonraki tekrar: {3}
+_______________________________</value>
+  </data>
+  <data name="Worker.TimeRemainingDaysHours" xml:space="preserve">
+    <value>{0} g {1} s içinde</value>
+  </data>
+  <data name="Worker.TimeRemainingHoursMinutes" xml:space="preserve">
+    <value>{0} s {1} dk içinde</value>
   </data>
   <data name="Worker.NoWords" xml:space="preserve">
     <value>Kelime yok.</value>

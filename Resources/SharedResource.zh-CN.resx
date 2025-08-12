@@ -395,7 +395,17 @@
     <value>🔟 </value>
   </data>
   <data name="Worker.HardWordDisplay" xml:space="preserve">
-    <value> |--&gt; {0} |- 难度系数: {1} |- 重复次数: {2}_______________________________</value>
+    <value>|--&gt; {0}
+ |- 重复次数: {1}
+ |- 难度系数: {2}
+ |- 下次复习: {3}
+_______________________________</value>
+  </data>
+  <data name="Worker.TimeRemainingDaysHours" xml:space="preserve">
+    <value>{0}天{1}小时后</value>
+  </data>
+  <data name="Worker.TimeRemainingHoursMinutes" xml:space="preserve">
+    <value>{0}小时{1}分钟后</value>
   </data>
   <data name="Worker.NoWords" xml:space="preserve">
     <value>没有单词。</value>
