@@ -395,7 +395,17 @@
     <value>🔟 </value>
   </data>
   <data name="Worker.HardWordDisplay" xml:space="preserve">
-    <value> |--&gt; {0} |- Współczynnik łatwości: {1} |- Powtórzenia: {2}_______________________________</value>
+    <value>|--&gt; {0}
+ |- Powtórzenia: {1}
+ |- Współczynnik łatwości: {2}
+ |- Następne powtórzenie: {3}
+_______________________________</value>
+  </data>
+  <data name="Worker.TimeRemainingDaysHours" xml:space="preserve">
+    <value>za {0} d {1} h</value>
+  </data>
+  <data name="Worker.TimeRemainingHoursMinutes" xml:space="preserve">
+    <value>za {0} h {1} min</value>
   </data>
   <data name="Worker.NoWords" xml:space="preserve">
     <value>Brak słów.</value>

@@ -2244,9 +2244,20 @@ namespace TelegramWordBot
                     var word = await _wordRepo.GetWordById(p.Word_Id);
                     var wordText = word?.Base_Text;
 
-                    var displayWordText = !string.IsNullOrEmpty(wordText) ? TelegramMessageHelper.EscapeHtml(wordText) : _localizer["Worker.UnknownLanguage"]; // "[Unknown Word]" -> localized
+                    var displayWordText = !string.IsNullOrEmpty(wordText)
+                        ? TelegramMessageHelper.EscapeHtml(wordText)
+                        : _localizer["Worker.UnknownLanguage"]; // "[Unknown Word]" -> localized
 
-                    sb.AppendLine(_localizer["Worker.HardWordDisplay", displayWordText, Math.Round(p.Ease_Factor, 2), p.Repetition]);
+                    var remaining = p.Next_Review - DateTime.UtcNow;
+                    string timeRemaining = remaining.TotalDays >= 1
+                        ? _localizer["Worker.TimeRemainingDaysHours", (int)remaining.TotalDays, remaining.Hours]
+                        : _localizer["Worker.TimeRemainingHoursMinutes", (int)remaining.TotalHours, remaining.Minutes];
+
+                    sb.AppendLine(_localizer["Worker.HardWordDisplay",
+                        displayWordText,
+                        p.Repetition,
+                        Math.Round(p.Ease_Factor, 2),
+                        timeRemaining]);
                 }
             }
             else

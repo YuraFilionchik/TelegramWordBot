@@ -395,7 +395,17 @@
     <value>🔟 </value>
   </data>
   <data name="Worker.HardWordDisplay" xml:space="preserve">
-    <value> |--&gt; {0} |- Lihtsuskordaja: {1} |- Kordused: {2}_______________________________</value>
+    <value>|--&gt; {0}
+ |- Kordused: {1}
+ |- Lihtsuskordaja: {2}
+ |- Järgmine kordus: {3}
+_______________________________</value>
+  </data>
+  <data name="Worker.TimeRemainingDaysHours" xml:space="preserve">
+    <value>{0} p {1} t pärast</value>
+  </data>
+  <data name="Worker.TimeRemainingHoursMinutes" xml:space="preserve">
+    <value>{0} t {1} min pärast</value>
   </data>
   <data name="Worker.NoWords" xml:space="preserve">
     <value>Sõnu pole.</value>

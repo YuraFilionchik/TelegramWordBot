@@ -400,7 +400,17 @@
     </value>
   </data>
   <data name="Worker.HardWordDisplay" xml:space="preserve">
-    <value> |--&gt; {0} |- Ease Factor: {1} |- Repetitions: {2}_______________________________</value>
+    <value>|--&gt; {0}
+ |- Повторения: {1}
+ |- Коэф. лёгкости: {2}
+ |- След. повторение: {3}
+_______________________________</value>
+  </data>
+  <data name="Worker.TimeRemainingDaysHours" xml:space="preserve">
+    <value>через {0} д. {1} ч.</value>
+  </data>
+  <data name="Worker.TimeRemainingHoursMinutes" xml:space="preserve">
+    <value>через {0} ч. {1} мин.</value>
   </data>
   <data name="Worker.NoWords" xml:space="preserve">
     <value>Нет слов.</value>
