@@ -23,7 +23,8 @@ static UserRepositoryTests() { SqlMapper.AddTypeHandler(new GuidTypeHandler()); 
             last_name TEXT,
             is_premium INTEGER,
             user_name TEXT,
-            last_seen TEXT
+            last_seen TEXT,
+            receive_reminders INTEGER
         );");
         _repo = new UserRepository(_factory);
     }
@@ -36,6 +37,7 @@ static UserRepositoryTests() { SqlMapper.AddTypeHandler(new GuidTypeHandler()); 
         var loaded = await _repo.GetByTelegramIdAsync(111);
         Assert.NotNull(loaded);
         Assert.Equal(user.Id, loaded!.Id);
+        Assert.True(loaded.Receive_Reminders);
     }
 
     [Fact]
@@ -44,9 +46,11 @@ static UserRepositoryTests() { SqlMapper.AddTypeHandler(new GuidTypeHandler()); 
         var user = new User { Id = Guid.NewGuid(), Telegram_Id = 222, Last_Seen = DateTime.UtcNow };
         await _repo.AddAsync(user);
         user.First_Name = "New";
+        user.Receive_Reminders = false;
         await _repo.UpdateAsync(user);
         var loaded = await _repo.GetByTelegramIdAsync(222);
         Assert.Equal("New", loaded!.First_Name);
+        Assert.False(loaded.Receive_Reminders);
     }
 
     public void Dispose() => _factory.Dispose();

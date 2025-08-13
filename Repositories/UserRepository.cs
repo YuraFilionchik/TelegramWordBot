@@ -25,8 +25,8 @@ public class UserRepository
     {
         using var conn = _factory.CreateConnection();
         await conn.ExecuteAsync(
-            "INSERT INTO users (id, telegram_id, native_language, current_language, prefer_multiple_choice, first_name, last_name, is_premium, user_name, last_seen) " +
-            "VALUES (@Id, @Telegram_Id, @Native_Language, @Current_Language, @Prefer_Multiple_Choice, @First_Name, @Last_Name, @Is_Premium, @User_Name, @Last_Seen)", user);
+            "INSERT INTO users (id, telegram_id, native_language, current_language, prefer_multiple_choice, first_name, last_name, is_premium, user_name, last_seen, receive_reminders) " +
+            "VALUES (@Id, @Telegram_Id, @Native_Language, @Current_Language, @Prefer_Multiple_Choice, @First_Name, @Last_Name, @Is_Premium, @User_Name, @Last_Seen, @Receive_Reminders)", user);
     }
 
     public async Task UpdateAsync(User user)
@@ -34,7 +34,7 @@ public class UserRepository
         using var conn = _factory.CreateConnection();
         await conn.ExecuteAsync(
             "UPDATE users SET telegram_id = @Telegram_Id, native_language = @Native_Language, current_language = @Current_Language, prefer_multiple_choice = @Prefer_Multiple_Choice, " +
-            "first_name = @First_Name, last_name = @Last_Name, is_premium = @Is_Premium, user_name = @User_Name, last_seen = @Last_Seen WHERE id = @Id",
+            "first_name = @First_Name, last_name = @Last_Name, is_premium = @Is_Premium, user_name = @User_Name, last_seen = @Last_Seen, receive_reminders = @Receive_Reminders WHERE id = @Id",
             user);
     }
 

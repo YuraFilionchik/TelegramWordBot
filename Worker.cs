@@ -259,7 +259,7 @@ namespace TelegramWordBot
                     return (true, string.Empty);
 
                 case "settings":
-                    await _keyboardFactory.ShowConfigMenuAsync(_botClient, chatId, ct);
+                    await _keyboardFactory.ShowConfigMenuAsync(_botClient, chatId, user, ct);
                     return (true, string.Empty);
 
                 case "statistics":
@@ -472,6 +472,12 @@ namespace TelegramWordBot
                     break;
                 case "help_info":
                     await ShowHelpInformation(chatId, ct);
+                    break;
+                case "toggle_reminders":
+                    user.Receive_Reminders = !user.Receive_Reminders;
+                    await _userRepo.UpdateAsync(user);
+                    var key = user.Receive_Reminders ? "Worker.RemindersEnabled" : "Worker.RemindersDisabled";
+                    await _msg.SendSuccessAsync(chatId, _localizer[key], ct);
                     break;
                 case "config_learn":
                     switch (parts[1])
@@ -811,7 +817,7 @@ namespace TelegramWordBot
                         break;
 
                     case "/config":
-                        await _keyboardFactory.ShowConfigMenuAsync(_botClient, chatId, ct);
+                        await _keyboardFactory.ShowConfigMenuAsync(_botClient, chatId, user, ct);
                         break;
 
                     case "/addlanguage":
@@ -2714,7 +2720,7 @@ namespace TelegramWordBot
 
             foreach (var user in users)
             {
-                if (await HasDueWordsAsync(user))
+                if (user.Receive_Reminders && await HasDueWordsAsync(user))
                 {
                     await StartLearningAsync(user, ct);
                 }

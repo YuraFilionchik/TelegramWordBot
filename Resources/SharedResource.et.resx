@@ -154,6 +154,12 @@
   <data name="Worker.AlreadyUsingMultipleChoiceLearningMode" xml:space="preserve">
     <value>Kasutate juba valikvastustega õpperežiimi</value>
   </data>
+  <data name="Worker.RemindersEnabled" xml:space="preserve">
+    <value>Meeldetuletused on sisse lülitatud.</value>
+  </data>
+  <data name="Worker.RemindersDisabled" xml:space="preserve">
+    <value>Meeldetuletused on välja lülitatud.</value>
+  </data>
   <data name="Worker.ConfirmDictionaryDeletion" xml:space="preserve">
     <value>Kustuta sõnastik? Sõnad eemaldatakse täielikult.</value>
   </data>
@@ -652,6 +658,12 @@ _______________________________</value>
   </data>
   <data name="Keyboard.Config.LearningMode" xml:space="preserve">
     <value>🎓 Õpperežiim</value>
+  </data>
+  <data name="Keyboard.Config.DisableReminders" xml:space="preserve">
+    <value>🔕 Keela meeldetuletused</value>
+  </data>
+  <data name="Keyboard.Config.EnableReminders" xml:space="preserve">
+    <value>🔔 Luba meeldetuletused</value>
   </data>
   <data name="Keyboard.Config.Help" xml:space="preserve">
     <value>❓ Abi</value>

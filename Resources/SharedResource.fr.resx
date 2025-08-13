@@ -154,6 +154,12 @@
   <data name="Worker.AlreadyUsingMultipleChoiceLearningMode" xml:space="preserve">
     <value>Vous utilisez déjà le mode d'apprentissage à choix multiples</value>
   </data>
+  <data name="Worker.RemindersEnabled" xml:space="preserve">
+    <value>Rappels activés.</value>
+  </data>
+  <data name="Worker.RemindersDisabled" xml:space="preserve">
+    <value>Rappels désactivés.</value>
+  </data>
   <data name="Worker.ConfirmDictionaryDeletion" xml:space="preserve">
     <value>Supprimer le dictionnaire ? Les mots seront complètement supprimés.</value>
   </data>
@@ -652,6 +658,12 @@ _______________________________</value>
   </data>
   <data name="Keyboard.Config.LearningMode" xml:space="preserve">
     <value>🎓 Mode d'apprentissage</value>
+  </data>
+  <data name="Keyboard.Config.DisableReminders" xml:space="preserve">
+    <value>🔕 Désactiver les rappels</value>
+  </data>
+  <data name="Keyboard.Config.EnableReminders" xml:space="preserve">
+    <value>🔔 Activer les rappels</value>
   </data>
   <data name="Keyboard.Config.Help" xml:space="preserve">
     <value>❓ Aide</value>

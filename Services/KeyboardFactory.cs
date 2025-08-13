@@ -3,6 +3,7 @@ using System.Xml.Linq;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
+using System.Collections.Generic;
 
 namespace TelegramWordBot.Services;
 
@@ -64,17 +65,24 @@ public class KeyboardFactory
     }
 
     // Настройки — выбор действия
-    public InlineKeyboardMarkup GetConfigInline()
+    public InlineKeyboardMarkup GetConfigInline(Models.User user)
     {
-        return new InlineKeyboardMarkup(new[]
+        var rows = new List<InlineKeyboardButton[]>
         {
             new[] { InlineKeyboardButton.WithCallbackData(_localizer["Keyboard.Config.SwitchLanguage"], "switch_language") },
             new[] { InlineKeyboardButton.WithCallbackData(_localizer["Keyboard.Config.AddLanguage"], "add_foreign") },
             new[] { InlineKeyboardButton.WithCallbackData(_localizer["Keyboard.Config.RemoveLanguage"], "remove_foreign") },
             new[] { InlineKeyboardButton.WithCallbackData(_localizer["Keyboard.Config.NativeLanguage"], "set_native") },
-            new[] { InlineKeyboardButton.WithCallbackData(_localizer["Keyboard.Config.LearningMode"], "config_learn:main") },
-            new[] { InlineKeyboardButton.WithCallbackData(_localizer["Keyboard.Config.Help"], "help_info") }
-        });
+            new[] { InlineKeyboardButton.WithCallbackData(_localizer["Keyboard.Config.LearningMode"], "config_learn:main") }
+        };
+
+        var toggleText = user.Receive_Reminders
+            ? _localizer["Keyboard.Config.DisableReminders"]
+            : _localizer["Keyboard.Config.EnableReminders"];
+        rows.Add(new[] { InlineKeyboardButton.WithCallbackData(toggleText, "toggle_reminders") });
+        rows.Add(new[] { InlineKeyboardButton.WithCallbackData(_localizer["Keyboard.Config.Help"], "help_info") });
+
+        return new InlineKeyboardMarkup(rows);
     }
 
     public InlineKeyboardMarkup GetConfigLearnInline(Models.User user)
@@ -197,9 +205,9 @@ public class KeyboardFactory
     }
 
     // Отображение меню настроек пользователю
-    public async Task ShowConfigMenuAsync(ITelegramBotClient botClient, ChatId chatId, CancellationToken ct)
+    public async Task ShowConfigMenuAsync(ITelegramBotClient botClient, ChatId chatId, Models.User user, CancellationToken ct)
     {
-        await botClient.SendMessage(chatId, _localizer["Keyboard.ShowConfigMenu.Settings"], replyMarkup: GetConfigInline(), cancellationToken: ct);
+        await botClient.SendMessage(chatId, _localizer["Keyboard.ShowConfigMenu.Settings"], replyMarkup: GetConfigInline(user), cancellationToken: ct);
     }
 
     public async Task ShowMyWordsMenuAsync(ITelegramBotClient botClient, ChatId chatId, CancellationToken ct)
