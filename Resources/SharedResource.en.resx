@@ -154,6 +154,12 @@
   <data name="Worker.AlreadyUsingMultipleChoiceLearningMode" xml:space="preserve">
     <value>You are already using multiple choice learning mode</value>
   </data>
+  <data name="Worker.RemindersEnabled" xml:space="preserve">
+    <value>Reminders enabled.</value>
+  </data>
+  <data name="Worker.RemindersDisabled" xml:space="preserve">
+    <value>Reminders disabled.</value>
+  </data>
   <data name="Worker.ConfirmDictionaryDeletion" xml:space="preserve">
     <value>Delete dictionary? Words will be completely removed.</value>
   </data>
@@ -677,6 +683,12 @@ _______________________________</value>
   </data>
   <data name="Keyboard.Config.LearningMode" xml:space="preserve">
     <value>🎓 Learning mode</value>
+  </data>
+  <data name="Keyboard.Config.DisableReminders" xml:space="preserve">
+    <value>🔕 Disable reminders</value>
+  </data>
+  <data name="Keyboard.Config.EnableReminders" xml:space="preserve">
+    <value>🔔 Enable reminders</value>
   </data>
   <data name="Keyboard.Config.Help" xml:space="preserve">
     <value>❓ Help</value>

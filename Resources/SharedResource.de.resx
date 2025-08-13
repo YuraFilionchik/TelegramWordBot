@@ -154,6 +154,12 @@
   <data name="Worker.AlreadyUsingMultipleChoiceLearningMode" xml:space="preserve">
     <value>Sie verwenden bereits den Multiple-Choice-Lernmodus</value>
   </data>
+  <data name="Worker.RemindersEnabled" xml:space="preserve">
+    <value>Erinnerungen aktiviert.</value>
+  </data>
+  <data name="Worker.RemindersDisabled" xml:space="preserve">
+    <value>Erinnerungen deaktiviert.</value>
+  </data>
   <data name="Worker.ConfirmDictionaryDeletion" xml:space="preserve">
     <value>Wörterbuch löschen? Wörter werden vollständig entfernt.</value>
   </data>
@@ -652,6 +658,12 @@ _______________________________</value>
   </data>
   <data name="Keyboard.Config.LearningMode" xml:space="preserve">
     <value>🎓 Lernmodus</value>
+  </data>
+  <data name="Keyboard.Config.DisableReminders" xml:space="preserve">
+    <value>🔕 Erinnerungen deaktivieren</value>
+  </data>
+  <data name="Keyboard.Config.EnableReminders" xml:space="preserve">
+    <value>🔔 Erinnerungen aktivieren</value>
   </data>
   <data name="Keyboard.Config.Help" xml:space="preserve">
     <value>❓ Hilfe</value>

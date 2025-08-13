@@ -13,4 +13,5 @@ public class User
     public bool Is_Premium {  get; set; }=false;
     public string? User_Name { get; set; }
     public DateTime Last_Seen { get; set; }
+    public bool Receive_Reminders { get; set; } = true;
 }

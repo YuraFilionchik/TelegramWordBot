@@ -154,6 +154,12 @@
   <data name="Worker.AlreadyUsingMultipleChoiceLearningMode" xml:space="preserve">
     <value>您已在使用多项选择学习模式</value>
   </data>
+  <data name="Worker.RemindersEnabled" xml:space="preserve">
+    <value>已启用提醒。</value>
+  </data>
+  <data name="Worker.RemindersDisabled" xml:space="preserve">
+    <value>已禁用提醒。</value>
+  </data>
   <data name="Worker.ConfirmDictionaryDeletion" xml:space="preserve">
     <value>删除词典？单词将完全删除。</value>
   </data>
@@ -652,6 +658,12 @@ _______________________________</value>
   </data>
   <data name="Keyboard.Config.LearningMode" xml:space="preserve">
     <value>🎓 学习模式</value>
+  </data>
+  <data name="Keyboard.Config.DisableReminders" xml:space="preserve">
+    <value>🔕 禁用提醒</value>
+  </data>
+  <data name="Keyboard.Config.EnableReminders" xml:space="preserve">
+    <value>🔔 启用提醒</value>
   </data>
   <data name="Keyboard.Config.Help" xml:space="preserve">
     <value>❓ 帮助</value>

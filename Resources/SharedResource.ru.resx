@@ -154,6 +154,12 @@
   <data name="Worker.AlreadyUsingMultipleChoiceLearningMode" xml:space="preserve">
     <value>Вы уже используете режим множественного выбора</value>
   </data>
+  <data name="Worker.RemindersEnabled" xml:space="preserve">
+    <value>Напоминания включены.</value>
+  </data>
+  <data name="Worker.RemindersDisabled" xml:space="preserve">
+    <value>Напоминания отключены.</value>
+  </data>
   <data name="Worker.ConfirmDictionaryDeletion" xml:space="preserve">
     <value>Удалить словарь? Слова будут удалены полностью.</value>
   </data>
@@ -677,6 +683,12 @@ _______________________________</value>
   </data>
   <data name="Keyboard.Config.LearningMode" xml:space="preserve">
     <value>🎓 Режим обучения</value>
+  </data>
+  <data name="Keyboard.Config.DisableReminders" xml:space="preserve">
+    <value>🔕 Отключить напоминания</value>
+  </data>
+  <data name="Keyboard.Config.EnableReminders" xml:space="preserve">
+    <value>🔔 Включить напоминания</value>
   </data>
   <data name="Keyboard.Config.Help" xml:space="preserve">
     <value>❓ Помощь</value>
