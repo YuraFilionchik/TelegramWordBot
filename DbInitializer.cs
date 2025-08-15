@@ -30,6 +30,7 @@ public static class DatabaseInitializer
                 last_seen TIMESTAMPTZ NOT NULL DEFAULT NOW(),
                 receive_reminders BOOLEAN NOT NULL DEFAULT TRUE
             );",
+            @"ALTER TABLE users ADD COLUMN IF NOT EXISTS receive_reminders BOOLEAN NOT NULL DEFAULT TRUE;",
             @"CREATE TABLE IF NOT EXISTS words (
                 id UUID PRIMARY KEY,
                 base_text TEXT NOT NULL,
