@@ -2720,25 +2720,7 @@ namespace TelegramWordBot
 
             foreach (var user in users)
             {
-                if (await HasDueWordsAsync(user))
-                private async Task NotifyUsersWithDueWordsAsync(CancellationToken ct)
-        {
-            var users = await _userRepo.GetAllUsersAsync();
-
-            foreach (var user in users)
-            {
-                private async Task NotifyUsersWithDueWordsAsync(CancellationToken ct)
-        {
-            var users = await _userRepo.GetAllUsersAsync();
-
-            foreach (var user in users)
-            {
                 if (user.Receive_Reminders && await HasDueWordsAsync(user))
-                {
-                    await StartLearningAsync(user, ct);
-                }
-            }
-        }
                 {
                     await StartLearningAsync(user, ct);
                 }
