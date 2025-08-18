@@ -2720,7 +2720,6 @@ namespace TelegramWordBot
 
             foreach (var user in users)
             {
-<<<<<<< HEAD
                 if (await HasDueWordsAsync(user))
                 private async Task NotifyUsersWithDueWordsAsync(CancellationToken ct)
         {
@@ -2740,7 +2739,6 @@ namespace TelegramWordBot
                 }
             }
         }
->>>>>>> master
                 {
                     await StartLearningAsync(user, ct);
                 }
