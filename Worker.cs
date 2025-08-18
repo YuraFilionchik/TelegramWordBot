@@ -259,7 +259,7 @@ namespace TelegramWordBot
                     return (true, string.Empty);
 
                 case "settings":
-                    await _keyboardFactory.ShowConfigMenuAsync(_botClient, chatId, ct);
+                    await _keyboardFactory.ShowConfigMenuAsync(_botClient, chatId, user, ct);
                     return (true, string.Empty);
 
                 case "statistics":
@@ -472,6 +472,12 @@ namespace TelegramWordBot
                     break;
                 case "help_info":
                     await ShowHelpInformation(chatId, ct);
+                    break;
+                case "toggle_reminders":
+                    user.Receive_Reminders = !user.Receive_Reminders;
+                    await _userRepo.UpdateAsync(user);
+                    var key = user.Receive_Reminders ? "Worker.RemindersEnabled" : "Worker.RemindersDisabled";
+                    await _msg.SendSuccessAsync(chatId, _localizer[key], ct);
                     break;
                 case "config_learn":
                     switch (parts[1])
@@ -811,7 +817,7 @@ namespace TelegramWordBot
                         break;
 
                     case "/config":
-                        await _keyboardFactory.ShowConfigMenuAsync(_botClient, chatId, ct);
+                        await _keyboardFactory.ShowConfigMenuAsync(_botClient, chatId, user, ct);
                         break;
 
                     case "/addlanguage":
@@ -2244,9 +2250,20 @@ namespace TelegramWordBot
                     var word = await _wordRepo.GetWordById(p.Word_Id);
                     var wordText = word?.Base_Text;
 
-                    var displayWordText = !string.IsNullOrEmpty(wordText) ? TelegramMessageHelper.EscapeHtml(wordText) : _localizer["Worker.UnknownLanguage"]; // "[Unknown Word]" -> localized
+                    var displayWordText = !string.IsNullOrEmpty(wordText)
+                        ? TelegramMessageHelper.EscapeHtml(wordText)
+                        : _localizer["Worker.UnknownLanguage"]; // "[Unknown Word]" -> localized
 
-                    sb.AppendLine(_localizer["Worker.HardWordDisplay", displayWordText, Math.Round(p.Ease_Factor, 2), p.Repetition]);
+                    var remaining = p.Next_Review - DateTime.UtcNow;
+                    string timeRemaining = remaining.TotalDays >= 1
+                        ? _localizer["Worker.TimeRemainingDaysHours", (int)remaining.TotalDays, remaining.Hours]
+                        : _localizer["Worker.TimeRemainingHoursMinutes", (int)remaining.TotalHours, remaining.Minutes];
+
+                    sb.AppendLine(_localizer["Worker.HardWordDisplay",
+                        displayWordText,
+                        p.Repetition,
+                        Math.Round(p.Ease_Factor, 2),
+                        timeRemaining]);
                 }
             }
             else
@@ -2703,7 +2720,22 @@ namespace TelegramWordBot
 
             foreach (var user in users)
             {
+<<<<<<< HEAD
                 if (await HasDueWordsAsync(user))
+=======
+                private async Task NotifyUsersWithDueWordsAsync(CancellationToken ct)
+        {
+            var users = await _userRepo.GetAllUsersAsync();
+
+            foreach (var user in users)
+            {
+                if (user.Receive_Reminders && await HasDueWordsAsync(user))
+                {
+                    await StartLearningAsync(user, ct);
+                }
+            }
+        }
+>>>>>>> master
                 {
                     await StartLearningAsync(user, ct);
                 }

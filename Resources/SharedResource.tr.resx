@@ -154,6 +154,12 @@
   <data name="Worker.AlreadyUsingMultipleChoiceLearningMode" xml:space="preserve">
     <value>Zaten çoktan seçmeli öğrenme modunu kullanıyorsunuz</value>
   </data>
+  <data name="Worker.RemindersEnabled" xml:space="preserve">
+    <value>Hatırlatmalar açıldı.</value>
+  </data>
+  <data name="Worker.RemindersDisabled" xml:space="preserve">
+    <value>Hatırlatmalar kapatıldı.</value>
+  </data>
   <data name="Worker.ConfirmDictionaryDeletion" xml:space="preserve">
     <value>Sözlüğü silmek mi? Kelimeler tamamen kaldırılacak.</value>
   </data>
@@ -395,7 +401,17 @@
     <value>🔟 </value>
   </data>
   <data name="Worker.HardWordDisplay" xml:space="preserve">
-    <value> |--&gt; {0} |- Kolaylık Faktörü: {1} |- Tekrarlar: {2}_______________________________</value>
+    <value>|--&gt; {0}
+ |- Tekrarlar: {1}
+ |- Kolaylık Faktörü: {2}
+ |- Sonraki tekrar: {3}
+_______________________________</value>
+  </data>
+  <data name="Worker.TimeRemainingDaysHours" xml:space="preserve">
+    <value>{0} g {1} s içinde</value>
+  </data>
+  <data name="Worker.TimeRemainingHoursMinutes" xml:space="preserve">
+    <value>{0} s {1} dk içinde</value>
   </data>
   <data name="Worker.NoWords" xml:space="preserve">
     <value>Kelime yok.</value>
@@ -642,6 +658,12 @@
   </data>
   <data name="Keyboard.Config.LearningMode" xml:space="preserve">
     <value>🎓 Öğrenme modu</value>
+  </data>
+  <data name="Keyboard.Config.DisableReminders" xml:space="preserve">
+    <value>🔕 Hatırlatmaları kapat</value>
+  </data>
+  <data name="Keyboard.Config.EnableReminders" xml:space="preserve">
+    <value>🔔 Hatırlatmaları aç</value>
   </data>
   <data name="Keyboard.Config.Help" xml:space="preserve">
     <value>❓ Yardım</value>

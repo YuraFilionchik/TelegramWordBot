@@ -154,6 +154,12 @@
   <data name="Worker.AlreadyUsingMultipleChoiceLearningMode" xml:space="preserve">
     <value>Вы уже используете режим множественного выбора</value>
   </data>
+  <data name="Worker.RemindersEnabled" xml:space="preserve">
+    <value>Напоминания включены.</value>
+  </data>
+  <data name="Worker.RemindersDisabled" xml:space="preserve">
+    <value>Напоминания отключены.</value>
+  </data>
   <data name="Worker.ConfirmDictionaryDeletion" xml:space="preserve">
     <value>Удалить словарь? Слова будут удалены полностью.</value>
   </data>
@@ -400,7 +406,17 @@
     </value>
   </data>
   <data name="Worker.HardWordDisplay" xml:space="preserve">
-    <value> |--&gt; {0} |- Ease Factor: {1} |- Repetitions: {2}_______________________________</value>
+    <value>|--&gt; {0}
+ |- Повторения: {1}
+ |- Коэф. лёгкости: {2}
+ |- След. повторение: {3}
+_______________________________</value>
+  </data>
+  <data name="Worker.TimeRemainingDaysHours" xml:space="preserve">
+    <value>через {0} д. {1} ч.</value>
+  </data>
+  <data name="Worker.TimeRemainingHoursMinutes" xml:space="preserve">
+    <value>через {0} ч. {1} мин.</value>
   </data>
   <data name="Worker.NoWords" xml:space="preserve">
     <value>Нет слов.</value>
@@ -667,6 +683,12 @@
   </data>
   <data name="Keyboard.Config.LearningMode" xml:space="preserve">
     <value>🎓 Режим обучения</value>
+  </data>
+  <data name="Keyboard.Config.DisableReminders" xml:space="preserve">
+    <value>🔕 Отключить напоминания</value>
+  </data>
+  <data name="Keyboard.Config.EnableReminders" xml:space="preserve">
+    <value>🔔 Включить напоминания</value>
   </data>
   <data name="Keyboard.Config.Help" xml:space="preserve">
     <value>❓ Помощь</value>

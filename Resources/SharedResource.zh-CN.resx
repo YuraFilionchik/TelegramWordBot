@@ -154,6 +154,12 @@
   <data name="Worker.AlreadyUsingMultipleChoiceLearningMode" xml:space="preserve">
     <value>您已在使用多项选择学习模式</value>
   </data>
+  <data name="Worker.RemindersEnabled" xml:space="preserve">
+    <value>已启用提醒。</value>
+  </data>
+  <data name="Worker.RemindersDisabled" xml:space="preserve">
+    <value>已禁用提醒。</value>
+  </data>
   <data name="Worker.ConfirmDictionaryDeletion" xml:space="preserve">
     <value>删除词典？单词将完全删除。</value>
   </data>
@@ -395,7 +401,17 @@
     <value>🔟 </value>
   </data>
   <data name="Worker.HardWordDisplay" xml:space="preserve">
-    <value> |--&gt; {0} |- 难度系数: {1} |- 重复次数: {2}_______________________________</value>
+    <value>|--&gt; {0}
+ |- 重复次数: {1}
+ |- 难度系数: {2}
+ |- 下次复习: {3}
+_______________________________</value>
+  </data>
+  <data name="Worker.TimeRemainingDaysHours" xml:space="preserve">
+    <value>{0}天{1}小时后</value>
+  </data>
+  <data name="Worker.TimeRemainingHoursMinutes" xml:space="preserve">
+    <value>{0}小时{1}分钟后</value>
   </data>
   <data name="Worker.NoWords" xml:space="preserve">
     <value>没有单词。</value>
@@ -642,6 +658,12 @@
   </data>
   <data name="Keyboard.Config.LearningMode" xml:space="preserve">
     <value>🎓 学习模式</value>
+  </data>
+  <data name="Keyboard.Config.DisableReminders" xml:space="preserve">
+    <value>🔕 禁用提醒</value>
+  </data>
+  <data name="Keyboard.Config.EnableReminders" xml:space="preserve">
+    <value>🔔 启用提醒</value>
   </data>
   <data name="Keyboard.Config.Help" xml:space="preserve">
     <value>❓ 帮助</value>

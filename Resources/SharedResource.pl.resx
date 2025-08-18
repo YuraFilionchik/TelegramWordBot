@@ -154,6 +154,12 @@
   <data name="Worker.AlreadyUsingMultipleChoiceLearningMode" xml:space="preserve">
     <value>Już używasz trybu nauki wielokrotnego wyboru</value>
   </data>
+  <data name="Worker.RemindersEnabled" xml:space="preserve">
+    <value>Przypomnienia włączone.</value>
+  </data>
+  <data name="Worker.RemindersDisabled" xml:space="preserve">
+    <value>Przypomnienia wyłączone.</value>
+  </data>
   <data name="Worker.ConfirmDictionaryDeletion" xml:space="preserve">
     <value>Usunąć słownik? Słowa zostaną całkowicie usunięte.</value>
   </data>
@@ -395,7 +401,17 @@
     <value>🔟 </value>
   </data>
   <data name="Worker.HardWordDisplay" xml:space="preserve">
-    <value> |--&gt; {0} |- Współczynnik łatwości: {1} |- Powtórzenia: {2}_______________________________</value>
+    <value>|--&gt; {0}
+ |- Powtórzenia: {1}
+ |- Współczynnik łatwości: {2}
+ |- Następne powtórzenie: {3}
+_______________________________</value>
+  </data>
+  <data name="Worker.TimeRemainingDaysHours" xml:space="preserve">
+    <value>za {0} d {1} h</value>
+  </data>
+  <data name="Worker.TimeRemainingHoursMinutes" xml:space="preserve">
+    <value>za {0} h {1} min</value>
   </data>
   <data name="Worker.NoWords" xml:space="preserve">
     <value>Brak słów.</value>
@@ -642,6 +658,12 @@
   </data>
   <data name="Keyboard.Config.LearningMode" xml:space="preserve">
     <value>🎓 Tryb nauki</value>
+  </data>
+  <data name="Keyboard.Config.DisableReminders" xml:space="preserve">
+    <value>🔕 Wyłącz przypomnienia</value>
+  </data>
+  <data name="Keyboard.Config.EnableReminders" xml:space="preserve">
+    <value>🔔 Włącz przypomnienia</value>
   </data>
   <data name="Keyboard.Config.Help" xml:space="preserve">
     <value>❓ Pomoc</value>

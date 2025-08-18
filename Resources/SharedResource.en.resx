@@ -154,6 +154,12 @@
   <data name="Worker.AlreadyUsingMultipleChoiceLearningMode" xml:space="preserve">
     <value>You are already using multiple choice learning mode</value>
   </data>
+  <data name="Worker.RemindersEnabled" xml:space="preserve">
+    <value>Reminders enabled.</value>
+  </data>
+  <data name="Worker.RemindersDisabled" xml:space="preserve">
+    <value>Reminders disabled.</value>
+  </data>
   <data name="Worker.ConfirmDictionaryDeletion" xml:space="preserve">
     <value>Delete dictionary? Words will be completely removed.</value>
   </data>
@@ -400,7 +406,17 @@
     </value>
   </data>
   <data name="Worker.HardWordDisplay" xml:space="preserve">
-    <value> |--&gt; {0} |- Ease Factor: {1} |- Repetitions: {2}_______________________________</value>
+    <value>|--&gt; {0}
+ |- Repetitions: {1}
+ |- Ease Factor: {2}
+ |- Next review in: {3}
+_______________________________</value>
+  </data>
+  <data name="Worker.TimeRemainingDaysHours" xml:space="preserve">
+    <value>in {0} d {1} h</value>
+  </data>
+  <data name="Worker.TimeRemainingHoursMinutes" xml:space="preserve">
+    <value>in {0} h {1} m</value>
   </data>
   <data name="Worker.NoWords" xml:space="preserve">
     <value>No words.</value>
@@ -667,6 +683,12 @@
   </data>
   <data name="Keyboard.Config.LearningMode" xml:space="preserve">
     <value>🎓 Learning mode</value>
+  </data>
+  <data name="Keyboard.Config.DisableReminders" xml:space="preserve">
+    <value>🔕 Disable reminders</value>
+  </data>
+  <data name="Keyboard.Config.EnableReminders" xml:space="preserve">
+    <value>🔔 Enable reminders</value>
   </data>
   <data name="Keyboard.Config.Help" xml:space="preserve">
     <value>❓ Help</value>
