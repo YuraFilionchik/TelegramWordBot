@@ -2722,7 +2722,12 @@ namespace TelegramWordBot
             {
 <<<<<<< HEAD
                 if (await HasDueWordsAsync(user))
-=======
+                private async Task NotifyUsersWithDueWordsAsync(CancellationToken ct)
+        {
+            var users = await _userRepo.GetAllUsersAsync();
+
+            foreach (var user in users)
+            {
                 private async Task NotifyUsersWithDueWordsAsync(CancellationToken ct)
         {
             var users = await _userRepo.GetAllUsersAsync();
