@@ -5,12 +5,12 @@ from pathlib import Path
 CSV_FILE = 'translation_table.csv'
 LANG_MAP = {
     'ru': 'Russian',
-    'en': 'English',
-    'de': 'German',
+    'en-US': 'English',
+    'de-DE': 'German',
     'et': 'Estonian',
-    'fr': 'French',
-    'pl': 'Polish',
-    'tr': 'Turkish',
+    'fr-FR': 'French',
+    'pl-PL': 'Polish',
+    'tr-TR': 'Turkish',
     'zh-CN': 'ChineseSimplified',
 }
 
