@@ -36,6 +36,7 @@ builder.Services.AddHttpClient<ITextToSpeechService, GoogleTextToSpeechService>(
 
 connectionString = DbConnectionFactory.ConvertDatabaseUrl(connectionString);
 var dbFactory = new DbConnectionFactory(connectionString);
+await DatabaseInitializer.RefreshCollationAsync(dbFactory);
 await DatabaseInitializer.EnsureTablesAsync(dbFactory);
 await DatabaseInitializer.EnsureLanguagesAsync(dbFactory);
 builder.Services.AddSingleton<IConnectionFactory>(new DbConnectionFactory(connectionString));

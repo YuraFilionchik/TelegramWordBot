@@ -5,6 +5,14 @@ namespace TelegramWordBot;
 
 public static class DatabaseInitializer
 {
+    public static async Task RefreshCollationAsync(DbConnectionFactory factory)
+    {
+        using var connection = factory.CreateConnection();
+        var dbName = connection.Database;
+        await connection.ExecuteAsync($"REINDEX DATABASE \"{dbName}\";");
+        await connection.ExecuteAsync($"ALTER DATABASE \"{dbName}\" REFRESH COLLATION VERSION;");
+    }
+
     public static async Task EnsureTablesAsync(DbConnectionFactory factory)
     {
         using var connection = factory.CreateConnection();
