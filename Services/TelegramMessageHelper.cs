@@ -7,6 +7,7 @@ using System.IO;
 using TelegramWordBot.Services.TTS;
 using TelegramWordBot.Models;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace TelegramWordBot.Services;
 
@@ -16,13 +17,20 @@ public class TelegramMessageHelper
     private readonly ITextToSpeechService _tts;
     private readonly TtsOptions _ttsOptions;
     private readonly IStringLocalizer<SharedResource> _localizer;
+    private readonly ILogger<TelegramMessageHelper> _logger;
 
-    public TelegramMessageHelper(ITelegramBotClient botClient, ITextToSpeechService tts, TtsOptions options, IStringLocalizer<SharedResource> localizer)
+    public TelegramMessageHelper(
+        ITelegramBotClient botClient,
+        ITextToSpeechService tts,
+        TtsOptions options,
+        IStringLocalizer<SharedResource> localizer,
+        ILogger<TelegramMessageHelper> logger)
     {
         _bot = botClient;
         _tts = tts;
         _ttsOptions = options;
         _localizer = localizer;
+        _logger = logger;
     }
 
     // === Вспомогательный метод для генерации текста карточки слова ===
@@ -399,28 +407,36 @@ public class TelegramMessageHelper
             cancellationToken: ct);
     }
 
-    public async Task<Message> SendVoiceAsync(ChatId chatId, string text, string? voiceLanguage = null, CancellationToken ct = default)
+    public async Task<Message?> SendVoiceAsync(ChatId chatId, string text, string? voiceLanguage = null, CancellationToken ct = default)
     {
         var lang = voiceLanguage ?? _ttsOptions.LanguageCode;
 
-        var dir = Path.Combine(AppContext.BaseDirectory, "speech");
-        Directory.CreateDirectory(dir);
-
-        var hash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(lang + "|" + text)))
-            .ToLowerInvariant();
-        var filePath = Path.Combine(dir, $"{hash}.ogg");
-
-        if (!File.Exists(filePath))
+        try
         {
-            await using var synth = await _tts.SynthesizeSpeechAsync(text, lang, _ttsOptions.Speed);
-            synth.Position = 0;
-            await using var fs = File.Create(filePath);
-            await synth.CopyToAsync(fs, ct);
-        }
+            var dir = Path.Combine(AppContext.BaseDirectory, "speech");
+            Directory.CreateDirectory(dir);
 
-        await using var voiceStream = File.OpenRead(filePath);
-        var input = InputFile.FromStream(voiceStream, Path.GetFileName(filePath));
-        return await _bot.SendVoice(chatId: chatId, voice: input, cancellationToken: ct);
+            var hash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(lang + "|" + text)))
+                .ToLowerInvariant();
+            var filePath = Path.Combine(dir, $"{hash}.ogg");
+
+            if (!File.Exists(filePath))
+            {
+                await using var synth = await _tts.SynthesizeSpeechAsync(text, lang, _ttsOptions.Speed);
+                synth.Position = 0;
+                await using var fs = File.Create(filePath);
+                await synth.CopyToAsync(fs, ct);
+            }
+
+            await using var voiceStream = File.OpenRead(filePath);
+            var input = InputFile.FromStream(voiceStream, Path.GetFileName(filePath));
+            return await _bot.SendVoice(chatId: chatId, voice: input, cancellationToken: ct);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send voice message");
+            return null;
+        }
     }
     public async Task<Message> SendText(
     ChatId chatId,
