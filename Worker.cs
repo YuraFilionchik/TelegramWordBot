@@ -999,30 +999,45 @@ namespace TelegramWordBot
         {
             try
             {
+                if (items == null || items.Count == 0)
+                    return true;
+
+                var sourceLang = await _languageRepo.GetByNameAsync(items.First().OriginalLanguage);
+                var targetLang = await _languageRepo.GetByNameAsync(items.First().TranslatedLanguage);
+
                 foreach (var item in items)
                 {
-                    var sourceLang = await _languageRepo.GetByNameAsync(items.First().OriginalLanguage);
-                    var targetLang = await _languageRepo.GetByNameAsync(items.First().TranslatedLanguage);
-                    Word newword = new Word
-                    {
-                        Id = Guid.NewGuid(),
-                        Base_Text = item.OriginalText,
-                        Language_Id = sourceLang!.Id
-                    };
+                    if (string.IsNullOrWhiteSpace(item.OriginalText) || string.IsNullOrWhiteSpace(item.TranslatedText))
+                        continue;
 
-                    Translation translation = new Translation
+                    var word = await _wordRepo.GetByTextAndLanguageAsync(item.OriginalText!, sourceLang!.Id);
+                    if (word == null)
                     {
-                        Id = Guid.NewGuid(),
-                        Word_Id = newword.Id,
-                        Language_Id = targetLang!.Id,
-                        Text = item.TranslatedText,
-                        Examples = item.Example
-                    };
+                        word = new Word
+                        {
+                            Id = Guid.NewGuid(),
+                            Base_Text = item.OriginalText!,
+                            Language_Id = sourceLang!.Id
+                        };
+                        await _wordRepo.AddWordAsync(word);
+                    }
 
-                    await _wordRepo.AddWordAsync(newword);
-                    await _translationRepo.AddTranslationAsync(translation);
-                    await _userWordRepo.AddUserWordAsync(user.Id, newword.Id, translation.Id);
-                    await _dictionaryRepo.AddWordAsync(dictName ?? "default", newword.Id, user.Id);
+                    var translation = await _translationRepo.GetTranslationAsync(word.Id, targetLang!.Id);
+                    if (translation == null)
+                    {
+                        translation = new Translation
+                        {
+                            Id = Guid.NewGuid(),
+                            Word_Id = word.Id,
+                            Language_Id = targetLang!.Id,
+                            Text = item.TranslatedText!,
+                            Examples = item.Example
+                        };
+                        await _translationRepo.AddTranslationAsync(translation);
+                    }
+
+                    await _userWordRepo.AddUserWordAsync(user.Id, word.Id, translation.Id);
+                    await _dictionaryRepo.AddWordAsync(dictName ?? "default", word.Id, user.Id);
                 }
                 return true;
             }
