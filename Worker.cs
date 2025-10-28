@@ -1802,6 +1802,7 @@ namespace TelegramWordBot
             var word = await _wordRepo.GetWordById(wordId);
             var translation = await _translationRepo.GetTranslationAsync(wordId, user.Native_Language!);
             var imgPath = await _imageService.GetImagePathAsync(word);
+            var lang = await _languageRepo.GetByIdAsync(word.Language_Id);
             if (success)
             {
                 await _msg.SendSuccessAsync(user.Telegram_Id, _localizer["Worker.CorrectAnswer", word.Base_Text, translation.Text], ct);
@@ -1809,10 +1810,9 @@ namespace TelegramWordBot
             else
             {
                 await _msg.SendErrorAsync(user.Telegram_Id, _localizer["Worker.IncorrectAnswer", word.Base_Text, translation.Text], ct);
-                var lang = await _languageRepo.GetByIdAsync(word.Language_Id);
-                await _msg.SendWordCardAsync(user.Telegram_Id, word.Base_Text, translation.Text, translation.Examples, imgPath, lang?.Name, ct);
-                
             }
+
+            await _msg.SendWordCardAsync(user.Telegram_Id, word.Base_Text, translation.Text, translation.Examples, imgPath, lang?.Name, ct);
             //отправка карточки и переход к next
            // await SendNextLearningWordAsync(user, user.Telegram_Id, ct);
         }
