@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text;
 using System.Linq;
+using System.Collections.Concurrent;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
@@ -61,6 +62,7 @@ namespace TelegramWordBot
         private const int EditListPageSize = 30;
         private readonly Dictionary<long, Guid> _pendingDeleteWordsDict = new();
         private readonly Dictionary<long, Guid> _pendingDeleteDict = new();
+        private readonly ConcurrentDictionary<long, bool> _pendingReminderResponses = new();
 
         // TTS configuration stored here temporarily
         public static string TtsLanguage = "en-US";
@@ -305,6 +307,7 @@ namespace TelegramWordBot
                         var success = command == "rem";
                         await UpdateLearningProgressAsync(user, wordId, success, ct);
                     }
+                    MarkReminderResponseReceived(user.Telegram_Id);
                     await SendNextLearningWordAsync(user, chatId, ct);
                     break;
                 case "delete":
@@ -608,6 +611,7 @@ namespace TelegramWordBot
                     await UpdateLearningProgressAsync(user, wordId, success, ct);
                 }
                 await Task.Delay(1000, ct); // Задержка перед отправкой следующего слова
+                MarkReminderResponseReceived(user.Telegram_Id);
                 await SendNextLearningWordAsync(user, chatId, ct);
                 return;
             }
@@ -1787,9 +1791,14 @@ namespace TelegramWordBot
         }
 
         
-        private async Task StartLearningAsync(User user, CancellationToken ct)
+        private Task<bool> StartLearningAsync(User user, CancellationToken ct)
         {
-            await SendNextLearningWordAsync(user, user.Telegram_Id, ct);
+            return SendNextLearningWordAsync(user, user.Telegram_Id, ct);
+        }
+
+        private void MarkReminderResponseReceived(long telegramId)
+        {
+            _pendingReminderResponses.TryRemove(telegramId, out _);
         }
 
         private async Task UpdateLearningProgressAsync(User user, Guid wordId, bool success, CancellationToken ct)
@@ -1840,7 +1849,7 @@ namespace TelegramWordBot
             }
         }
 
-        private async Task SendNextLearningWordAsync(User user, long chatId, CancellationToken ct)
+        private async Task<bool> SendNextLearningWordAsync(User user, long chatId, CancellationToken ct)
         {
             var currentLang = await _languageRepo.GetByNameAsync(user.Current_Language!);
             var all = await _userWordRepo.GetWordsByUserId(user.Id);
@@ -1858,15 +1867,21 @@ namespace TelegramWordBot
             if (!due.Any())
             {
                 await _msg.SendInfoAsync(chatId, _localizer["Worker.NothingToRepeat"], ct);
-                return;
+                return false;
             }
 
             var rnd = new Random();
             var word = due[rnd.Next(due.Count)];
             if (user.Prefer_Multiple_Choice)
+            {
                 await ShowMultipleChoiceAsync(user, word, ct);
+            }
             else
+            {
                 await ShowBinaryChoiceAsync(chatId, word, ct);
+            }
+
+            return true;
         }
 
 
@@ -2735,9 +2750,19 @@ namespace TelegramWordBot
 
             foreach (var user in users)
             {
-                if (user.Receive_Reminders && await HasDueWordsAsync(user))
+                if (!user.Receive_Reminders)
+                    continue;
+
+                if (_pendingReminderResponses.ContainsKey(user.Telegram_Id))
+                    continue;
+
+                if (await HasDueWordsAsync(user))
                 {
-                    await StartLearningAsync(user, ct);
+                    var started = await StartLearningAsync(user, ct);
+                    if (started)
+                    {
+                        _pendingReminderResponses.TryAdd(user.Telegram_Id, true);
+                    }
                 }
             }
         }
