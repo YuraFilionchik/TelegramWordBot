@@ -958,7 +958,7 @@ namespace TelegramWordBot
                         break;
 
                     default:
-                        await _msg.SendErrorAsync(chatId, _localizer["Worker.UnknownCommand"], ct);
+                        await ProcessAddWord(user, text, ct);
                         break;
                 }
             }
